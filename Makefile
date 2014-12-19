@@ -10,3 +10,7 @@ lint_python:
 clean:
 	find . -name "*.pyc" -exec rm -rf {} \;
 
+bootstrap:
+	pip install -r requirements-dev.txt
+	python manage.py syncdb
+	python manage.py cities_light

@@ -54,3 +54,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __unicode__(self):
         return self.get_full_name()
+
+    def get_short_name(self):
+        return self.first_name
