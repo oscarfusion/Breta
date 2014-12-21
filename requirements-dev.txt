@@ -3,3 +3,9 @@
 prospector
 factory_boy
 ipdb
+mock
+pylint
+pyflakes
+pep8
+coverage
+flake8

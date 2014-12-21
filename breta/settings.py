@@ -41,6 +41,7 @@ INSTALLED_APPS = (
 
     'cities_light',
     'rest_framework',
+    'django_jenkins',
 
     'accounts',
 )
@@ -87,6 +88,11 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissions',
     )
 }
+
+JENKINS_TASKS = (
+    'django_jenkins.tasks.run_pep8',
+    'django_jenkins.tasks.run_pyflakes',
+)
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
