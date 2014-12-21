@@ -1,3 +1,5 @@
+TESTS=
+
 run:
 	python manage.py runserver
 
@@ -14,3 +16,6 @@ bootstrap:
 	pip install -r requirements-dev.txt
 	python manage.py syncdb
 	python manage.py cities_light
+
+test:
+	python manage.py test $(TESTS) --failfast --settings=breta.test_settings

@@ -5,6 +5,8 @@ class UserPermissions(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method == 'POST':
             return True
+        elif request.method == 'DELETE':
+            return False
         else:
             return request.user.is_authenticated()
 
