@@ -10,10 +10,11 @@ router.register(r'users', views.UserViewSet)
 urlpatterns = patterns(
     '',
     # Examples:
-    # url(r'^$', 'breta.views.home', name='home'),
+    url(r'^$', 'core.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^accounts/', include('accounts.urls')),
 
     url(r'^api/v1/', include(router.urls)),
 )

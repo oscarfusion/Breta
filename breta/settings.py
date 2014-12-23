@@ -22,9 +22,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY', '$$b*2%yetxq**-*)^70v31ml!^p@#$d(s=hyb
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'cities_light',
     'rest_framework',
     'django_jenkins',
+    'pipeline',
 
     'accounts',
 )
@@ -54,12 +55,25 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
+    'pipeline.middleware.MinifyHTMLMiddleware',
 )
 
 ROOT_URLCONF = 'breta.urls'
 
 WSGI_APPLICATION = 'breta.wsgi.application'
 
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "breta/static"),
+)
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+)
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -67,6 +81,10 @@ WSGI_APPLICATION = 'breta.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(),
 }
+
+TEMPLATE_DIRS = (
+    os.path.join(BASE_DIR, 'breta/templates'),
+)
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -98,6 +116,8 @@ JENKINS_TASKS = (
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+from static_settings import *
 
 try:
     from local_settings import *
