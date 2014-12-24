@@ -130,6 +130,8 @@ JENKINS_TASKS = (
     'django_jenkins.tasks.run_pyflakes',
 )
 
+PEP8_RCFILE = os.path.join(BASE_DIR, 'setup.cfg'),
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
