@@ -21,4 +21,3 @@ class SignUpTestCase(TestCase):
         }
         resp = self.client.post(url, data=data)
         self.assertEqual(resp.status_code, 302)
-
