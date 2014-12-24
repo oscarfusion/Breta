@@ -7,6 +7,8 @@ DATABASES = {
     }
 }
 
+PIPELINE_ENABLED = False
+
 # If your test settings file doesn't import any other settings file
 # then you can use the function directly:
  

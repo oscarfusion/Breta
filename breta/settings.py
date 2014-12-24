@@ -43,6 +43,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'django_jenkins',
     'pipeline',
+    'widget_tweaks',
 
     'accounts',
 )
@@ -86,6 +87,8 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR, 'breta/templates'),
 )
 
+STATIC_ROOT = 'staticfiles'
+
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
@@ -104,7 +107,22 @@ AUTH_USER_MODEL = 'accounts.User'
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.DjangoModelPermissions',
-    )
+    ),
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'PAGINATE_BY': 100,
+    'PAGINATE_BY_PARAM': 'page_size',
+    'MAX_PAGINATE_BY': 100,
+    'DEFAULT_PAGINATION_SERIALIZER_CLASS':
+        'rest_framework_ember.pagination.PaginationSerializer',
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework_ember.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework_ember.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
 }
 
 JENKINS_TASKS = (

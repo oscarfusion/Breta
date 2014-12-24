@@ -12,8 +12,6 @@ PIPELINE_JS = {
     'base': {
         'source_filenames': (
             'js/vendors/jquery-1.10.2.js',
-            'js/vendors/handlebars-v2.0.0.js',
-            'js/vendors/ember-1.9.0.js',
         ),
         'output_filename': 'cache/js/base.js',
     }

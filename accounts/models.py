@@ -38,7 +38,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     phone = models.CharField(max_length=255)
 
-    region = models.ForeignKey('cities_light.Region', blank=True, null=True)
     city = models.ForeignKey('cities_light.City', blank=True, null=True)
 
     is_staff = models.BooleanField(
