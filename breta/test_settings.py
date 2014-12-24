@@ -48,4 +48,4 @@ def prevent_tests_migrate(db):
 # (e.g. a dependency on the contenttypes app). To fix, simply add the new
 # app to MIGRATION_MODULES.
 
-PROJECT_APPS = ('accounts', 'breta')
+PROJECT_APPS = ('accounts', 'breta', 'core')
