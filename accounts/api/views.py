@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.response import Response
 
 from .serializers import UserSerializer
 from .permissions import UserPermissions
@@ -18,3 +19,11 @@ class UserViewSet(viewsets.ModelViewSet):
             instance.set_password(password)
             instance.save()
         return instance
+
+    def retrieve(self, request, pk=None):
+        """
+        If provided 'pk' is "me" then return the current user.
+        """
+        if pk == 'me':
+            return Response(UserSerializer(request.user).data)
+        return super(UserViewSet, self).retrieve(request, pk)
