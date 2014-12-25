@@ -1,8 +1,11 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext as _
+from rest_framework.authtoken.models import Token
 
 
 class UserManager(BaseUserManager):
@@ -62,3 +65,12 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_full_name(self):
         return '{} {}'.format(self.first_name, self.last_name)
+
+
+@receiver(post_save, sender=User)
+def init_new_user(sender, instance, signal, created, **kwargs):
+    """
+    Create an authentication token for newly created users.
+    """
+    if created:
+        Token.objects.create(user=instance)

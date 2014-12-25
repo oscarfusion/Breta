@@ -41,6 +41,7 @@ INSTALLED_APPS = (
 
     'cities_light',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_jenkins',
     'pipeline',
     'widget_tweaks',
@@ -124,6 +125,10 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework_ember.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',  # optional
     ),
 }
 

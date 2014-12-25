@@ -5,7 +5,7 @@ from rest_framework import routers
 from accounts.api import views as account_views
 from core.api import views as core_views
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'users', account_views.UserViewSet)
 router.register(r'regions', core_views.RegionViewSet)
 router.register(r'cities', core_views.CityViewSet)
@@ -19,5 +19,6 @@ urlpatterns = patterns(
 
     url(r'^admin/', include(admin.site.urls)),
 
+    url(r'^api-token-auth/', 'core.api.views.obtain_auth_token'),
     url(r'^api/v1/', include(router.urls)),
 )
