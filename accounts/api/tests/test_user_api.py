@@ -11,13 +11,13 @@ class UserApiTestCase(APITestCase):
         UserFactory()
         url = reverse('user-list')
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_should_require_auth_for_get_object(self):
         user = UserFactory()
         url = reverse('user-detail', args=(user.id, ))
         response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_should_create_object_without_auth_and_set_password(self):
         url = reverse('user-list')
@@ -48,7 +48,7 @@ class UserApiTestCase(APITestCase):
             'first_name': 'John',
         }
         response = self.client.put(url, data=data)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_should_not_allow_update_another_profile(self):
         user = UserFactory()
