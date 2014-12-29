@@ -48,6 +48,7 @@ INSTALLED_APPS = (
     'corsheaders',
 
     'accounts',
+    'projects',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -91,6 +92,7 @@ TEMPLATE_DIRS = (
 )
 
 STATIC_ROOT = 'staticfiles'
+MEDIA_ROOT = 'mediafiles'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -145,6 +147,7 @@ CORS_ORIGIN_WHITELIST = (
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
 from static_settings import *
 
