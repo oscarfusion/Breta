@@ -6,7 +6,7 @@ from ..models import Project, ProjectFile
 class ProjectFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectFile
-        fields = ('project', 'file')
+        fields = ('id', 'project', 'file')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
