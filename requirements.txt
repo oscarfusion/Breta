@@ -7,5 +7,6 @@ django==1.7.1
 django_filter==0.9.1
 django_pipeline==1.4.2
 djangorestframework==3.0.2
+gunicorn==19.1.1
 psycopg2==2.5.4
 rest_framework_ember==1.1.0

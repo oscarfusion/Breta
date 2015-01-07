@@ -1,0 +1,22 @@
+- name: install libraries
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - python-dev
+    - python-virtualenv
+    - postgresql-client
+    - libpq-dev
+    - supervisor
+
+- name: Create frontend directory
+  file: path=/www/frontend state=directory
+
+- name: Create backend directory
+  file: path=/www/backend state=directory
+
+- name: Nginx config for app
+  template: src=nginx.conf.j2 dest=/etc/nginx/sites-enabled/frontend.conf
+  notify: restart nginx
+
+- name: Supervisor config for backend app
+  template: src=supervisor.conf.j2 dest=/etc/supervisor/conf.d/breta.conf
+  notify: restart supervisor
