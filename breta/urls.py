@@ -4,8 +4,9 @@ from django.contrib import admin
 from rest_framework import routers
 
 from accounts.api import views as account_views
-from projects.api import views as project_views
+from breta_messages.api import views as message_views
 from core.api import views as core_views
+from projects.api import views as project_views
 
 
 router = routers.DefaultRouter(trailing_slash=False)
@@ -14,6 +15,9 @@ router.register(r'regions', core_views.RegionViewSet)
 router.register(r'cities', core_views.CityViewSet)
 router.register(r'projects', project_views.ProjectViewSet)
 router.register(r'project-files', project_views.ProjectFileViewSet)
+router.register(r'messages', message_views.MessageViewSet)
+router.register(r'message-files', message_views.MessageFileViewSet)
+router.register(r'message-recipients', message_views.MessageRecipientViewSet)
 
 urlpatterns = patterns(
     '',

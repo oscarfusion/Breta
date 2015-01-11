@@ -8,7 +8,7 @@ from ..models import Project, ProjectFile
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    queryset = Project.objects.all()
+    queryset = Project.objects.select_related().all()
     serializer_class = ProjectSerializer
     permission_classes = (ProjectPermissions, )
 
@@ -16,7 +16,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         """
         Should return only own projects
         """
-        return Project.objects.filter(user=self.request.user)
+        return Project.objects.select_related().filter(user=self.request.user)
 
     def perform_create(self, obj):
         obj.save(user=self.request.user)
