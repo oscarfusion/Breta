@@ -16,16 +16,6 @@ server {
         index index.html;
     }
 
-    location /app/static/ {
-        alias   /www/backend/breta/static/;
-        proxy_set_header SCRIPT_NAME /app;
-    }
-    
-    location /app/media/ {
-        alias   /www/backend/breta/mediafiles/;
-        proxy_set_header SCRIPT_NAME /app;
-    }
- 
     location /app {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Host $http_host;

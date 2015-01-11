@@ -6,6 +6,8 @@
     - postgresql-client
     - libpq-dev
     - supervisor
+    - node
+    - npm
 
 - name: Create frontend directory
   file: path=/www/frontend state=directory
@@ -20,3 +22,6 @@
 - name: Supervisor config for backend app
   template: src=supervisor.conf.j2 dest=/etc/supervisor/conf.d/breta.conf
   notify: restart supervisor
+
+- name: install npm dependencies
+  npm: name=yuglify global=yes

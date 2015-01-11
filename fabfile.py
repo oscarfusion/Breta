@@ -29,9 +29,15 @@ def syncdb():
         run('/www/backend/venv/bin/python /www/backend/breta/manage.py syncdb')
 
 
+def collect_static():
+    with prefix('source /www/backend/venv/bin/activate'):
+        run('/www/backend/venv/bin/python /www/backend/breta/manage.py collectstatic --noinput --settings breta.settings')
+
+
 def deploy():
     rsync()
     run('chmod u+x /www/backend/breta/gunicorn_start.sh')
     install_dependencies()
     syncdb()
+    collect_static()
     run('supervisorctl restart breta')
