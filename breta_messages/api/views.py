@@ -81,6 +81,7 @@ class MessageViewSet(viewsets.ModelViewSet):
             qs = qs.order_by('-is_unread', '-last_activity',)
         else:
             qs = filter_queryset(qs)
+            qs = queryset.filter(id__in=[o.id for o in qs])
         return qs
 
 
