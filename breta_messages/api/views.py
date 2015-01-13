@@ -84,6 +84,9 @@ class MessageViewSet(viewsets.ModelViewSet):
             qs = queryset.filter(id__in=[o.id for o in qs])
         return qs
 
+    def perform_create(self, serializer):
+        serializer.save(sender=self.request.user)
+
 
 class MessageRecipientViewSet(viewsets.ModelViewSet):
     queryset = MessageRecipient.objects.select_related().all()

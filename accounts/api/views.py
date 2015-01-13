@@ -1,3 +1,4 @@
+from rest_framework import filters
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -10,6 +11,8 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (UserPermissions, )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('first_name', 'last_name')
 
     def perform_create(self, serializer):
         instance = serializer.save()
