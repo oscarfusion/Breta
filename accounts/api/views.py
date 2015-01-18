@@ -14,11 +14,6 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.SearchFilter,)
     search_fields = ('first_name', 'last_name')
 
-    def get_queryset(self):
-        return self.queryset.extra(select={
-            'is_current_user': 'id =' + str(self.request.user.id)
-        })
-
     def perform_create(self, serializer):
         instance = serializer.save()
         password = self.request.DATA.get('password')

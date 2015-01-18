@@ -12,4 +12,4 @@ class UserSerializer(serializers.ModelSerializer):
     is_current_user = serializers.SerializerMethodField()
 
     def get_is_current_user(self, obj):
-        return getattr(obj, 'is_current_user', None)
+        return self.context['request'].user.id == obj.id
