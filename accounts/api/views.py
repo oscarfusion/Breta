@@ -18,7 +18,7 @@ class UserViewSet(viewsets.ModelViewSet):
         instance = serializer.save()
         password = self.request.DATA.get('password')
         if password:
-            instance.is_active = True
+            instance.is_active = False
             instance.set_password(password)
             instance.save()
         return instance

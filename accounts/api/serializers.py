@@ -6,8 +6,8 @@ from ..models import User
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user',)
-        read_only_fields = ('is_current_user',)
+        fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user', 'location')
+        read_only_fields = ('is_current_user', 'city',)
 
     is_current_user = serializers.SerializerMethodField()
 
