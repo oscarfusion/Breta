@@ -21,7 +21,7 @@ def projects_count(data):
 class ProjectApiTestCase(APITestCase):
 
     def fake_data(self, project_type=Project.WEBSITE, name='Test project',
-                  idea='Test idea', description='Projects description', price_range=Project.ONE_TO_FIVE):
+                  idea='Test idea', description='Projects description', price_range='1000,5000'):
         return {
             'project_type': project_type,
             'name': name,
@@ -60,7 +60,7 @@ class ProjectApiTestCase(APITestCase):
         self.assertEqual(project['project_type'], Project.WEBSITE)
         self.assertEqual(project['idea'], data['idea'])
         self.assertEqual(project['description'], data['description'])
-        self.assertEqual(project['price_range'], Project.ONE_TO_FIVE)
+        self.assertEqual(project['price_range'], '1000,5000')
         self.assertEqual(project['slug'], slugify(unicode(data['name'])))
 
     def test_should_have_access_only_to_own_objects(self):

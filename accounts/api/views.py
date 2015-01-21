@@ -1,5 +1,6 @@
 from rest_framework import filters
 from rest_framework import viewsets
+from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
 from .serializers import UserSerializer
@@ -22,6 +23,15 @@ class UserViewSet(viewsets.ModelViewSet):
             instance.set_password(password)
             instance.save()
         return instance
+
+    def create(self, request, *args, **kwargs):
+        resp = super(UserViewSet, self).create(request, args, kwargs)
+        if resp.status_code != 201:
+            return resp
+        user_id = resp.data['id']
+        token, created = Token.objects.get_or_create(user=user_id)
+        resp.data['token'] = token.key
+        return resp
 
     def retrieve(self, request, pk=None):
         """

@@ -11,5 +11,5 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'My project %d' % n)
     idea = factory.Sequence(lambda n: 'My idea %d' % n)
     description = factory.Sequence(lambda n: 'My description %d' % n)
-    price_range = Project.ONE_TO_FIVE
+    price_range = factory.Sequence(lambda n: '%d,%d' % (n, n+1))
     user = factory.SubFactory('accounts.tests.factories.UserFactory')

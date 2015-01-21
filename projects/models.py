@@ -5,30 +5,21 @@ from accounts.models import User
 
 class Project(models.Model):
     WEBSITE = 'WS'
-    TABLET_APP = 'TA'
-    PHONE_APP = 'PA'
-    DESKTOP_PROGRAM = 'DP'
+    APP = 'APP'
+    WEBSITE_AND_APP = 'WAA'
 
     PROJECT_CHOICES = (
         (WEBSITE, 'Website'),
-        (TABLET_APP, 'Tablet app'),
-        (PHONE_APP, 'Phone app'),
-        (DESKTOP_PROGRAM, 'Desktop program')
-    )
-
-    ONE_TO_FIVE = '1-5'
-    FIVE_TO_TEN = '5-10'
-
-    PRICE_RANGES = (
-        (ONE_TO_FIVE, '$1000-5000'),
-        (FIVE_TO_TEN, '$5000-10000')
+        (APP, 'App'),
+        (WEBSITE_AND_APP, 'Website & App'),
     )
 
     project_type = models.CharField(max_length=255, choices=PROJECT_CHOICES, default=WEBSITE)
     name = models.CharField(max_length=255)
     idea = models.CharField(max_length=255)
     description = models.TextField()
-    price_range = models.CharField(max_length=255, choices=PRICE_RANGES, default=ONE_TO_FIVE)
+    price_range = models.CharField(max_length=255)
+    is_sure_about_price = models.BooleanField(default=False)
     slug = models.SlugField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
