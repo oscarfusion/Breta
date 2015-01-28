@@ -3,9 +3,15 @@ from rest_framework import viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
-from .serializers import UserSerializer
-from .permissions import UserPermissions
-from ..models import User
+from .serializers import (
+    UserSerializer, DeveloperSerializer, PortfolioProjectSerializer,
+    PortfolioProjectAttachmentSerializer, WebsiteSerializer,
+)
+
+from .permissions import (
+    UserPermissions, DeveloperPermissions, WebsitePermission, PortfolioProjectPermission, PortfolioProjectAttachmentPermission
+)
+from ..models import User, Developer, PortfolioProject, PortfolioProjectAttachment, Website
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -40,3 +46,27 @@ class UserViewSet(viewsets.ModelViewSet):
         if pk == 'me':
             return Response(UserSerializer(request.user).data)
         return super(UserViewSet, self).retrieve(request, pk)
+
+
+class DeveloperViewSet(viewsets.ModelViewSet):
+    queryset = Developer.objects.all()
+    serializer_class = DeveloperSerializer
+    permission_classes = (DeveloperPermissions,)
+
+
+class PortfolioProjectViewSet(viewsets.ModelViewSet):
+    queryset = PortfolioProject.objects.all()
+    serializer_class = PortfolioProjectSerializer
+    permission_classes = (WebsitePermission,)
+
+
+class PortfolioProjectAttachmentViewSet(viewsets.ModelViewSet):
+    queryset = PortfolioProjectAttachment.objects.all()
+    serializer_class = PortfolioProjectAttachmentSerializer
+    permission_classes = (PortfolioProjectPermission,)
+
+
+class WebsiteViewSet(viewsets.ModelViewSet):
+    queryset = Website.objects.all()
+    serializer_class = WebsiteSerializer
+    permission_classes = (PortfolioProjectAttachmentPermission,)

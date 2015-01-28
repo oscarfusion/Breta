@@ -11,6 +11,10 @@ from projects.api import views as project_views
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'users', account_views.UserViewSet)
+router.register(r'developers', account_views.DeveloperViewSet)
+router.register(r'portfolio-projects', account_views.PortfolioProjectViewSet)
+router.register(r'portfolio-project-attachments', account_views.PortfolioProjectAttachmentViewSet)
+router.register(r'websites', account_views.WebsiteViewSet)
 router.register(r'regions', core_views.RegionViewSet)
 router.register(r'cities', core_views.CityViewSet)
 router.register(r'projects', project_views.ProjectViewSet)

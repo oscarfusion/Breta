@@ -3,8 +3,11 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from bitfield import BitField
+from bitfield.forms import BitFieldCheckboxSelectMultiple
+from bitfield.admin import BitFieldListFilter
 
-from .models import User
+from .models import User, Developer, Website, PortfolioProject, PortfolioProjectAttachment
 
 
 class AdminUserCreationForm(UserCreationForm):
@@ -62,4 +65,34 @@ class UserAdmin(DjangoUserAdmin):
     form = AdminUserChangeForm
     add_form = AdminUserCreationForm
 
+
+class WebsiteInline(admin.StackedInline):
+    extra = 1
+    model = Website
+
+
+class PortfolioProjectInline(admin.StackedInline):
+    extra = 1
+    model = PortfolioProject
+
+
+class PortfolioProjectAttachmentInline(admin.StackedInline):
+    extra = 1
+    model = PortfolioProjectAttachment
+
+
+class DeveloperAdmin(admin.ModelAdmin):
+    inlines = [WebsiteInline, PortfolioProjectInline]
+    list_display = ('user', 'type', 'created_at', 'updated_at',)
+    search_fields = ('type',)
+
+    formfield_overrides = {
+        BitField: {'widget': BitFieldCheckboxSelectMultiple}
+    }
+
+    list_filter = (
+        ('project_preferences', BitFieldListFilter,),
+    )
+
 admin.site.register(User, UserAdmin)
+admin.site.register(Developer, DeveloperAdmin)
