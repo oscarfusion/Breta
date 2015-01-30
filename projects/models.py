@@ -1,5 +1,8 @@
+import uuid
+
 from django.db import models
 from django.utils.text import slugify
+from django.utils import timezone
 from accounts.models import User
 
 
@@ -37,12 +40,15 @@ class Project(models.Model):
 
 
 def file_upload_to(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = '%s.%s' % (uuid.uuid4(), ext)
     return 'project_files/%s/%s' % (instance.project.slug, filename)
 
 
 class ProjectFile(models.Model):
     project = models.ForeignKey(Project, related_name='files')
     file = models.FileField(upload_to=file_upload_to)
+    created_at = models.DateTimeField(auto_now_add=True, default=timezone.now())
 
     def __unicode__(self):
         return '%s - %s' % (self.project.name, self.file)

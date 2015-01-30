@@ -9,8 +9,8 @@ from ..models import User, Developer, Website, PortfolioProject, PortfolioProjec
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user', 'location')
-        read_only_fields = ('is_current_user', 'city',)
+        fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user', 'location', 'is_active')
+        read_only_fields = ('is_current_user', 'city', 'is_active')
 
     is_current_user = serializers.SerializerMethodField()
 
