@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from accounts.api.serializers import UserSerializer
 
-from ..models import Project, ProjectFile
+from ..models import Project, ProjectFile, Milestone
 
 
 class ProjectFileSerializer(serializers.ModelSerializer):
@@ -20,3 +20,9 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     files = ProjectFileSerializer(many=True, read_only=True)
     user = UserSerializer(required=False)
+
+
+class MilestoneSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Milestone
+        fields = ('id', 'project', 'name', 'description', 'due_date', 'status', 'paid_status', 'amount')

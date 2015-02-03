@@ -1,10 +1,10 @@
 from rest_framework import viewsets
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 
-from .serializers import ProjectSerializer, ProjectFileSerializer
-from .permissions import ProjectPermissions, ProjectFilePermissions
+from .serializers import ProjectSerializer, ProjectFileSerializer, MilestoneSerializer
+from .permissions import ProjectPermissions, ProjectFilePermissions, MilestonePermission
 
-from ..models import Project, ProjectFile
+from ..models import Project, ProjectFile, Milestone
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -27,3 +27,15 @@ class ProjectFileViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectFileSerializer
     permission_classes = (ProjectFilePermissions,)
     parser_classes = (FileUploadParser, MultiPartParser,)
+
+
+class MilestoneViewSet(viewsets.ModelViewSet):
+    queryset = Milestone.objects.all()
+    serializer_class = MilestoneSerializer
+    permission_classes = (MilestonePermission,)
+
+    def get_queryset(self):
+        qs = self.queryset.order_by('due_date')
+        if 'project' in self.request.QUERY_PARAMS:
+            qs = qs.filter(project=self.request.QUERY_PARAMS['project'])
+        return qs

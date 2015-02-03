@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from accounts.tests.factories import UserFactory
-from ...tests.factories import ProjectFactory
+from ...tests.factories import ProjectFactory, MilestonesFactory
 from ...models import Project
 
 
@@ -84,3 +84,17 @@ class ProjectApiTestCase(APITestCase):
         response = self.client.get(url)
         count = projects_count(response.content)
         self.assertEqual(count, 2)
+
+
+class MilestonesAPITestCase(APITestCase):
+    def test_should_require_auth_for_get_list(self):
+        MilestonesFactory()
+        url = reverse('milestone-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_should_require_auth_for_get_object(self):
+        ms = MilestonesFactory()
+        url = reverse('milestone-detail', args=(ms.id, ))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

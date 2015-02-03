@@ -2,7 +2,6 @@ import uuid
 
 from django.db import models
 from django.utils.text import slugify
-from django.utils import timezone
 from accounts.models import User
 
 
@@ -48,7 +47,33 @@ def file_upload_to(instance, filename):
 class ProjectFile(models.Model):
     project = models.ForeignKey(Project, related_name='files')
     file = models.FileField(upload_to=file_upload_to)
-    created_at = models.DateTimeField(auto_now_add=True, default=timezone.now())
+    created_at = models.DateTimeField(auto_now_add=True, blank=True)
 
     def __unicode__(self):
         return '%s - %s' % (self.project.name, self.file)
+
+
+class Milestone(models.Model):
+    STATUS_IN_PROGRESS = 'IP'
+    STATUS_COMPLETE = 'CM'
+
+    STATUS_CHOICES = (
+        (STATUS_IN_PROGRESS, 'In progress'),
+        (STATUS_COMPLETE, 'Complete'),
+    )
+
+    PAID_STATUS_DUE = 'DUE'
+    PAID_STATUS_PAID = 'PAID'
+
+    PAID_STATUS_CHOICES = (
+        (PAID_STATUS_DUE, 'Due'),
+        (PAID_STATUS_PAID, 'Paid'),
+    )
+
+    project = models.ForeignKey(Project, related_name='milestones')
+    due_date = models.DateField(blank=True, null=True)
+    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default=STATUS_IN_PROGRESS)
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    amount = models.DecimalField(max_digits=7, decimal_places=2)
+    paid_status = models.CharField(max_length=255, choices=PAID_STATUS_CHOICES, default=PAID_STATUS_DUE)
