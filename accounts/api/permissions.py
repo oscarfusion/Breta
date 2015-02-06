@@ -11,10 +11,13 @@ class UserPermissions(permissions.BasePermission):
             return request.user.is_authenticated()
 
     def has_object_permission(self, request, view, obj):
-        return (
-            request.user.is_authenticated() and
-            (obj == request.user or request.user.is_staff)
-        )
+        if request.method == 'GET':
+            return request.user.is_authenticated()
+        else:
+            return (
+                request.user.is_authenticated() and
+                (obj == request.user or request.user.is_staff)
+            )
 
 
 class DeveloperPermissions(UserPermissions):

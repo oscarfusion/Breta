@@ -1,25 +1,26 @@
 import json
 
-from django.utils.text import slugify
 from django.core.urlresolvers import reverse
+from django.utils import timezone
+from django.utils.text import slugify
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from accounts.tests.factories import UserFactory
-from ...tests.factories import ProjectFactory, MilestonesFactory
-from ...models import Project
+
+from ...tests.factories import ProjectFactory, MilestoneFactory, TaskFactory
+from ...models import Project, Milestone, Task
 
 
-def project_from_json(data):
-    return json.loads(data)['project']
+def data_from_json(type, data):
+    return json.loads(data)[type]
 
 
-def projects_count(data):
+def data_count(data):
     return int(json.loads(data)['meta']['count'])
 
 
 class ProjectApiTestCase(APITestCase):
-
     def fake_data(self, project_type=Project.WEBSITE, name='Test project',
                   idea='Test idea', description='Projects description', price_range='1000,5000'):
         return {
@@ -55,7 +56,7 @@ class ProjectApiTestCase(APITestCase):
         url = reverse('project-list')
         response = self.client.post(url, data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        project = project_from_json(response.content)
+        project = data_from_json('project', response.content)
         self.assertEqual(project['name'], data['name'])
         self.assertEqual(project['project_type'], Project.WEBSITE)
         self.assertEqual(project['idea'], data['idea'])
@@ -77,24 +78,105 @@ class ProjectApiTestCase(APITestCase):
         data = self.fake_data(name='Project3')
         self.client.post(url, data)
         response = self.client.get(url)
-        count = projects_count(response.content)
+        count = data_count(response.content)
         self.assertEqual(count, 1)
         self.client.logout()
         self.client.force_authenticate(user=user)
         response = self.client.get(url)
-        count = projects_count(response.content)
+        count = data_count(response.content)
         self.assertEqual(count, 2)
 
 
 class MilestonesAPITestCase(APITestCase):
+    def fake_data(self, project=ProjectFactory(), name='Test milestone', description='Milestone description',
+                  amount=123.45, status=Milestone.STATUS_IN_PROGRESS, paid_status=Milestone.PAID_STATUS_DUE,
+                  due_date=timezone.now().date()):
+        return {
+            'project': project.id,
+            'name': name,
+            'description': description,
+            'amount': amount,
+            'status': status,
+            'paid_status': paid_status,
+            'due_date': due_date
+        }
+
     def test_should_require_auth_for_get_list(self):
-        MilestonesFactory()
+        MilestoneFactory()
         url = reverse('milestone-list')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_should_require_auth_for_get_object(self):
-        ms = MilestonesFactory()
+        ms = MilestoneFactory()
         url = reverse('milestone-detail', args=(ms.id, ))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_should_not_allow_create_without_login(self):
+        data = self.fake_data()
+        url = reverse('milestone-list')
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_should_allow_create_with_login(self):
+        user = UserFactory()
+        self.client.force_authenticate(user=user)
+        project = ProjectFactory(user=user)
+        project.save()
+        data = self.fake_data(project=project)
+        url = reverse('milestone-list')
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        milestone = data_from_json('milestone', response.content)
+        self.assertEqual(milestone['name'], data['name'])
+        self.assertEqual(milestone['description'], data['description'])
+        self.assertEqual(milestone['status'], Milestone.STATUS_IN_PROGRESS)
+        self.assertEqual(milestone['paid_status'], data['paid_status'])
+        self.assertEqual(milestone['amount'], str(data['amount']))
+        self.assertEqual(milestone['project'], data['project'])
+
+
+class TasksAPITestCase(APITestCase):
+    def fake_data(self, milestone=MilestoneFactory(), status=Task.STATUS_DEFAULT, name='Test name',
+                  description='Test description', due_date=timezone.now().date()):
+        return {
+            'milestone': milestone.id,
+            'status': status,
+            'name': name,
+            'description': description,
+            'due_date': due_date
+        }
+
+    def test_should_require_auth_for_get_list(self):
+        TaskFactory()
+        url = reverse('task-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_should_require_auth_for_get_object(self):
+        task = TaskFactory()
+        url = reverse('task-detail', args=(task.id, ))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_should_not_allow_create_without_login(self):
+        data = self.fake_data()
+        url = reverse('task-list')
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_should_allow_create_with_login(self):
+        user = UserFactory()
+        self.client.force_authenticate(user=user)
+        proj = ProjectFactory(user=user)
+        milestone = MilestoneFactory(project=proj)
+        data = self.fake_data(milestone=milestone)
+        url = reverse('task-list')
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        task = data_from_json('task', response.content)
+        self.assertEqual(task['name'], data['name'])
+        self.assertEqual(task['description'], data['description'])
+        self.assertEqual(task['status'], data['status'])
+        self.assertEqual(task['milestone'], data['milestone'])

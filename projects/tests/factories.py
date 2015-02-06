@@ -1,9 +1,9 @@
 from django.utils import timezone
 
 import factory
-from factory.fuzzy import FuzzyDate, FuzzyDecimal
+from factory.fuzzy import FuzzyDate, FuzzyDecimal, FuzzyChoice
 
-from ..models import Project, Milestone
+from ..models import Project, Milestone, Task
 
 
 class ProjectFactory(factory.django.DjangoModelFactory):
@@ -18,7 +18,7 @@ class ProjectFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory('accounts.tests.factories.UserFactory')
 
 
-class MilestonesFactory(factory.django.DjangoModelFactory):
+class MilestoneFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'projects.Milestone'
 
@@ -29,3 +29,14 @@ class MilestonesFactory(factory.django.DjangoModelFactory):
     due_date = FuzzyDate(timezone.now().date())
     project = factory.SubFactory('projects.tests.factories.ProjectFactory')
     amount = FuzzyDecimal(100)
+
+
+class TaskFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = 'projects.Task'
+
+    milestone = factory.SubFactory('projects.tests.factories.MilestoneFactory')
+    status = FuzzyChoice(Task.STATUS_CHOICES)
+    name = factory.Sequence(lambda n: 'Test name %d' % n)
+    description = factory.Sequence(lambda n: 'Test description %d' % n)
+    due_date = FuzzyDate(timezone.now().date())

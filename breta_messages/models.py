@@ -1,6 +1,7 @@
 from django.db import models
 
 from accounts.models import User
+from projects.models import Milestone, Task
 
 
 class Message(models.Model):
@@ -18,6 +19,8 @@ class Message(models.Model):
     sender_deleted_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    milestone = models.OneToOneField(Milestone, related_name='message', null=True, blank=True)
+    task = models.OneToOneField(Task, related_name='message', null=True, blank=True)
 
     def is_system(self):
         return (self.sender is None) and (self.sent_at is not None)

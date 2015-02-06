@@ -1,28 +1,71 @@
+from rest_framework import relations
 from rest_framework import serializers
 
-from accounts.api.serializers import UserSerializer
+from ..models import Project, ProjectFile, Milestone, Task, ProjectMessage, ProjectMember
+from ..utils import sort_project_messages
 
-from ..models import Project, ProjectFile, Milestone
+
+class ProjectMessageChildrenField(relations.Field):
+    def to_representation(self, value):
+        return ProjectMessageSerializer(value).data
+
+
+class ProjectMessageChildrenManyRelatedField(relations.ManyRelatedField):
+    def to_representation(self, iterable):
+        iterable = sort_project_messages(iterable)
+        return super(ProjectMessageChildrenManyRelatedField, self).to_representation(iterable)
 
 
 class ProjectFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectFile
-        fields = ('id', 'project', 'file', 'created_at')
+        fields = ('id', 'project', 'file', 'created_at', 'author', 'task', 'milestone', 'message',)
+    file = serializers.FileField(use_url=True)
+
+
+class ProjectMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectMessage
+        fields = ('id', 'body', 'sender', 'parent', 'reply_to', 'milestone', 'task', 'children', 'created_at', 'message_attachments',)
+        read_only_fields = ('sender', 'message_attachments',)
+
+    children = ProjectMessageChildrenManyRelatedField(child_relation=ProjectMessageChildrenField())
+    message_attachments = ProjectFileSerializer(many=True, read_only=True)
+
+
+class ProjectMemberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectMember
+        fields = ('id', 'member', 'project', 'created_at')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ('id', 'project_type', 'name', 'idea', 'description', 'user',
-                  'price_range', 'slug', 'created_at', 'updated_at', 'files')
-        read_only_fields = ('slug', 'files',)
+        fields = ('id', 'project_type', 'name', 'idea', 'description', 'user', 'price_range',
+                  'slug', 'created_at', 'updated_at', 'files', 'memberships',)
+        read_only_fields = ('slug', 'files', 'user', 'memberships',)
 
     files = ProjectFileSerializer(many=True, read_only=True)
-    user = UserSerializer(required=False)
+    memberships = ProjectMemberSerializer(many=True, read_only=True)
+
+
+class TaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ('id', 'milestone', 'status', 'name', 'description', 'due_date', 'created_at', 'updated_at',
+                  'task_message',)
+        read_only_fields = ('task_message',)
+    task_message = ProjectMessageSerializer(read_only=True)
 
 
 class MilestoneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Milestone
-        fields = ('id', 'project', 'name', 'description', 'due_date', 'status', 'paid_status', 'amount')
+        fields = ('id', 'project', 'name', 'description', 'due_date', 'status', 'paid_status', 'amount',
+                  'created_at', 'updated_at', 'assigned', 'tasks', 'milestone_message', 'milestone_attachments',)
+        read_only_fields = ('tasks', 'milestone_message', 'milestone_attachments',)
+
+    tasks = TaskSerializer(many=True, read_only=True)
+    milestone_message = ProjectMessageSerializer(read_only=True)
+    milestone_attachments = ProjectFileSerializer(many=True, read_only=True)
