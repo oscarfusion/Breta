@@ -104,7 +104,7 @@ class Developer(models.Model):
         ('adiposcing_elit', 'Adiposcing Elit',),
     )
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, unique=True, related_name='developer')
     type = models.CharField(max_length=255, choices=TYPE_CHOICES, default=DEVELOPER)
     title = models.CharField(max_length=255)
     bio = models.TextField()

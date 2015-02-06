@@ -6,21 +6,6 @@ from rest_framework import serializers
 from ..models import User, Developer, Website, PortfolioProject, PortfolioProjectAttachment
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user', 'location', 'is_active')
-        read_only_fields = ('is_current_user', 'city', 'is_active')
-
-    is_current_user = serializers.SerializerMethodField()
-
-    def get_is_current_user(self, obj):
-        if 'request' in self.context:
-            return self.context['request'].user.id == obj.id
-        else:
-            return True
-
-
 class PortfolioProjectAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PortfolioProjectAttachment
@@ -70,3 +55,23 @@ class DeveloperSerializer(serializers.ModelSerializer):
     portfolio_projects = PortfolioProjectSerializer(many=True, read_only=True)
 
     project_preferences = SerializedBitField()
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user', 'location', 'is_active', 'developer')
+        read_only_fields = ('is_current_user', 'city', 'is_active', 'developer')
+
+    is_current_user = serializers.SerializerMethodField()
+    developer = serializers.SerializerMethodField()
+
+    def get_is_current_user(self, obj):
+        if 'request' in self.context:
+            return self.context['request'].user.id == obj.id
+        else:
+            return True
+
+    def get_developer(self, obj):
+        dev = obj.developer.first()
+        return dev.id if dev else None

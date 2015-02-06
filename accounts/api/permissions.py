@@ -27,7 +27,13 @@ class DeveloperPermissions(UserPermissions):
         return request.user.is_authenticated()
 
     def has_object_permission(self, request, view, obj):
-        return obj.user == request.user
+        if request.method == 'GET':
+            return request.user.is_authenticated()
+        else:
+            return (
+                request.user.is_authenticated() and
+                (obj.user == request.user or request.user.is_staff)
+            )
 
 
 class WebsitePermission(DeveloperPermissions):
