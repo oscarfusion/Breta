@@ -135,6 +135,10 @@ class MilestonesAPITestCase(APITestCase):
         self.assertEqual(milestone['paid_status'], data['paid_status'])
         self.assertEqual(milestone['amount'], str(data['amount']))
         self.assertEqual(milestone['project'], data['project'])
+        url = reverse('activity-list')
+        response = self.client.get(url, {'project': project.id})
+        count = data_count(response.content)
+        self.assertEqual(count, 1)
 
 
 class TasksAPITestCase(APITestCase):
@@ -180,3 +184,7 @@ class TasksAPITestCase(APITestCase):
         self.assertEqual(task['description'], data['description'])
         self.assertEqual(task['status'], data['status'])
         self.assertEqual(task['milestone'], data['milestone'])
+        url = reverse('activity-list')
+        response = self.client.get(url, {'project': proj.id})
+        count = data_count(response.content)
+        self.assertEqual(count, 1)

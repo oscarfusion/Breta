@@ -4,12 +4,14 @@ from django.contrib import admin
 from rest_framework import routers
 
 from accounts.api import views as account_views
+from activities.api import views as activity_views
 from breta_messages.api import views as message_views
 from core.api import views as core_views
 from projects.api import views as project_views
 
 
 router = routers.DefaultRouter(trailing_slash=False)
+router.register(r'activities', activity_views.ActivityViewSet)
 router.register(r'users', account_views.UserViewSet)
 router.register(r'developers', account_views.DeveloperViewSet)
 router.register(r'portfolio-projects', account_views.PortfolioProjectViewSet)

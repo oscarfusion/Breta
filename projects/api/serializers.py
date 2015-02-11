@@ -26,11 +26,14 @@ class ProjectFileSerializer(serializers.ModelSerializer):
 class ProjectMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectMessage
-        fields = ('id', 'body', 'sender', 'parent', 'reply_to', 'milestone', 'task', 'children', 'created_at', 'message_attachments',)
-        read_only_fields = ('sender', 'message_attachments',)
+        fields = ('id', 'body', 'sender', 'parent', 'reply_to', 'milestone', 'task', 'children', 'created_at',
+                  'message_attachments',)
+        read_only_fields = ('sender', 'message_attachments', 'children')
 
-    children = ProjectMessageChildrenManyRelatedField(child_relation=ProjectMessageChildrenField())
-    message_attachments = ProjectFileSerializer(many=True, read_only=True)
+    children = ProjectMessageChildrenManyRelatedField(
+        child_relation=ProjectMessageChildrenField(), read_only=True, required=False
+    )
+    message_attachments = ProjectFileSerializer(many=True, read_only=True, required=False)
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):
@@ -46,8 +49,8 @@ class ProjectSerializer(serializers.ModelSerializer):
                   'slug', 'created_at', 'updated_at', 'files', 'memberships',)
         read_only_fields = ('slug', 'files', 'user', 'memberships',)
 
-    files = ProjectFileSerializer(many=True, read_only=True)
-    memberships = ProjectMemberSerializer(many=True, read_only=True)
+    files = ProjectFileSerializer(many=True, read_only=True, required=False)
+    memberships = ProjectMemberSerializer(many=True, read_only=True, required=False)
 
 
 class TaskSerializer(serializers.ModelSerializer):
@@ -56,7 +59,7 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = ('id', 'milestone', 'status', 'name', 'description', 'due_date', 'created_at', 'updated_at',
                   'task_message',)
         read_only_fields = ('task_message',)
-    task_message = ProjectMessageSerializer(read_only=True)
+    task_message = ProjectMessageSerializer(read_only=True, required=False)
 
 
 class MilestoneSerializer(serializers.ModelSerializer):
@@ -66,6 +69,6 @@ class MilestoneSerializer(serializers.ModelSerializer):
                   'created_at', 'updated_at', 'assigned', 'tasks', 'milestone_message', 'milestone_attachments',)
         read_only_fields = ('tasks', 'milestone_message', 'milestone_attachments',)
 
-    tasks = TaskSerializer(many=True, read_only=True)
-    milestone_message = ProjectMessageSerializer(read_only=True)
-    milestone_attachments = ProjectFileSerializer(many=True, read_only=True)
+    tasks = TaskSerializer(many=True, read_only=True, required=False)
+    milestone_message = ProjectMessageSerializer(read_only=True, required=False)
+    milestone_attachments = ProjectFileSerializer(many=True, read_only=True, required=False)

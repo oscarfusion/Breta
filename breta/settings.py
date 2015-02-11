@@ -48,8 +48,9 @@ INSTALLED_APPS = (
     'corsheaders',
 
     'accounts',
-    'projects',
+    'activities',
     'breta_messages',
+    'projects',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -130,7 +131,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        #'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
         'core.authentication.BretaAuthentication',
         'rest_framework.authentication.SessionAuthentication',  # optional
     ),

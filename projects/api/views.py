@@ -3,6 +3,8 @@ from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 
+from activities.models import Activity
+
 from .serializers import ProjectSerializer, ProjectFileSerializer, MilestoneSerializer, TaskSerializer, \
     ProjectMessageSerializer, ProjectMemberSerializer
 from .permissions import ProjectPermissions, ProjectFilePermissions, MilestonePermission, TaskPermission, \
@@ -55,6 +57,23 @@ class MilestoneViewSet(viewsets.ModelViewSet):
             qs = qs.filter(project=self.request.QUERY_PARAMS['project'])
         return qs
 
+    def perform_create(self, serializer):
+        new = serializer.save()
+        activity = Activity.objects.create(
+            milestone=new, project=new.project, type=Activity.TYPE_NEW_MILESTONE, user=self.request.user
+        )
+        activity.save()
+
+    def perform_update(self, serializer):
+        pk = serializer.instance.id
+        old = Milestone.objects.get(pk=pk)
+        new = serializer.save()
+        if old.status != new.status:
+            activity = Activity.objects.create(
+                milestone=new, project=new.project, type=Activity.TYPE_MILESTONE_STATUS_CHANGED, user=self.request.user
+            )
+            activity.save()
+
 
 class TaskViewSet(viewsets.ModelViewSet):
     queryset = Task.objects.all()
@@ -67,6 +86,25 @@ class TaskViewSet(viewsets.ModelViewSet):
             project = self.request.QUERY_PARAMS['project']
             return qs.filter(milestone__project=project)
         return qs
+
+    def perform_create(self, serializer):
+        new = serializer.save()
+        activity = Activity.objects.create(
+            task=new, project=new.milestone.project,
+            type=Activity.TYPE_NEW_TASK, user=self.request.user
+        )
+        activity.save()
+
+    def perform_update(self, serializer):
+        pk = serializer.instance.id
+        old = Task.objects.get(pk)
+        new = serializer.save()
+        if old.status != new.status:
+            activity = Activity.objects.create(
+                task=new, project=new.milestone.project,
+                type=Activity.TYPE_TASK_STATUS_CHANGED, user=self.request.user
+            )
+            activity.save()
 
 
 class ProjectMessageViewSet(viewsets.ModelViewSet):
