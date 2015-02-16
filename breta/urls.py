@@ -8,6 +8,7 @@ from activities.api import views as activity_views
 from breta_messages.api import views as message_views
 from core.api import views as core_views
 from projects.api import views as project_views
+from payments.api import views as payments_views
 
 
 router = routers.DefaultRouter(trailing_slash=False)
@@ -28,12 +29,14 @@ router.register(r'project-members', project_views.ProjectMemberViewSet)
 router.register(r'messages', message_views.MessageViewSet)
 router.register(r'message-files', message_views.MessageFileViewSet)
 router.register(r'message-recipients', message_views.MessageRecipientViewSet)
+router.register(r'payment-methods', payments_views.CreditCardViewSet)
 
 urlpatterns = patterns(
     '',
     url(r'^$', 'core.views.home', name='home'),
     url(r'^signup/$', 'accounts.views.signup', name='signup'),
     url(r'^signin/$', 'accounts.views.signin', name='signin'),
+    url(r'^stripe/$', 'core.views.stripe_test', name='stripe_test'),
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='logout'),
 
     url(r'^admin/', include(admin.site.urls)),

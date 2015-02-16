@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'activities',
     'breta_messages',
     'projects',
+    'payments',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -151,6 +152,9 @@ CORS_ORIGIN_WHITELIST = (
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
 
 from static_settings import *
 
