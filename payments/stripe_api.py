@@ -14,3 +14,12 @@ def create_customer(token, email):
 
 def get_customer(token):
     return stripe.Customer.retrieve(token)
+
+
+def create_recipient(token, name, email):
+    return stripe.Recipient.create(
+        name=name,
+        type="individual",
+        email=email,
+        bank_account=token,
+    )

@@ -17,6 +17,23 @@
             return false;
           });
         });
+        jQuery(function($) {
+          $('#payout-form').submit(function(event) {
+            var $form = $(this);
+
+            // Disable the submit button to prevent repeated clicks
+            $form.find('button').prop('disabled', true);
+
+            Stripe.bankAccount.createToken({
+              country: $('.js-country').val(),
+              routing_number: $('.js-routing-number').val(),
+              account_number: $('.js-account-number').val()
+            }, stripePayoutResponseHandler);
+
+            // Prevent the form from submitting with the default action
+            return false;
+          });
+        });
         function stripeResponseHandler(status, response) {
           var $form = $('#payment-form');
 
@@ -33,6 +50,22 @@
             $form.get(0).submit();
           }
         };
+        function stripePayoutResponseHandler(status, response) {
+          var $form = $('#payout-form');
+
+          if (response.error) {
+            // Show the errors on the form
+            $form.find('.payment-errors').text(response.error.message);
+            $form.find('button').prop('disabled', false);
+          } else {
+            // response contains id and bank_account, which contains additional bank account details
+            var token = response.id;
+            // Insert the token into the form so it gets submitted to the server
+            $form.append($('<input type="hidden" name="stripeToken" />').val(token));
+            // and submit
+            $form.get(0).submit();
+          }
+        }
     </script>
 {% endblock %}
 
@@ -41,7 +74,7 @@
     <div class="row">
         <div class="span4">
             <h1>Add payment method form</h1>
-            <form action="/api/v1/payment-methods" method="POST" id="payment-form">
+            <form action="/api/v1/credit-cards" method="POST" id="payment-form">
               {% csrf_token %}
               <span class="payment-errors" style="color: red;"></span>
               <div class="form-row">
@@ -112,6 +145,73 @@
               </div>
 
               <button type="submit">Submit Payment</button>
+            </form>
+        </div>
+
+        <div class="span4">
+            <h1>Add payout method form</h1>
+            <form action="/api/v1/payout-methods" method="POST" id="payout-form">
+              {% csrf_token %}
+              <span class="payment-errors" style="color: red;"></span>
+              <div class="form-row">
+                <label>
+                  <span>Account Name</span>
+                  <input type="text" size="20" name="name"/>
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>Address Line 1</span>
+                  <input type="text" size="20" name="address1"/>
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>Address Line 2</span>
+                  <input type="text" size="20" name="address2"/>
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>City</span>
+                  <input type="text" size="20" name="city"/>
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>State</span>
+                  <input type="text" size="20" name="state"/>
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>ZIP</span>
+                  <input type="text" size="20" name="zip_code"/>
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>Country</span>
+                  <input type="text" size="20" class="js-country" name="country"/>
+                </label>
+              </div>
+              <hr>
+
+              <div class="form-row">
+                <label>
+                  <span>Bank Account Number</span>
+                  <input type="text" size="20" class="js-account-number"/>
+                </label>
+              </div>
+
+              <div class="form-row">
+                <label>
+                  <span>Routing Number</span>
+                  <input type="text" size="20" class="js-routing-number"/>
+                </label>
+              </div>
+
+              <button type="submit">Submit Payout Method</button>
             </form>
         </div>
     </div>

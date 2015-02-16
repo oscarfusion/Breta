@@ -3,10 +3,11 @@ from django.core.exceptions import PermissionDenied
 from rest_framework import status
 from rest_framework.response import Response
 
-from ..models import CreditCard, Customer
-from .serializers import CreditCardSerializer
-from .permissions import CreditCardPermissions
+from ..models import CreditCard, PayoutMethod
+from .serializers import CreditCardSerializer, PayoutMethodSerializer
+from .permissions import CreditCardPermissions, PayoutMethodPermissions
 from .forms import CreateCreditCardForm
+from .. import stripe_api
 
 
 class CreditCardViewSet(viewsets.ModelViewSet):
@@ -15,10 +16,7 @@ class CreditCardViewSet(viewsets.ModelViewSet):
     permission_classes = (CreditCardPermissions, )
 
     def get_queryset(self, *args, **kwargs):
-        try:
-            return CreditCard.objects.filter(customer=self.request.user.stripe_customer).all()
-        except Customer.DoesNotExist:
-            return CreditCard.objects.none()
+        return CreditCard.objects.filter(customer__user=self.request.user).all()
 
     def perform_create(self, serializer):
         form = CreateCreditCardForm(self.request.data)
@@ -33,3 +31,20 @@ class CreditCardViewSet(viewsets.ModelViewSet):
         serializer.instance = obj
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class PayoutMethodViewSet(viewsets.ModelViewSet):
+    queryset = PayoutMethod.objects.all()
+    serializer_class = PayoutMethodSerializer
+    permission_classes = (PayoutMethodPermissions, )
+
+    def get_queryset(self, *args, **kwargs):
+        return PayoutMethod.objects.filter(user=self.request.user).all()
+
+    def perform_create(self, serializer):
+        instance = serializer.save(user=self.request.user)
+        recipient = stripe_api.create_recipient(self.request.data.get('stripeToken'), self.request.data['name'], self.request.user.email)
+        instance.stripe_recipient_id = recipient.id
+        instance.extra_data = recipient.to_dict()
+        instance.save()
+        return instance
