@@ -29,7 +29,7 @@ router.register(r'project-members', project_views.ProjectMemberViewSet)
 router.register(r'messages', message_views.MessageViewSet)
 router.register(r'message-files', message_views.MessageFileViewSet)
 router.register(r'message-recipients', message_views.MessageRecipientViewSet)
-router.register(r'payment-methods', payments_views.CreditCardViewSet)
+router.register(r'credit-cards', payments_views.CreditCardViewSet)
 
 urlpatterns = patterns(
     '',
