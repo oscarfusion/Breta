@@ -3,9 +3,9 @@ from django.core.exceptions import PermissionDenied
 from rest_framework import status
 from rest_framework.response import Response
 
-from ..models import CreditCard, PayoutMethod
-from .serializers import CreditCardSerializer, PayoutMethodSerializer
-from .permissions import CreditCardPermissions, PayoutMethodPermissions
+from ..models import CreditCard, PayoutMethod, Transaction
+from .serializers import CreditCardSerializer, PayoutMethodSerializer, TransactionSerializer
+from .permissions import CreditCardPermissions, PayoutMethodPermissions, TransactionPermissions
 from .forms import CreateCreditCardForm
 from .. import stripe_api
 
@@ -46,5 +46,25 @@ class PayoutMethodViewSet(viewsets.ModelViewSet):
         recipient = stripe_api.create_recipient(self.request.data.get('stripeToken'), self.request.data['name'], self.request.user.email)
         instance.stripe_recipient_id = recipient.id
         instance.extra_data = recipient.to_dict()
+        instance.save()
+        return instance
+
+
+class TransactionViewSet(viewsets.ModelViewSet):
+    queryset = Transaction.objects.all()
+    serializer_class = TransactionSerializer
+    permission_classes = (TransactionPermissions, )
+
+    def get_queryset(self, *args, **kwargs):
+        return Transaction.objects.select_related('milestone', 'milestone__project').filter(credit_card__customer__user=self.request.user).all()
+
+    def perform_create(self, serializer):
+        credit_card = CreditCard.objects.get(pk=self.request.data['credit_card'])
+        if credit_card.customer.user != self.request.user:
+            raise PermissionDenied()
+        instance = serializer.save()
+        transaction = stripe_api.create_transaction(instance.amount, self.request.user.stripe_customer.stripe_customer_id, credit_card.stripe_card_id, self.request.user.email)
+        instance.stripe_id = transaction.id
+        instance.extra_data = transaction.to_dict()
         instance.save()
         return instance

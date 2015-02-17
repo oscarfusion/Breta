@@ -23,3 +23,13 @@ def create_recipient(token, name, email):
         email=email,
         bank_account=token,
     )
+
+
+def create_transaction(amount, customer_id, card_id, description):
+    return stripe.Charge.create(
+        amount=amount * 100,
+        currency="usd",
+        customer=customer_id,
+        card=card_id,
+        description=description,
+    )

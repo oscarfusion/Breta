@@ -214,6 +214,40 @@
               <button type="submit">Submit Payout Method</button>
             </form>
         </div>
+
+        <div class="span4">
+            <h1>Add payout method form</h1>
+            <form action="/api/v1/transactions" method="POST" id="transaction-form">
+              {% csrf_token %}
+              <span class="payment-errors" style="color: red;"></span>
+              <div class="form-row">
+                <label>
+                  <span>Credit Card Id</span>
+                  <input type="text" size="20" name="credit_card"/>
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>Transaction Type</span>
+                  <input type="text" size="20" name="transaction_type"/>
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>Amount</span>
+                  <input type="text" size="20" name="amount"/>
+                </label>
+              </div>
+              <div class="form-row">
+                <label>
+                  <span>Milestone Id</span>
+                  <input type="text" size="20" name="milestone"/>
+                </label>
+              </div>
+
+              <button type="submit">Submit Transaction</button>
+            </form>
+        </div>
     </div>
 
 {% endblock %}

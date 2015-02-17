@@ -69,3 +69,36 @@ class PayoutMethod(models.Model):
     @property
     def last4(self):
         return self.extra_data.get('active_account', {}).get('last4')
+
+
+class Transaction(models.Model):
+    ESCROW = 'escrow'
+    MILESTONE = 'milestone'
+    CREDIT = 'credit'
+
+    TRANSACTION_TYPE_CHOICES = (
+        (ESCROW, 'Payment to Escrow'),
+        (MILESTONE, 'Payment to Milestone'),
+        (CREDIT, 'Credit'),
+    )
+
+    credit_card = models.ForeignKey(CreditCard, related_name='transactions')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    stripe_id = models.CharField(max_length=255, null=True)
+    extra_data = JSONField()
+
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    transaction_type = models.CharField(max_length=255, choices=TRANSACTION_TYPE_CHOICES)
+    milestone = models.ForeignKey('projects.Milestone', null=True, blank=True)
+
+    def __unicode__(self):
+        return u'Transaction #{}'.format(self.pk)
+
+    @property
+    def milestone_name(self):
+        return self.milestone.name if self.milestone else None
+
+    @property
+    def project_name(self):
+        return self.milestone.project.name if self.milestone and self.milestone.project else None
