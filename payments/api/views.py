@@ -1,7 +1,10 @@
+from decimal import Decimal
+
 from rest_framework import viewsets
 from django.core.exceptions import PermissionDenied
 from rest_framework import status
 from rest_framework.response import Response
+from stripe.error import StripeError
 
 from ..models import CreditCard, PayoutMethod, Transaction
 from .serializers import CreditCardSerializer, PayoutMethodSerializer, TransactionSerializer
@@ -27,7 +30,10 @@ class CreditCardViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        obj = self.perform_create(serializer)
+        try:
+            obj = self.perform_create(serializer)
+        except StripeError as e:
+            return Response({'stripeToken': e.message}, status=status.HTTP_400_BAD_REQUEST)
         serializer.instance = obj
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -41,9 +47,20 @@ class PayoutMethodViewSet(viewsets.ModelViewSet):
     def get_queryset(self, *args, **kwargs):
         return PayoutMethod.objects.filter(user=self.request.user).all()
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            obj = self.perform_create(serializer)
+        except StripeError as e:
+            return Response({e.json_body['error']['param']: e.message}, status=status.HTTP_400_BAD_REQUEST)
+        serializer.instance = obj
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
-        instance = serializer.save(user=self.request.user)
         recipient = stripe_api.create_recipient(self.request.data.get('stripeToken'), self.request.data['name'], self.request.user.email)
+        instance = serializer.save(user=self.request.user)
         instance.stripe_recipient_id = recipient.id
         instance.extra_data = recipient.to_dict()
         instance.save()
@@ -58,12 +75,23 @@ class TransactionViewSet(viewsets.ModelViewSet):
     def get_queryset(self, *args, **kwargs):
         return Transaction.objects.select_related('milestone', 'milestone__project').filter(credit_card__customer__user=self.request.user).all()
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            obj = self.perform_create(serializer)
+        except StripeError as e:
+            return Response({'credit_card': e.message}, status=status.HTTP_400_BAD_REQUEST)
+        serializer.instance = obj
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def perform_create(self, serializer):
         credit_card = CreditCard.objects.get(pk=self.request.data['credit_card'])
         if credit_card.customer.user != self.request.user:
             raise PermissionDenied()
+        transaction = stripe_api.create_transaction(Decimal(self.request.data['amount']), self.request.user.stripe_customer.stripe_customer_id, credit_card.stripe_card_id, self.request.user.email)
         instance = serializer.save()
-        transaction = stripe_api.create_transaction(instance.amount, self.request.user.stripe_customer.stripe_customer_id, credit_card.stripe_card_id, self.request.user.email)
         instance.stripe_id = transaction.id
         instance.extra_data = transaction.to_dict()
         instance.save()
