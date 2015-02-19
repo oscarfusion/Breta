@@ -65,7 +65,7 @@ class PayoutMethod(models.Model):
 
     def __save__(self, *args, **kwargs):
         if self.is_active:
-            self.customer.credit_cards.update(is_active=False)
+            self.user.payout_methods.update(is_active=False)
             self.is_active = True
         super(self, PayoutMethod).save(*args, **kwargs)
 
