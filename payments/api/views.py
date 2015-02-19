@@ -1,5 +1,6 @@
 from decimal import Decimal
 
+from annoying.decorators import ajax_request
 from rest_framework import viewsets
 from django.core.exceptions import PermissionDenied
 from rest_framework import status
@@ -11,6 +12,7 @@ from .serializers import CreditCardSerializer, PayoutMethodSerializer, Transacti
 from .permissions import CreditCardPermissions, PayoutMethodPermissions, TransactionPermissions
 from .forms import CreateCreditCardForm
 from .. import stripe_api
+from .. import bl
 
 
 class CreditCardViewSet(viewsets.ModelViewSet):
@@ -96,3 +98,12 @@ class TransactionViewSet(viewsets.ModelViewSet):
         instance.extra_data = transaction.to_dict()
         instance.save()
         return instance
+
+
+@ajax_request
+def user_balance(request):
+    return {
+        'userBalance': {
+            'balance': bl.get_user_balance(request.user.id)
+        }
+    }
