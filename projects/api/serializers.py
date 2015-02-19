@@ -1,6 +1,8 @@
 from rest_framework import relations
 from rest_framework import serializers
 
+from accounts.api.serializers import UserSerializer
+
 from ..models import Project, ProjectFile, Milestone, Task, ProjectMessage, ProjectMember
 from ..utils import sort_project_messages
 
@@ -34,6 +36,7 @@ class ProjectMessageSerializer(serializers.ModelSerializer):
         child_relation=ProjectMessageChildrenField(), read_only=True, required=False
     )
     message_attachments = ProjectFileSerializer(many=True, read_only=True, required=False)
+    sender = UserSerializer(read_only=True, required=False)
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):

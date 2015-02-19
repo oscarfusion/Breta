@@ -48,8 +48,8 @@ class DeveloperSerializer(serializers.ModelSerializer):
     class Meta:
         model = Developer
         fields = ('id', 'user', 'type', 'title', 'bio', 'skills', 'availability', 'websites', 'portfolio_projects',
-                  'avatar', 'project_preferences', 'created_at', 'updated_at',)
-        read_only_fields = ('created_at', 'updated_at', 'websites')
+                  'avatar', 'project_preferences', 'created_at', 'updated_at', 'current_payout_method')
+        read_only_fields = ('created_at', 'updated_at', 'websites', 'current_payout_method')
 
     websites = WebsiteSerializer(many=True, read_only=True)
     portfolio_projects = PortfolioProjectSerializer(many=True, read_only=True)
@@ -60,8 +60,9 @@ class DeveloperSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user', 'location', 'is_active', 'developer')
-        read_only_fields = ('is_current_user', 'city', 'is_active', 'developer')
+        fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user', 'location', 'is_active',
+                  'developer', 'current_credit_card')
+        read_only_fields = ('is_current_user', 'city', 'is_active', 'developer', 'current_credit_card')
 
     is_current_user = serializers.SerializerMethodField()
     developer = serializers.SerializerMethodField()

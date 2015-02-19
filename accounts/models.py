@@ -56,6 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text=_('Designates whether this user should be treated as '
                     'active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    current_credit_card = models.OneToOneField('payments.CreditCard', related_name='owner', null=True, blank=True)
 
     objects = UserManager()
 
@@ -114,6 +115,7 @@ class Developer(models.Model):
     avatar = models.FileField(upload_to=avatar_upload_to, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    current_payout_method = models.OneToOneField('payments.PayoutMethod', related_name='owner', null=True, blank=True)
 
     def __unicode__(self):
         return self.user.get_full_name()
