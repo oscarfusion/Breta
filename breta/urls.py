@@ -45,7 +45,7 @@ urlpatterns = patterns(
 
     url(r'^api-token-auth/', 'core.api.views.obtain_auth_token'),
     url(r'^api/v1/', include(router.urls)),
-    url(r'^api/v1/balance/', 'payments.api.views.user_balance'),
+    url(r'^api/v1/balance/me/', 'payments.api.views.user_balance'),
 )
 
 if settings.DEBUG:
