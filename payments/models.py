@@ -19,6 +19,13 @@ class CreditCard(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     stripe_card_id = models.CharField(max_length=255, null=True)
     extra_data = JSONField()
+    is_active = models.BooleanField(default=False)
+
+    def __save__(self, *args, **kwargs):
+        if self.is_active:
+            self.customer.credit_cards.update(is_active=False)
+            self.is_active = True
+        super(self, CreditCard).save(*args, **kwargs)
 
     def __unicode__(self):
         return u'Credit Card #{}'.format(self.pk)
@@ -54,6 +61,13 @@ class PayoutMethod(models.Model):
     state = models.CharField(max_length=255, null=True, blank=True)
     zip_code = models.CharField(max_length=255, null=True, blank=True)
     country = models.CharField(max_length=255, null=True, blank=True)
+    is_active = models.BooleanField(default=False)
+
+    def __save__(self, *args, **kwargs):
+        if self.is_active:
+            self.customer.credit_cards.update(is_active=False)
+            self.is_active = True
+        super(self, PayoutMethod).save(*args, **kwargs)
 
     def __unicode__(self):
         return u'PayoutMethod #{}'.format(self.pk)
