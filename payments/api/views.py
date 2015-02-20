@@ -111,7 +111,7 @@ class UsersBalancesViewSet(viewsets.ReadOnlyModelViewSet):
         if pk == 'me':
             data = {
                 'userBalance': {
-                    'id': self.request.user.id,
+                    'id': 'me',
                     'balance': bl.get_user_balance(self.request.user.id)
                 }
             }
