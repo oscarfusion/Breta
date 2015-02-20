@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.renderers import JSONRenderer
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from rest_framework import status
 from rest_framework.response import Response
 from stripe.error import StripeError
@@ -74,7 +75,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
     permission_classes = (TransactionPermissions, )
 
     def get_queryset(self, *args, **kwargs):
-        return Transaction.objects.select_related('milestone', 'milestone__project').filter(credit_card__customer__user=self.request.user).all()
+        return Transaction.objects.select_related('milestone', 'milestone__project').filter(Q(credit_card__customer__user=self.request.user) | Q(milestone__project__user=self.request.user)).all()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
