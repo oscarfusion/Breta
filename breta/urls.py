@@ -32,6 +32,8 @@ router.register(r'message-recipients', message_views.MessageRecipientViewSet)
 router.register(r'credit-cards', payments_views.CreditCardViewSet)
 router.register(r'payout-methods', payments_views.PayoutMethodViewSet)
 router.register(r'transactions', payments_views.TransactionViewSet)
+router.register(r'user-balances', payments_views.UsersBalancesViewSet, base_name='user-balance')
+
 
 urlpatterns = patterns(
     '',
@@ -45,7 +47,6 @@ urlpatterns = patterns(
 
     url(r'^api-token-auth/', 'core.api.views.obtain_auth_token'),
     url(r'^api/v1/', include(router.urls)),
-    url(r'^api/v1/balance/me/', 'payments.api.views.user_balance'),
 )
 
 if settings.DEBUG:

@@ -1,7 +1,8 @@
 from decimal import Decimal
 
-from annoying.decorators import ajax_request
 from rest_framework import viewsets
+from rest_framework import permissions
+from rest_framework.renderers import JSONRenderer
 from django.core.exceptions import PermissionDenied
 from rest_framework import status
 from rest_framework.response import Response
@@ -100,10 +101,18 @@ class TransactionViewSet(viewsets.ModelViewSet):
         return instance
 
 
-@ajax_request
-def user_balance(request):
-    return {
-        'userBalance': {
-            'balance': bl.get_user_balance(request.user.id)
-        }
-    }
+class UsersBalancesViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = None
+    permission_classes = (permissions.IsAuthenticated,)
+    renderer_classes = (JSONRenderer,)
+
+    def retrieve(self, request, pk=None):
+        data = None
+        if pk == 'me':
+            data = {
+                'userBalance': {
+                    'id': self.request.user.id,
+                    'balance': bl.get_user_balance(self.request.user.id)
+                }
+            }
+        return Response(data)
