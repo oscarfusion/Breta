@@ -23,14 +23,14 @@ class MessageViewSet(viewsets.ModelViewSet):
                         SELECT COUNT(*)>0 FROM breta_messages_message as bmm2
                         inner join breta_messages_messagerecipient as bmmr2 on bmmr2.message_id = bmm2.id
                         WHERE bmm2.parent_id = breta_messages_message.id and
-                        bmmr2.recipient_id = """ + str(self.request.user.pk) + """and
+                        bmmr2.recipient_id = """ + str(self.request.user.pk) + """ and
                         bmmr2.read_at is null
                     """,
                     'is_unread': """
                         SELECT COUNT(*)>0 FROM breta_messages_message as bmm2
                         inner join breta_messages_messagerecipient as bmmr2 on bmmr2.message_id = bmm2.id
                         WHERE bmmr2.message_id = breta_messages_message.id and
-                        bmmr2.recipient_id = """ + str(self.request.user.pk) + """and
+                        bmmr2.recipient_id = """ + str(self.request.user.pk) + """ and
                         bmmr2.read_at is null
                     """,
                     'last_activity': """

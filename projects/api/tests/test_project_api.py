@@ -88,9 +88,11 @@ class ProjectApiTestCase(APITestCase):
 
 
 class MilestonesAPITestCase(APITestCase):
-    def fake_data(self, project=ProjectFactory(), name='Test milestone', description='Milestone description',
+    def fake_data(self, project=None, name='Test milestone', description='Milestone description',
                   amount=123.45, status=Milestone.STATUS_IN_PROGRESS, paid_status=Milestone.PAID_STATUS_DUE,
                   due_date=timezone.now().date()):
+        if project is None:
+            project = ProjectFactory()
         return {
             'project': project.id,
             'name': name,
@@ -142,8 +144,10 @@ class MilestonesAPITestCase(APITestCase):
 
 
 class TasksAPITestCase(APITestCase):
-    def fake_data(self, milestone=MilestoneFactory(), status=Task.STATUS_DEFAULT, name='Test name',
+    def fake_data(self, milestone=None, status=Task.STATUS_DEFAULT, name='Test name',
                   description='Test description', due_date=timezone.now().date()):
+        if milestone is None:
+            milestone = MilestoneFactory()
         return {
             'milestone': milestone.id,
             'status': status,

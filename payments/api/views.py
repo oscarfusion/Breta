@@ -62,7 +62,7 @@ class PayoutMethodViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        recipient = stripe_api.create_recipient(self.request.data.get('stripeToken'), self.request.data['name'], self.request.user.email)
+        recipient = stripe_api.create_recipient(self.request.data.get('stripeToken'), self.request.data.get('name'), self.request.user.email)
         instance = serializer.save(user=self.request.user)
         instance.stripe_recipient_id = recipient.id
         instance.extra_data = recipient.to_dict()

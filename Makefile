@@ -1,4 +1,5 @@
 TESTS=
+PACKAGES=payments
 
 run:
 	python manage.py runserver
@@ -19,3 +20,8 @@ bootstrap:
 
 test:
 	python manage.py test $(TESTS) --failfast --settings=breta.test_settings
+
+coverage:
+	coverage run manage.py test $(TESTS) --settings=breta.test_settings
+	coverage report -m
+	coverage html
