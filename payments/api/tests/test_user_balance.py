@@ -1,13 +1,10 @@
-from mock import patch, Mock
+from mock import Mock
 
 from django.core.urlresolvers import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from stripe.error import StripeError
 
 from accounts.tests.factories import UserFactory
-from payments.tests.factories import CreditCardFactory, TransactionFactory
-from payments.models import Transaction
 
 
 stripe_transaction = Mock(
