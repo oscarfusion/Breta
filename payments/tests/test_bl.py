@@ -4,6 +4,7 @@ from django.test import TestCase
 from mock import patch, Mock
 
 from accounts.tests.factories import UserFactory
+from projects.models import Milestone
 from projects.tests.factories import MilestoneFactory
 from .factories import CreditCardFactory, CustomerFactory, TransactionFactory
 from ..bl import create_transaction
@@ -77,3 +78,5 @@ class CreateTransactionTestCase(TestCase):
         self.assertEqual(Transaction.objects.count(), 3)
         Transaction.objects.filter(amount=Decimal(80), transaction_type=Transaction.MILESTONE, credit_card__isnull=True).exists()
         Transaction.objects.filter(amount=Decimal(20), transaction_type=Transaction.MILESTONE, credit_card=credit_card).exists()
+        milestone = Milestone.objects.get(pk=milestone.id)
+        self.assertTrue(milestone.is_paid())

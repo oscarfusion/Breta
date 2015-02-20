@@ -113,6 +113,12 @@ class Milestone(models.Model):
     def __unicode__(self):
         return '%s - %s' % (self.project.name, self.name)
 
+    def set_as_paid(self):
+        self.paid_status = Milestone.PAID_STATUS_PAID
+
+    def is_paid(self):
+        return self.paid_status == Milestone.PAID_STATUS_PAID
+
 
 class Task(models.Model):
     STATUS_DEFAULT = '-'

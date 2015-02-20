@@ -71,4 +71,6 @@ def create_milestone_transaction(credit_card_id, user, milestone_id):
             transaction_type=Transaction.MILESTONE,
             milestone=milestone,
         )
+    milestone.set_as_paid()
+    milestone.save()
     return instance
