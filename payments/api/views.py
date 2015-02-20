@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework.renderers import JSONRenderer
@@ -90,14 +88,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        credit_card = CreditCard.objects.get(pk=self.request.data['credit_card'])
-        if credit_card.customer.user != self.request.user:
-            raise PermissionDenied()
-        transaction = stripe_api.create_transaction(Decimal(self.request.data['amount']), self.request.user.stripe_customer.stripe_customer_id, credit_card.stripe_card_id, self.request.user.email)
-        instance = serializer.save()
-        instance.stripe_id = transaction.id
-        instance.extra_data = transaction.to_dict()
-        instance.save()
+        instance = bl.create_transaction(self.request.get('credit_card'), self.request.user, self.request.data.get('amount'), self.request.data['transaction_type'], self.request.data.get('milestone_id'))
         return instance
 
 

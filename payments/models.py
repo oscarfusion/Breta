@@ -96,7 +96,7 @@ class Transaction(models.Model):
         (CREDIT, 'Credit'),
     )
 
-    credit_card = models.ForeignKey(CreditCard, related_name='transactions')
+    credit_card = models.ForeignKey(CreditCard, related_name='transactions', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     stripe_id = models.CharField(max_length=255, null=True)
