@@ -88,7 +88,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        instance = bl.create_transaction(self.request.data.get('credit_card'), self.request.user, self.request.data.get('amount'), self.request.data['transaction_type'], self.request.data.get('milestone_id'))
+        instance = bl.create_transaction(self.request.data.get('credit_card'), self.request.user, self.request.data.get('amount'), self.request.data['transaction_type'], self.request.data.get('milestone'))
         return instance
 
 
