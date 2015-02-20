@@ -88,7 +88,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
-        instance = bl.create_transaction(self.request.get('credit_card'), self.request.user, self.request.data.get('amount'), self.request.data['transaction_type'], self.request.data.get('milestone_id'))
+        instance = bl.create_transaction(self.request.data.get('credit_card'), self.request.user, self.request.data.get('amount'), self.request.data['transaction_type'], self.request.data.get('milestone_id'))
         return instance
 
 
@@ -103,7 +103,7 @@ class UsersBalancesViewSet(viewsets.ReadOnlyModelViewSet):
             data = {
                 'userBalance': {
                     'id': 'me',
-                    'balance': bl.get_user_balance(self.request.user.id)
+                    'balance': str(bl.get_user_balance(self.request.user.id))
                 }
             }
         return Response(data)
