@@ -1,4 +1,7 @@
 import factory
+from factory.fuzzy import FuzzyDecimal
+
+from ..models import Transaction
 
 
 class CustomerFactory(factory.django.DjangoModelFactory):
@@ -43,3 +46,14 @@ class PayoutMethodFactory(factory.django.DjangoModelFactory):
     state = factory.Sequence(lambda n: 'State %d' % n)
     zip_code = factory.Sequence(lambda n: 'Zip Code %d' % n)
     country = factory.Sequence(lambda n: 'Country %d' % n)
+
+
+class TransactionFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = 'payments.Transaction'
+
+    credit_card = factory.SubFactory(CreditCardFactory)
+    stripe_id = factory.Sequence(lambda n: 'stripe_%d' % n)
+    extra_data = {}
+    amount = FuzzyDecimal(100)
+    transaction_type = Transaction.ESCROW
