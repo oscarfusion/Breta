@@ -89,13 +89,16 @@ class Transaction(models.Model):
     ESCROW = 'escrow'
     MILESTONE = 'milestone'
     CREDIT = 'credit'
+    PAYOUT = 'payout'
 
     TRANSACTION_TYPE_CHOICES = (
         (ESCROW, 'Payment to Escrow'),
         (MILESTONE, 'Payment to Milestone'),
         (CREDIT, 'Credit'),
+        (PAYOUT, 'Payout'),
     )
 
+    payout_method = models.ForeignKey(PayoutMethod, related_name='transactions', blank=True, null=True)
     credit_card = models.ForeignKey(CreditCard, related_name='transactions', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

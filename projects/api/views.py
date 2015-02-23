@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 
 from activities.models import Activity
+from payments import bl as payments_bl
 
 from .serializers import ProjectSerializer, ProjectFileSerializer, MilestoneSerializer, TaskSerializer, \
     ProjectMessageSerializer, ProjectMemberSerializer
@@ -73,6 +74,8 @@ class MilestoneViewSet(viewsets.ModelViewSet):
                 milestone=new, project=new.project, type=Activity.TYPE_MILESTONE_STATUS_CHANGED, user=self.request.user
             )
             activity.save()
+        if old.status != Milestone.STATUS_COMPLETE and new.status == Milestone.STATUS_COMPLETE:
+            payments_bl.create_milestone_transfer(new)
 
 
 class TaskViewSet(viewsets.ModelViewSet):
