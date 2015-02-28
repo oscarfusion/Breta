@@ -6,6 +6,8 @@
 
 {% block content %}
 
-    Thank you for submitting project!
+    <p>Thank you for submitting project!</p>
+
+    <p>You can access your project using link: <a href="{{ project.get_absolute_url }}">{{ project.get_absolute_url }}</a></p>
 
 {% endblock %}

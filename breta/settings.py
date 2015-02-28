@@ -168,6 +168,8 @@ CONSTANCE_CONFIG = {
     'BRETA_FEE': (10, 'Percent of price users pays as remuneration for using Breta'),
 }
 
+DOMAIN = 'https://easy.breta.com'
+
 try:
     from local_settings import *  # noqa
 except ImportError:

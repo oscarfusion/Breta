@@ -3,10 +3,11 @@ import uuid
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils.text import slugify
+from django.conf import settings
 
 from accounts.models import User
 
-from .email import send_manager_assigned_email
+from . import email
 
 
 class Project(models.Model):
@@ -32,12 +33,16 @@ class Project(models.Model):
     user = models.ForeignKey(User)
     members = models.ManyToManyField(User, related_name='projects', through='ProjectMember', through_fields=('project', 'member'), null=True, blank=True)
     manager = models.ForeignKey(User, blank=True, null=True, related_name='manager_projects')
+    brief = models.TextField(blank=True, null=True)
+    brief_ready = models.BooleanField(default=False)
 
     __original_manager = None
+    __original_brief_ready = None
 
     def __init__(self, *args, **kwargs):
         super(Project, self).__init__(*args, **kwargs)
         self.__original_manager = self.manager
+        self.__original_brief_ready = self.brief_ready
 
     def files(self):
         return ProjectFile.objects.filter(project=self)
@@ -45,8 +50,16 @@ class Project(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(unicode(self.name))
         if self.__original_manager is None and self.manager is not None:
-            send_manager_assigned_email(self)
+            email.send_manager_assigned_email(self)
+        if self.__original_brief_ready is False and self.brief_ready is True:
+            email.send_brief_ready_email(self)
         super(Project, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return '{}/projects/{}'.format(settings.DOMAIN, self.id)
+
+    def get_brief_url(self):
+        return '{}/projects/{}/brief'.format(settings.DOMAIN, self.id)
 
     def __unicode__(self):
         return self.name

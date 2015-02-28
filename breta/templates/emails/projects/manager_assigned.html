@@ -6,6 +6,8 @@
 
 {% block content %}
 
-    Manager was assigned to your project - {{ project.name }}.
+    <p>Manager was assigned to your project - {{ project.name }}.</p>
+
+    <p>You can access your project using link: <a href="{{ project.get_absolute_url }}">{{ project.get_absolute_url }}</a></p>
 
 {% endblock %}

@@ -7,3 +7,7 @@ def send_new_project_email(project):
 
 def send_manager_assigned_email(project):
     return send_email([project.user.email], 'Manager assigned to your project', 'emails/projects/manager_assigned.html', {'project': project})
+
+
+def send_brief_ready_email(project):
+    return send_email([project.user.email], 'Brief and mockups for your project are ready!', 'emails/projects/brief_ready.html', {'project': project})
