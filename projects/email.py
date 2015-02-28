@@ -24,3 +24,7 @@ def send_developer_invited_to_project_email(project_member, message):
 
 def send_bids_entered_email(project):
     return send_email([project.user.email], 'Bids for your project are entered', 'emails/projects/bids_entered.html', {'project': project})
+
+
+def send_quote_accepted_email_to_project_owner(project):
+    return send_email([project.user.email], 'Thank you for approving project bid', 'emails/projects/quote_accepted_project_owner.html', {'project': project})

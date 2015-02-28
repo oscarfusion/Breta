@@ -12,7 +12,8 @@ from .permissions import ProjectPermissions, ProjectFilePermissions, MilestonePe
     ProjectMessagePermission, ProjectMemberPermission, QuotePermission
 from ..models import Project, ProjectFile, Milestone, Task, ProjectMessage, ProjectMember, Quote
 from ..utils import sort_project_messages
-from ..email import send_new_project_email
+from .. import email
+from .. import bl
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -35,7 +36,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, obj):
         obj.save(user=self.request.user)
-        send_new_project_email(obj.instance)
+        email.send_new_project_email(obj.instance)
 
 
 class ProjectFileViewSet(viewsets.ModelViewSet):
@@ -144,6 +145,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
             if instance.status == Quote.STATUS_PENDING_MEMBER:
                 instance.status = Quote.STATUS_PENDING_OWNER
                 instance.save()
+                bl.quote_submitted_to_project_owner(self)
             elif instance.status == Quote.STATUS_REFUSED:
                 instance.project_member.status = ProjectMember.STATUS_REFUSED
                 instance.project_member.save()
@@ -151,6 +153,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
             member = instance.project_member
             if instance.status == Quote.STATUS_ACCEPTED:
                 member.status = ProjectMember.STATUS_ACCEPTED
+                email.send_quote_accepted_email_to_project_owner(instance.project_member.project)
             if instance.status == Quote.STATUS_REFUSED:
                 member.status = ProjectMember.STATUS_REFUSED
             member.save()

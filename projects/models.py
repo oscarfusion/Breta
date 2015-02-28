@@ -10,7 +10,6 @@ from django.utils.text import slugify
 from accounts.models import User
 
 from . import email
-from . import bl
 
 
 class Project(models.Model):
@@ -259,12 +258,6 @@ class Quote(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
-    __original_status = None
-
-    def __init__(self, *args, **kwargs):
-        super(Quote, self).__init__(*args, **kwargs)
-        self.__original_status = self.status
-
     def __unicode__(self):
         return u'%s - %s' % (self.project_member.project.name, self.project_member.member.get_full_name())
 
@@ -279,8 +272,3 @@ class Quote(models.Model):
     @classmethod
     def condition_status_owner_pending(cls):
         return Q(status=cls.STATUS_PENDING_OWNER)
-
-    def save(self, *args, **kwargs):
-        super(Quote, self).save(*args, **kwargs)
-        if self.__original_status == Quote.STATUS_PENDING_MEMBER and self.status == Quote.STATUS_PENDING_OWNER:
-            bl.quote_submitted_to_project_owner(self)
