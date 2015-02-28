@@ -1,0 +1,13 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}
+    Hello, {{ project.user.first_name }}!
+{% endblock %}
+
+{% block content %}
+
+    <p>Bids for your project was entered.</p>
+
+    <p>You can review them using link: <a href="{{ project.get_absolute_url }}">{{ project.get_absolute_url }}</a></p>
+
+{% endblock %}

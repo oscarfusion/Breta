@@ -20,3 +20,7 @@ def send_project_assigned_email(project):
 
 def send_developer_invited_to_project_email(project_member, message):
     return send_email([project_member.member.email], 'You was invited to project', 'emails/projects/developer_invited.html', {'project_member': project_member, 'message': message})
+
+
+def send_bids_entered_email(project):
+    return send_email([project.user.email], 'Bids for your project are entered', 'emails/projects/bids_entered.html', {'project': project})
