@@ -158,6 +158,9 @@ STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
 
 from static_settings import *  # noqa
 
+DEFAULT_FROM_EMAIL = 'support@breta.com'
+ADMINS = ['elliot@breta.com']
+
 try:
     from local_settings import *  # noqa
 except ImportError:
