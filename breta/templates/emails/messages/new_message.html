@@ -1,0 +1,13 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}
+    Hello, {{ user.first_name }}!
+{% endblock %}
+
+{% block content %}
+
+    <p>You got new message.</p>
+
+    <p>You can see your messages here: <a href="{{ messages_url }}">{{ messages_url }}</a></p>
+
+{% endblock %}

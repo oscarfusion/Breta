@@ -1,8 +1,11 @@
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
 
 from accounts.models import User
 from projects.models import Milestone, Task
+
+from . import email
 
 
 class Message(models.Model):
@@ -64,3 +67,13 @@ class MessageFile(models.Model):
     message = models.ForeignKey(Message, related_name='files')
     file = models.FileField(upload_to=file_upload_to)
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+def message_recipient_save(sender, instance, created=False, **kwargs):
+    if created:
+        not_read_count = MessageRecipient.objects.filter(recipient=instance.recipient, read_at__isnull=True).count()
+        if not_read_count == 1:
+            email.send_new_message_email(instance.recipient)
+
+
+post_save.connect(message_recipient_save, sender=MessageRecipient)
