@@ -1,3 +1,4 @@
+from annoying.decorators import ajax_request
 from rest_framework import parsers
 from rest_framework import renderers
 from rest_framework import viewsets
@@ -5,8 +6,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import BasePermission
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from cities_light.models import Region, City
+from constance import config
 
 from .serializers import AuthTokenSerializer
 from .serializers import RegionSerializer, CitySerializer
@@ -41,3 +42,12 @@ class ObtainAuthToken(APIView):
 
 
 obtain_auth_token = ObtainAuthToken.as_view()
+
+
+@ajax_request
+def breta_config(request):
+    return {
+        'config': {
+            'bretaFee': config.BRETA_FEE
+        }
+    }

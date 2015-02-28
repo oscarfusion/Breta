@@ -46,6 +46,8 @@ INSTALLED_APPS = (
     'pipeline',
     'widget_tweaks',
     'corsheaders',
+    'constance',
+    'constance.backends.database',
 
     'accounts',
     'activities',
@@ -160,6 +162,11 @@ from static_settings import *  # noqa
 
 DEFAULT_FROM_EMAIL = 'support@breta.com'
 ADMINS = ['elliot@breta.com']
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
+CONSTANCE_CONFIG = {
+    'BRETA_FEE': (10, 'Percent of price users pays as remuneration for using Breta'),
+}
 
 try:
     from local_settings import *  # noqa

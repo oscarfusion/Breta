@@ -48,6 +48,7 @@ urlpatterns = patterns(
 
     url(r'^api-token-auth/', 'core.api.views.obtain_auth_token'),
     url(r'^api/v1/', include(router.urls)),
+    url(r'^api/v1/config/', 'core.api.views.breta_config'),
 )
 
 if settings.DEBUG:
