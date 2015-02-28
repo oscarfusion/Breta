@@ -12,6 +12,7 @@ from .permissions import ProjectPermissions, ProjectFilePermissions, MilestonePe
     ProjectMessagePermission, ProjectMemberPermission, QuotePermission
 from ..models import Project, ProjectFile, Milestone, Task, ProjectMessage, ProjectMember, Quote
 from ..utils import sort_project_messages
+from ..email import send_new_project_email
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -34,6 +35,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, obj):
         obj.save(user=self.request.user)
+        send_new_project_email(obj)
 
 
 class ProjectFileViewSet(viewsets.ModelViewSet):
