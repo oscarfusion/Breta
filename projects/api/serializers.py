@@ -1,7 +1,9 @@
 from rest_framework import relations
 from rest_framework import serializers
 
-from ..models import Project, ProjectFile, Milestone, Task, ProjectMessage, ProjectMember
+from accounts.api.serializers import UserSerializer
+
+from ..models import Project, ProjectFile, Milestone, Task, ProjectMessage, ProjectMember, Quote
 from ..utils import sort_project_messages
 
 
@@ -34,12 +36,13 @@ class ProjectMessageSerializer(serializers.ModelSerializer):
         child_relation=ProjectMessageChildrenField(), read_only=True, required=False
     )
     message_attachments = ProjectFileSerializer(many=True, read_only=True, required=False)
+    sender = UserSerializer(read_only=True, required=False)
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectMember
-        fields = ('id', 'member', 'project', 'created_at')
+        fields = ('id', 'member', 'project', 'created_at', 'status')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
@@ -72,3 +75,12 @@ class MilestoneSerializer(serializers.ModelSerializer):
     tasks = TaskSerializer(many=True, read_only=True, required=False)
     milestone_message = ProjectMessageSerializer(read_only=True, required=False)
     milestone_attachments = ProjectFileSerializer(many=True, read_only=True, required=False)
+
+
+class QuoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Quote
+        fields = ('id', 'status', 'project_member', 'amount', 'created_at', 'updated_at')
+        read_only_fields = ('project_member',)
+
+    project_member = ProjectMemberSerializer(required=False, read_only=True)

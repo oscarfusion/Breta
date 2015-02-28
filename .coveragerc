@@ -1,0 +1,14 @@
+[run]
+branch = True
+source = 
+    accounts/
+    activities/
+    breta/
+    breta_messages/
+    core/
+    payments/
+    project/
+    projects/
+omit =
+    */migrations/*
+    */tests/*

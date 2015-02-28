@@ -8,7 +8,7 @@ class ProjectPermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return (
             request.user.is_authenticated() and
-            obj.user == request.user
+            (obj.user == request.user or request.user in obj.members.all())
         )
 
 
@@ -19,7 +19,7 @@ class ProjectFilePermissions(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return (
             request.user.is_authenticated() and
-            obj.project.user == request.user
+            (obj.project.user == request.user or request.user in obj.project.members.all())
         )
 
 
@@ -77,4 +77,15 @@ class ProjectMemberPermission(permissions.BasePermission):
                 obj.project.user == request.user or
                 request.user.is_staff
             )
+        )
+
+
+class QuotePermission(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated()
+
+    def has_object_permission(self, request, view, obj):
+        return (
+            request.user.is_authenticated() and
+            request.user in [obj.project_member.member, obj.project_member.project.user]
         )

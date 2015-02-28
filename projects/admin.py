@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Project, ProjectFile, Milestone, Task, ProjectMessage, ProjectMember
+from .models import Project, ProjectFile, Milestone, Task, ProjectMessage, ProjectMember, Quote
 
 
 class ProjectFileInline(admin.StackedInline):
@@ -32,3 +32,4 @@ admin.site.register(Project, ProjectAdmin)
 admin.site.register(Milestone, MilestoneAdmin)
 admin.site.register(ProjectMessage)
 admin.site.register(ProjectMember)
+admin.site.register(Quote)

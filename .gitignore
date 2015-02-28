@@ -6,3 +6,5 @@ reports/
 project_files/*
 !.gitkeep
 mediafiles/
+.coverage
+htmlcov/

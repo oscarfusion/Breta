@@ -8,6 +8,7 @@ from activities.api import views as activity_views
 from breta_messages.api import views as message_views
 from core.api import views as core_views
 from projects.api import views as project_views
+from payments.api import views as payments_views
 
 
 router = routers.DefaultRouter(trailing_slash=False)
@@ -28,18 +29,26 @@ router.register(r'project-members', project_views.ProjectMemberViewSet)
 router.register(r'messages', message_views.MessageViewSet)
 router.register(r'message-files', message_views.MessageFileViewSet)
 router.register(r'message-recipients', message_views.MessageRecipientViewSet)
+router.register(r'credit-cards', payments_views.CreditCardViewSet)
+router.register(r'payout-methods', payments_views.PayoutMethodViewSet)
+router.register(r'transactions', payments_views.TransactionViewSet)
+router.register(r'user-balances', payments_views.UsersBalancesViewSet, base_name='user-balance')
+router.register(r'quotes', project_views.QuoteViewSet)
+
 
 urlpatterns = patterns(
     '',
     url(r'^$', 'core.views.home', name='home'),
     url(r'^signup/$', 'accounts.views.signup', name='signup'),
     url(r'^signin/$', 'accounts.views.signin', name='signin'),
+    url(r'^stripe/$', 'core.views.stripe_test', name='stripe_test'),
     url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page': '/'}, name='logout'),
 
     url(r'^admin/', include(admin.site.urls)),
 
     url(r'^api-token-auth/', 'core.api.views.obtain_auth_token'),
     url(r'^api/v1/', include(router.urls)),
+    url(r'^api/v1/config/', 'core.api.views.breta_config'),
 )
 
 if settings.DEBUG:

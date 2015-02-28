@@ -46,11 +46,14 @@ INSTALLED_APPS = (
     'pipeline',
     'widget_tweaks',
     'corsheaders',
+    'constance',
+    'constance.backends.database',
 
     'accounts',
     'activities',
     'breta_messages',
     'projects',
+    'payments',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -152,10 +155,19 @@ CORS_ORIGIN_WHITELIST = (
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-from static_settings import *
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
+STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
+
+CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
+
+CONSTANCE_CONFIG = {
+    'BRETA_FEE': (10, 'Percent of price users pays as remuneration for using Breta'),
+}
+
+from static_settings import *  # noqa
 
 try:
-    from local_settings import *
+    from local_settings import *  # noqa
 except ImportError:
     pass
 
