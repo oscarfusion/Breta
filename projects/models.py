@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils.text import slugify
+
 from accounts.models import User
 
 
@@ -179,3 +180,40 @@ def task_milestone_post_save(sender, instance, created=False, **kwargs):
 
 post_save.connect(task_milestone_post_save, sender=Task)
 post_save.connect(task_milestone_post_save, sender=Milestone)
+
+
+def project_member_post_save(sender, instance, created=False, **kwargs):
+    from breta_messages.models import Message, MessageRecipient
+    if created and instance.status == ProjectMember.STATUS_PENDING:
+        quote = Quote(project_member=instance, amount=0)
+        quote.save()
+        msg = Message.objects.create(type=Message.TYPE_QUOTE, project=instance.project, sender=instance.project.user, quote=quote)
+        msg.save()
+        recipient = MessageRecipient(message=msg, recipient=instance.member)
+        recipient.save()
+
+
+post_save.connect(project_member_post_save, sender=ProjectMember)
+
+
+class Quote(models.Model):
+    STATUS_PENDING_MEMBER = 'pending-member'
+    STATUS_PENDING_OWNER = 'pending-owner'
+    STATUS_REFUSED = 'refused'
+    STATUS_ACCEPTED = 'accepted'
+
+    STATUS_CHOICES = (
+        (STATUS_PENDING_MEMBER, 'Pending member'),
+        (STATUS_PENDING_OWNER, 'Pending owner'),
+        (STATUS_REFUSED, 'Refused'),
+        (STATUS_ACCEPTED, 'Accepted'),
+    )
+
+    project_member = models.ForeignKey(ProjectMember, related_name='quotes')
+    amount = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
+    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default=STATUS_PENDING_MEMBER)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
+    def __unicode__(self):
+        return u'%s - %s' % (self.project_member.project.name, self.project_member.member.get_full_name())

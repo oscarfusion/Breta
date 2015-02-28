@@ -156,10 +156,13 @@ MEDIA_URL = '/media/'
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
 
-from static_settings import *
+from static_settings import *  # noqa
+
+DEFAULT_FROM_EMAIL = 'support@breta.com'
+ADMINS = ['elliot@breta.com']
 
 try:
-    from local_settings import *
+    from local_settings import *  # noqa
 except ImportError:
     pass
 

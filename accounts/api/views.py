@@ -12,6 +12,7 @@ from .permissions import (
     UserPermissions, DeveloperPermissions, WebsitePermission, PortfolioProjectPermission, PortfolioProjectAttachmentPermission
 )
 from ..models import User, Developer, PortfolioProject, PortfolioProjectAttachment, Website
+from ..email import send_welcome_email
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -28,6 +29,7 @@ class UserViewSet(viewsets.ModelViewSet):
             instance.is_active = False
             instance.set_password(password)
             instance.save()
+        send_welcome_email(instance)
         return instance
 
     def create(self, request, *args, **kwargs):

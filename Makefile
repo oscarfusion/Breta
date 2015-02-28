@@ -25,3 +25,6 @@ coverage:
 	coverage run manage.py test $(TESTS) --settings=breta.test_settings
 	coverage report -m
 	coverage html
+
+shell:
+	python manage.py shell

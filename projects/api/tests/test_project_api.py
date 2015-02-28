@@ -8,8 +8,8 @@ from rest_framework.test import APITestCase
 
 from accounts.tests.factories import UserFactory
 
-from ...tests.factories import ProjectFactory, MilestoneFactory, TaskFactory
-from ...models import Project, Milestone, Task
+from ...tests.factories import ProjectFactory, MilestoneFactory, TaskFactory, ProjectMemberFactory
+from ...models import Project, Milestone, Task, ProjectMember
 
 
 def data_from_json(type, data):
@@ -192,3 +192,75 @@ class TasksAPITestCase(APITestCase):
         response = self.client.get(url, {'project': proj.id})
         count = data_count(response.content)
         self.assertEqual(count, 1)
+
+
+class ProjectMemberTestCase(APITestCase):
+    def fake_data(self, project=None, member=None, status=ProjectMember.STATUS_PENDING):
+        if project is None:
+            project = MilestoneFactory()
+        if member is None:
+            member = UserFactory()
+        return {
+            'project': project.id,
+            'status': status,
+            'member': member.id,
+        }
+
+    def test_should_require_auth_for_get_list(self):
+        ProjectMemberFactory()
+        url = reverse('projectmember-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_should_require_auth_for_get_object(self):
+        member = ProjectMemberFactory()
+        url = reverse('projectmember-detail', args=(member.id, ))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_should_not_return_not_own_project(self):
+        member = ProjectMemberFactory()
+        user = UserFactory()
+        self.client.force_authenticate(user=user)
+        url = reverse('projectmember-detail', args=(member.id, ))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_should_return_own_project(self):
+        user = UserFactory()
+        project = ProjectFactory(user=user)
+        member = ProjectMemberFactory(project=project)
+        self.client.force_authenticate(user=user)
+        url = reverse('projectmember-detail', args=(member.id, ))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_should_return_object_with_right_data(self):
+        user = UserFactory()
+        project = ProjectFactory(user=user)
+        member = ProjectMemberFactory(project=project)
+        self.client.force_authenticate(user=user)
+        url = reverse('projectmember-detail', args=(member.id, ))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        data = data_from_json('projectMember', response.content)
+        self.assertEqual(data['member'], member.member.id)
+        self.assertEqual(data['project'], member.project.id)
+        self.assertEqual(data['status'], member.status)
+
+    def test_should_require_auth_for_create(self):
+        data = self.fake_data()
+        url = reverse('projectmember-list')
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_should_allow_create(self):
+        user = UserFactory()
+        project = ProjectFactory()
+        data = self.fake_data(project=project)
+        self.client.force_authenticate(user=user)
+        url = reverse('projectmember-list')
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        data = data_from_json('projectMember', response.content)
+        self.assertEqual(data['project'], project.id)

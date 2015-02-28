@@ -33,6 +33,7 @@ router.register(r'credit-cards', payments_views.CreditCardViewSet)
 router.register(r'payout-methods', payments_views.PayoutMethodViewSet)
 router.register(r'transactions', payments_views.TransactionViewSet)
 router.register(r'user-balances', payments_views.UsersBalancesViewSet, base_name='user-balance')
+router.register(r'quotes', project_views.QuoteViewSet)
 
 
 urlpatterns = patterns(
