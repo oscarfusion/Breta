@@ -169,6 +169,7 @@ CONSTANCE_CONFIG = {
 }
 
 DOMAIN = 'https://easy.breta.com'
+API_DOMAIN = 'https://easy.breta.com/app'
 
 try:
     from local_settings import *  # noqa

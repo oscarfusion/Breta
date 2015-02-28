@@ -1,0 +1,13 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}
+    Hello, {{ project.manager.first_name }}!
+{% endblock %}
+
+{% block content %}
+
+    <p>New project was assigned to you.</p>
+
+    <p>You can check it using link: <a href="{{ project.get_admin_link }}">{{ project.get_admin_link }}</a></p>
+
+{% endblock %}

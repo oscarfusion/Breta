@@ -1,9 +1,10 @@
 import uuid
 
+from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.utils.text import slugify
-from django.conf import settings
 
 from accounts.models import User
 
@@ -21,6 +22,18 @@ class Project(models.Model):
         (WEBSITE_AND_APP, 'Website & App'),
     )
 
+    BRIEF_NOT_READY = 'not-ready'
+    BRIEF_READY = 'ready'
+    BRIEF_ACCEPTED = 'accepted'
+    BRIEF_DECLINED = 'declined'
+
+    BRIEF_STATUS_CHOICES = (
+        (BRIEF_NOT_READY, 'Not ready'),
+        (BRIEF_READY, 'Ready'),
+        (BRIEF_ACCEPTED, 'Accepted'),
+        (BRIEF_DECLINED, 'Declined'),
+    )
+
     project_type = models.CharField(max_length=255, choices=PROJECT_CHOICES, default=WEBSITE)
     name = models.CharField(max_length=255)
     idea = models.CharField(max_length=255)
@@ -34,15 +47,15 @@ class Project(models.Model):
     members = models.ManyToManyField(User, related_name='projects', through='ProjectMember', through_fields=('project', 'member'), null=True, blank=True)
     manager = models.ForeignKey(User, blank=True, null=True, related_name='manager_projects')
     brief = models.TextField(blank=True, null=True)
-    brief_ready = models.BooleanField(default=False)
+    brief_status = models.CharField(max_length=255, choices=BRIEF_STATUS_CHOICES, default=BRIEF_NOT_READY)
 
     __original_manager = None
-    __original_brief_ready = None
+    __original_brief_status = None
 
     def __init__(self, *args, **kwargs):
         super(Project, self).__init__(*args, **kwargs)
         self.__original_manager = self.manager
-        self.__original_brief_ready = self.brief_ready
+        self.__original_brief_status = self.brief_status
 
     def files(self):
         return ProjectFile.objects.filter(project=self)
@@ -51,7 +64,8 @@ class Project(models.Model):
         self.slug = slugify(unicode(self.name))
         if self.__original_manager is None and self.manager is not None:
             email.send_manager_assigned_email(self)
-        if self.__original_brief_ready is False and self.brief_ready is True:
+            email.send_project_assigned_email(self)
+        if self.__original_brief_status == Project.BRIEF_NOT_READY and self.brief_status == Project.BRIEF_READY:
             email.send_brief_ready_email(self)
         super(Project, self).save(*args, **kwargs)
 
@@ -60,6 +74,9 @@ class Project(models.Model):
 
     def get_brief_url(self):
         return '{}/projects/{}/brief'.format(settings.DOMAIN, self.id)
+
+    def get_admin_link(self):
+        return '{}{}'.format(settings.API_DOMAIN, reverse('admin:projects_project_change', args=(self.id,)))
 
     def __unicode__(self):
         return self.name
