@@ -154,6 +154,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
             if instance.status == Quote.STATUS_ACCEPTED:
                 member.status = ProjectMember.STATUS_ACCEPTED
                 email.send_quote_accepted_email_to_project_owner(instance.project_member.project)
+                email.send_quote_accepted_email_to_developer(instance.project_member)
             if instance.status == Quote.STATUS_REFUSED:
                 member.status = ProjectMember.STATUS_REFUSED
             member.save()
