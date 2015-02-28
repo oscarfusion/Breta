@@ -35,7 +35,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, obj):
         obj.save(user=self.request.user)
-        send_new_project_email(obj)
+        send_new_project_email(obj.instance)
 
 
 class ProjectFileViewSet(viewsets.ModelViewSet):

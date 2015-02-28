@@ -6,6 +6,8 @@ from django.utils.text import slugify
 
 from accounts.models import User
 
+from .email import send_manager_assigned_email
+
 
 class Project(models.Model):
     WEBSITE = 'WS'
@@ -28,14 +30,22 @@ class Project(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User)
-    members = models.ManyToManyField(User, related_name='projects', through='ProjectMember',
-                                     through_fields=('project', 'member'), null=True, blank=True)
+    members = models.ManyToManyField(User, related_name='projects', through='ProjectMember', through_fields=('project', 'member'), null=True, blank=True)
+    manager = models.ForeignKey(User, blank=True, null=True, related_name='manager_projects')
+
+    __original_manager = None
+
+    def __init__(self, *args, **kwargs):
+        super(Project, self).__init__(*args, **kwargs)
+        self.__original_manager = self.manager
 
     def files(self):
         return ProjectFile.objects.filter(project=self)
 
     def save(self, *args, **kwargs):
         self.slug = slugify(unicode(self.name))
+        if self.__original_manager is None and self.manager is not None:
+            send_manager_assigned_email(self)
         super(Project, self).save(*args, **kwargs)
 
     def __unicode__(self):

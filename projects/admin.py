@@ -14,7 +14,10 @@ class MilestoneInline(admin.StackedInline):
 
 
 class ProjectAdmin(admin.ModelAdmin):
-    fields = ('project_type', 'name', 'idea', 'description', 'price_range', 'user',)
+    date_hierarchy = 'created_at'
+    list_display = ('name', 'project_type', 'price_range', 'created_at', 'user', 'manager')
+    list_filter = ('project_type', )
+    fields = ('project_type', 'name', 'idea', 'description', 'price_range', 'user', 'manager')
     inlines = [ProjectFileInline, MilestoneInline]
 
 
