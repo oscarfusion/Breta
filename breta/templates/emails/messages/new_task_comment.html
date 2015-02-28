@@ -1,0 +1,13 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}
+    Hello, {{ user.first_name }}!
+{% endblock %}
+
+{% block content %}
+
+    <p>New comment for task - {{ task.name }}.</p>
+
+    <p>You can check it here: <a href="{{ task.get_absolute_url }}">{{ task.get_absolute_url }}</a></p>
+
+{% endblock %}

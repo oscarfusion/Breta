@@ -5,6 +5,7 @@ from django.db.models.signals import post_save
 from accounts.models import User
 from projects.models import Milestone, Task
 
+from . import bl
 from . import email
 
 
@@ -76,4 +77,13 @@ def message_recipient_save(sender, instance, created=False, **kwargs):
             email.send_new_message_email(instance.recipient)
 
 
+def message_save(sender, instance, created=False, **kwargs):
+    if created:
+        if instance.task is not None:
+            bl.notify_about_new_task_comment(instance)
+        elif instance.milestone is not None:
+            bl.notify_about_new_milestone_comment(instance)
+
+
 post_save.connect(message_recipient_save, sender=MessageRecipient)
+post_save.connect(message_save, sender=Message)

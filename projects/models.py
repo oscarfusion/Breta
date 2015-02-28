@@ -191,6 +191,9 @@ class Task(models.Model):
     def __unicode__(self):
         return '%s - %s' % (self.milestone.name, self.name)
 
+    def get_absolute_url(self):
+        return '{}/projects/{}/tasks/{}'.format(settings.DOMAIN, self.milestone.project_id, self.id)
+
 
 class ProjectMessage(models.Model):
     body = models.CharField(max_length=255, null=True, blank=True)
