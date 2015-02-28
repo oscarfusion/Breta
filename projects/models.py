@@ -232,6 +232,8 @@ def project_member_post_save(sender, instance, created=False, **kwargs):
         recipient = MessageRecipient(message=msg, recipient=instance.member)
         recipient.save()
 
+        email.send_developer_invited_to_project_email(instance, msg)
+
 
 post_save.connect(project_member_post_save, sender=ProjectMember)
 

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 
 from accounts.models import User
@@ -35,6 +36,12 @@ class Message(models.Model):
 
     def is_system(self):
         return (self.sender is None) and (self.sent_at is not None)
+
+    def get_absolute_url(self):
+        return '{}/messages/inbox/{}'.format(settings.DOMAIN, self.id)
+
+    def get_quote_url(self):
+        return '{}/messages/quote-requests/{}'.format(settings.DOMAIN, self.id)
 
     def __unicode__(self):
         return self.subject

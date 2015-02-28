@@ -13,12 +13,17 @@ class MilestoneInline(admin.StackedInline):
     extra = 1
 
 
+class ProjectMemberInline(admin.TabularInline):
+    model = ProjectMember
+    extra = 1
+
+
 class ProjectAdmin(admin.ModelAdmin):
     date_hierarchy = 'created_at'
     list_display = ('name', 'project_type', 'price_range', 'created_at', 'user', 'manager', 'brief_status')
     list_filter = ('project_type', 'brief_status')
     fields = ('project_type', 'name', 'idea', 'description', 'price_range', 'user', 'manager', 'brief', 'brief_status')
-    inlines = [ProjectFileInline, MilestoneInline]
+    inlines = (ProjectMemberInline, ProjectFileInline, MilestoneInline)
 
 
 class TasksInline(admin.StackedInline):
@@ -34,5 +39,5 @@ class MilestoneAdmin(admin.ModelAdmin):
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Milestone, MilestoneAdmin)
 admin.site.register(ProjectMessage)
-admin.site.register(ProjectMember)
+# admin.site.register(ProjectMember)
 admin.site.register(Quote)
