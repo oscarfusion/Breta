@@ -119,3 +119,6 @@ class Transaction(models.Model):
     @property
     def project_name(self):
         return self.milestone.project.name if self.milestone and self.milestone.project else None
+
+    def get_user(self):
+        return self.credit_card.customer.user if self.credit_card_id else self.payout_method.user

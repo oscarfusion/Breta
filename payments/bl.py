@@ -5,6 +5,7 @@ from django.db.models import Sum
 
 from projects.models import Milestone
 from . import stripe_api
+from . import email
 from .exceptions import PaymentException
 from .models import Transaction, CreditCard, PayoutMethod
 
@@ -17,11 +18,13 @@ def get_user_balance(user_id):
 
 def create_transaction(credit_card_id, user, amount=None, transaction_type=Transaction.ESCROW, milestone_id=None):
     if transaction_type == Transaction.ESCROW:
-        return create_escrow_transaction(credit_card_id, user, amount)
+        transaction = create_escrow_transaction(credit_card_id, user, amount)
     elif transaction_type == Transaction.MILESTONE:
-        return create_milestone_transaction(credit_card_id, user, milestone_id)
+        transaction = create_milestone_transaction(credit_card_id, user, milestone_id)
     else:
         raise NotImplementedError()
+    email.send_payment_confirmation_email(transaction)
+    return transaction
 
 
 def create_escrow_transaction(credit_card_id, user, amount):

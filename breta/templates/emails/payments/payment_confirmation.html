@@ -1,0 +1,15 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}
+    Hello, {{ transaction.get_user.first_name }}!
+{% endblock %}
+
+{% block content %}
+
+    <p>Thank you for payment.</p>
+
+    <p>You have paid: ${{ transaction.amount }}</p>
+
+    <p>You can see full list of your transaction here: <a href="{{ transactions_url }}">{{ transactions_url }}</a></p>
+
+{% endblock %}
