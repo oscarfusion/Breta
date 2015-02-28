@@ -32,3 +32,7 @@ def send_quote_accepted_email_to_project_owner(project):
 
 def send_quote_accepted_email_to_developer(project_member):
     return send_email([project_member.member.email], 'Your bid was accepted', 'emails/projects/quote_accepted_developer.html', {'project_member': project_member})
+
+
+def send_milestone_completed_email(milestone):
+    return send_email([milestone.project.user.email], 'Milestone completed', 'emails/projects/milestone_completed.html', {'milestone': milestone})

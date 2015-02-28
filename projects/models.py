@@ -126,11 +126,13 @@ class Milestone(models.Model):
     STATUS_NO_STARTED = 'NS'
     STATUS_IN_PROGRESS = 'IP'
     STATUS_COMPLETE = 'CM'
+    STATUS_ACCEPTED = 'ACCEPTED'
 
     STATUS_CHOICES = (
         (STATUS_NO_STARTED, 'No started'),
         (STATUS_IN_PROGRESS, 'In progress'),
         (STATUS_COMPLETE, 'Complete'),
+        (STATUS_ACCEPTED, 'Accepted'),
     )
 
     PAID_STATUS_DUE = 'DUE'
@@ -160,6 +162,9 @@ class Milestone(models.Model):
 
     def is_paid(self):
         return self.paid_status == Milestone.PAID_STATUS_PAID
+
+    def get_absolute_url(self):
+        return '{}/projects/{}/milestones/{}'.format(settings.DOMAIN, self.project_id, self.id)
 
 
 class Task(models.Model):
