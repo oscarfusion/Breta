@@ -23,14 +23,14 @@ class MessageViewSet(viewsets.ModelViewSet):
                         SELECT COUNT(*)>0 FROM breta_messages_message as bmm2
                         inner join breta_messages_messagerecipient as bmmr2 on bmmr2.message_id = bmm2.id
                         WHERE bmm2.parent_id = breta_messages_message.id and
-                        bmmr2.recipient_id = """ + str(self.request.user.pk) + """and
+                        bmmr2.recipient_id = """ + str(self.request.user.pk) + """ and
                         bmmr2.read_at is null
                     """,
                     'is_unread': """
                         SELECT COUNT(*)>0 FROM breta_messages_message as bmm2
                         inner join breta_messages_messagerecipient as bmmr2 on bmmr2.message_id = bmm2.id
                         WHERE bmmr2.message_id = breta_messages_message.id and
-                        bmmr2.recipient_id = """ + str(self.request.user.pk) + """and
+                        bmmr2.recipient_id = """ + str(self.request.user.pk) + """ and
                         bmmr2.read_at is null
                     """,
                     'last_activity': """
@@ -45,13 +45,14 @@ class MessageViewSet(viewsets.ModelViewSet):
             msgs_type = self.request.QUERY_PARAMS['type']
             if msgs_type == 'inbox':
                 return queryset.filter(
+                    Q(type=Message.TYPE_MESSAGE) &
                     Q(parent__isnull=True) &
                     (Q(children__recipients=self.request.user) | Q(recipients=self.request.user)) &
                     Q(message_recipients__deleted_at__isnull=True)
                 ).distinct()
             if msgs_type == 'sent':
                 return queryset.filter(
-                    (
+                    Q(type=Message.TYPE_MESSAGE) & ((
                         Q(sender=self.request.user) &
                         Q(sent_at__isnull=False) &
                         Q(sender_deleted_at__isnull=True) &
@@ -60,15 +61,28 @@ class MessageViewSet(viewsets.ModelViewSet):
                         Q(children__sender=self.request.user) &
                         Q(children__sent_at__isnull=False) &
                         Q(children__sender_deleted_at__isnull=True)
-                    )
+                    ))
                 ).distinct()
 
             if msgs_type == 'draft':
                 return queryset.filter(
+                    Q(type=Message.TYPE_MESSAGE) &
                     Q(sender=self.request.user) &
                     Q(sent_at__isnull=True) &
                     Q(sender_deleted_at__isnull=True)
                 )
+            if msgs_type == 'quote-requests':
+                return queryset.filter(
+                    Q(type=Message.TYPE_QUOTE) & ((
+                        Q(parent__isnull=True) &
+                        (Q(children__recipients=self.request.user) | Q(recipients=self.request.user)) &
+                        Q(message_recipients__deleted_at__isnull=True)
+                        ) | (
+                        Q(parent__isnull=True) &
+                        (Q(sender=self.request.user) | Q(children__sender=self.request.user)) &
+                        Q(sender_deleted_at__isnull=True)
+                    ))
+                ).distinct()
 
         if 'parent' in self.request.QUERY_PARAMS:
             return queryset.filter(

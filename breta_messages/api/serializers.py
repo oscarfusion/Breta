@@ -3,6 +3,8 @@ from rest_framework import relations
 from rest_framework import fields
 
 from accounts.api.serializers import UserSerializer
+from projects.api.serializers import QuoteSerializer
+
 from ..models import Message, MessageRecipient, MessageFile
 from ..utils import filter_queryset
 
@@ -35,9 +37,9 @@ class MessageSerializer(serializers.ModelSerializer):
         model = Message
         fields = ('id', 'subject', 'body', 'sender', 'recipients', 'parent', 'reply_to',
                   'sent_at', 'sender_deleted_at', 'created_at', 'updated_at', 'files', 'children',
-                  'has_unread', 'is_unread', 'last_activity',)
+                  'has_unread', 'is_unread', 'last_activity', 'quote', 'project', 'type')
         read_only_fields = ('sender', 'files', 'recipients', 'children',
-                            'has_unread', 'is_unread', 'last_activity',)
+                            'has_unread', 'is_unread', 'last_activity', 'quote', 'project', 'type')
 
     sender = UserSerializer(read_only=True)
     files = MessageFileSerializer(many=True, read_only=True)
@@ -46,6 +48,7 @@ class MessageSerializer(serializers.ModelSerializer):
     has_unread = fields.SerializerMethodField()
     is_unread = fields.SerializerMethodField()
     last_activity = fields.SerializerMethodField()
+    quote = QuoteSerializer(required=False, read_only=True)
 
     def get_has_unread(self, obj):
         return getattr(obj, 'has_unread', None)

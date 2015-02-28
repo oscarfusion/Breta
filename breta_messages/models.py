@@ -8,7 +8,16 @@ class Message(models.Model):
     class Meta:
         ordering = ['-sent_at']
 
-    subject = models.CharField(max_length=255)
+    TYPE_MESSAGE = 'message'
+    TYPE_QUOTE = 'quote'
+
+    TYPE_CHOICES = (
+        (TYPE_MESSAGE, 'Message'),
+        (TYPE_QUOTE, 'Quote'),
+    )
+
+    type = models.CharField(max_length=255, choices=TYPE_CHOICES, default=TYPE_MESSAGE)
+    subject = models.CharField(max_length=255, null=True, blank=True)
     body = models.TextField()
     sender = models.ForeignKey(User, related_name='sent_messages', null=True)
     recipients = models.ManyToManyField(User, through='MessageRecipient',
@@ -21,6 +30,8 @@ class Message(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     milestone = models.OneToOneField(Milestone, related_name='message', null=True, blank=True)
     task = models.OneToOneField(Task, related_name='message', null=True, blank=True)
+    project = models.ForeignKey('projects.Project', related_name='messages', null=True, blank=True)
+    quote = models.OneToOneField('projects.Quote', related_name='message', null=True, blank=True)
 
     def is_system(self):
         return (self.sender is None) and (self.sent_at is not None)

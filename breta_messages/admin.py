@@ -15,7 +15,7 @@ class MessageRecipientInline(admin.StackedInline):
 
 class MessageAdmin(admin.ModelAdmin):
     inlines = [MessageFileInline, MessageRecipientInline]
-    list_display = ('subject', 'sender', 'created_at', 'sent_at',)
+    list_display = ('type', 'subject', 'sender', 'created_at', 'sent_at',)
 
 
 admin.site.register(Message, MessageAdmin)

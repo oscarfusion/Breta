@@ -3,14 +3,14 @@ from django.utils import timezone
 import factory
 from factory.fuzzy import FuzzyDate, FuzzyDecimal, FuzzyChoice
 
-from ..models import Project, Milestone, Task
+from ..models import Project, Milestone, Task, ProjectMember
 
 
 class ProjectFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = 'projects.Project'
 
-    project_type = Project.WEBSITE
+    project_type = FuzzyChoice(choices=Project.PROJECT_CHOICES)
     name = factory.Sequence(lambda n: 'My project %d' % n)
     idea = factory.Sequence(lambda n: 'My idea %d' % n)
     description = factory.Sequence(lambda n: 'My description %d' % n)
@@ -40,3 +40,12 @@ class TaskFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'Test name %d' % n)
     description = factory.Sequence(lambda n: 'Test description %d' % n)
     due_date = FuzzyDate(timezone.now().date())
+
+
+class ProjectMemberFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = 'projects.ProjectMember'
+
+    project = factory.SubFactory('projects.tests.factories.ProjectFactory')
+    member = factory.SubFactory('accounts.tests.factories.UserFactory')
+    status = ProjectMember.STATUS_PENDING
