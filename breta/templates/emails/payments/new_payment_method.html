@@ -1,0 +1,13 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}
+    Hello, {{ payment_method.customer.get_user.first_name }}!
+{% endblock %}
+
+{% block content %}
+
+    <p>New payment method was added.</p>
+
+    <p>You can manage your payment methods here: <a href="{{ transactions_url }}">{{ transactions_url }}</a></p>
+
+{% endblock %}
