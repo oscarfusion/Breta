@@ -13,6 +13,7 @@ from .permissions import CreditCardPermissions, PayoutMethodPermissions, Transac
 from .forms import CreateCreditCardForm
 from .. import stripe_api
 from .. import bl
+from .. import email
 
 
 class CreditCardViewSet(viewsets.ModelViewSet):
@@ -36,6 +37,7 @@ class CreditCardViewSet(viewsets.ModelViewSet):
             obj = self.perform_create(serializer)
         except StripeError as e:
             return Response({'stripeToken': e.message}, status=status.HTTP_400_BAD_REQUEST)
+        email.send_new_payment_method_email(obj)
         serializer.instance = obj
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
