@@ -9,6 +9,8 @@ from djorm_pgarray.fields import ArrayField
 from rest_framework.authtoken.models import Token
 from bitfield import BitField
 
+from . import email
+
 
 class UserManager(BaseUserManager):
     def _create_user(self, email, password,
@@ -61,8 +63,19 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
 
+    __original_is_active = None
+
+    def __init__(self, *args, **kwargs):
+        super(User, self).__init__(*args, **kwargs)
+        self.__original_is_active = self.is_active
+
     def __unicode__(self):
         return self.get_full_name()
+
+    def save(self, *args, **kwargs):
+        if self.__original_is_active is False and self.is_active is True and self.developer.exists():
+            email.send_developer_accepted_email(self)
+        super(User, self).save(*args, **kwargs)
 
     def get_short_name(self):
         return self.first_name
