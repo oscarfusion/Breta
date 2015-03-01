@@ -49,8 +49,8 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ('id', 'project_type', 'name', 'idea', 'description', 'user', 'price_range',
-                  'slug', 'created_at', 'updated_at', 'files', 'memberships',)
-        read_only_fields = ('slug', 'files', 'user', 'memberships',)
+                  'slug', 'created_at', 'updated_at', 'files', 'memberships', 'manager', 'brief_status', 'brief')
+        read_only_fields = ('slug', 'files', 'user', 'memberships', 'manager', 'brief')
 
     files = ProjectFileSerializer(many=True, read_only=True, required=False)
     memberships = ProjectMemberSerializer(many=True, read_only=True, required=False)

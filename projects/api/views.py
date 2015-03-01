@@ -38,6 +38,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
         obj.save(user=self.request.user)
         email.send_new_project_email(obj.instance)
 
+    def perform_update(self, serializer):
+        if self.request.user != serializer.instance.user:
+            old_status = serializer.instance.brief_status
+            serializer.save(brief_status=old_status)
+        else:
+            serializer.save()
+
 
 class ProjectFileViewSet(viewsets.ModelViewSet):
     queryset = ProjectFile.objects.all()
