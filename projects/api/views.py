@@ -154,7 +154,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
             if instance.status == Quote.STATUS_PENDING_MEMBER:
                 instance.status = Quote.STATUS_PENDING_OWNER
                 instance.save()
-                bl.quote_submitted_to_project_owner(self)
+                bl.quote_submitted_to_project_owner(instance)
             elif instance.status == Quote.STATUS_REFUSED:
                 instance.project_member.status = ProjectMember.STATUS_REFUSED
                 instance.project_member.save()

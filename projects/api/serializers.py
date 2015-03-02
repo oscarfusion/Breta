@@ -87,4 +87,7 @@ class QuoteSerializer(serializers.ModelSerializer):
     member_type = serializers.SerializerMethodField()
 
     def get_member_type(self, obj):
-        return obj.project_member.member.developer.all()[0].type
+        if obj.project_member.member.developer.all().first():
+            return obj.project_member.member.developer.all()[0].type
+        else:
+            return None
