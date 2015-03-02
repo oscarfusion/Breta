@@ -127,12 +127,14 @@ class Milestone(models.Model):
     STATUS_IN_PROGRESS = 'IP'
     STATUS_COMPLETE = 'CM'
     STATUS_ACCEPTED = 'ACCEPTED'
+    STATUS_ACCEPTED_BY_PM = 'pm-accepted'
 
     STATUS_CHOICES = (
         (STATUS_NO_STARTED, 'No started'),
         (STATUS_IN_PROGRESS, 'In progress'),
         (STATUS_COMPLETE, 'Complete'),
         (STATUS_ACCEPTED, 'Accepted'),
+        (STATUS_ACCEPTED_BY_PM, 'Accepted by PM'),
     )
 
     PAID_STATUS_DUE = 'DUE'
