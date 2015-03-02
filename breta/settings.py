@@ -137,7 +137,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         # 'rest_framework.authentication.TokenAuthentication',
         'core.authentication.BretaAuthentication',
-        'rest_framework.authentication.SessionAuthentication',  # optional
+        # 'rest_framework.authentication.SessionAuthentication',  # optional
     ),
 }
 
