@@ -80,7 +80,11 @@ class MilestoneSerializer(serializers.ModelSerializer):
 class QuoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quote
-        fields = ('id', 'status', 'project_member', 'amount', 'created_at', 'updated_at')
-        read_only_fields = ('project_member',)
+        fields = ('id', 'status', 'project_member', 'amount', 'created_at', 'updated_at', 'member_type')
+        read_only_fields = ('project_member', 'member_type')
 
     project_member = ProjectMemberSerializer(required=False, read_only=True)
+    member_type = serializers.SerializerMethodField()
+
+    def get_member_type(self, obj):
+        return obj.project_member.member.developer.all()[0].type
