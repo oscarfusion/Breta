@@ -8,12 +8,14 @@ class Activity(models.Model):
     class Meta:
         verbose_name_plural = 'Activities'
 
+    TYPE_NEW_PROJECT = 'new-project'
     TYPE_NEW_TASK = 'new-task'
     TYPE_NEW_MILESTONE = 'new-milestone'
     TYPE_TASK_STATUS_CHANGED = 'task-status-changed'
     TYPE_MILESTONE_STATUS_CHANGED = 'milestone-status-changed'
 
     TYPE_CHOICES = (
+        (TYPE_NEW_PROJECT, 'New project created'),
         (TYPE_NEW_TASK, 'New task created'),
         (TYPE_NEW_MILESTONE, 'New milestone created'),
         (TYPE_TASK_STATUS_CHANGED, 'Task status changed'),
@@ -26,7 +28,7 @@ class Activity(models.Model):
     milestone = models.ForeignKey(Milestone, null=True, blank=True)
     task = models.ForeignKey(Task, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    text = models.TextField(null=True)
+    text = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
         if not self.project:

@@ -37,6 +37,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def perform_create(self, obj):
         obj.save(user=self.request.user)
         email.send_new_project_email(obj.instance)
+        Activity.objects.create(
+            project=obj.instance, type=Activity.TYPE_NEW_PROJECT, user=self.request.user
+        )
 
     def perform_update(self, serializer):
         if self.request.user != serializer.instance.user:
@@ -72,10 +75,9 @@ class MilestoneViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         new = serializer.save()
-        activity = Activity.objects.create(
+        Activity.objects.create(
             milestone=new, project=new.project, type=Activity.TYPE_NEW_MILESTONE, user=self.request.user
         )
-        activity.save()
 
     def perform_update(self, serializer):
         pk = serializer.instance.id

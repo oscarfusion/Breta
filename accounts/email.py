@@ -11,3 +11,7 @@ def send_welcome_email(user):
 def send_developer_accepted_email(user):
     login_url = '{}/login'.format(settings.DOMAIN)
     return send_email([user.email], 'You accepted to beta', 'emails/accounts/developer_accepted.html', {'user': user, 'login_url': login_url})
+
+
+def send_password_changed_email(user):
+    return send_email([user.email], 'You password was changed', 'emails/accounts/password_changed.html', {'user': user})
