@@ -47,8 +47,8 @@ class Message(models.Model):
     def get_quote_url(self):
         return '{}/messages/quote-requests/{}'.format(settings.DOMAIN, self.id)
 
-    def __unicode__(self):
-        return self.subject
+    # def __unicode__(self):
+    #     return self.subject
 
 
 class MessageRecipient(models.Model):

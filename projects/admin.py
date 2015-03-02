@@ -53,8 +53,12 @@ class MilestoneAdmin(admin.ModelAdmin):
     inlines = [TasksInline]
 
 
+class QuoteAdmin(admin.ModelAdmin):
+    list_display = ('project_member', 'amount', 'status', 'created_at')
+
+
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Milestone, MilestoneAdmin)
 admin.site.register(ProjectMessage)
 # admin.site.register(ProjectMember)
-admin.site.register(Quote)
+admin.site.register(Quote, QuoteAdmin)

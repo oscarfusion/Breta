@@ -157,7 +157,7 @@ class Milestone(models.Model):
     assigned = models.ForeignKey(User, related_name='milestones', blank=True, null=True)
 
     def __unicode__(self):
-        return '%s - %s' % (self.project.name, self.name)
+        return '%s - %s' % (self.project.name if self.project else None, self.name)
 
     def set_as_paid(self):
         self.paid_status = Milestone.PAID_STATUS_PAID
@@ -191,7 +191,7 @@ class Task(models.Model):
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     def __unicode__(self):
-        return '%s - %s' % (self.milestone.name, self.name)
+        return '%s - %s' % (self.milestone.name if self.milestone else None, self.name)
 
     def get_absolute_url(self):
         return '{}/projects/{}/tasks/{}'.format(settings.DOMAIN, self.milestone.project_id, self.id)
@@ -269,7 +269,7 @@ class Quote(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     def __unicode__(self):
-        return u'%s - %s' % (self.project_member.project.name, self.project_member.member.get_full_name())
+        return u'%s - %s' % (self.project_member.project.name if self.project_member and self.project_member.project else None, self.project_member.member.get_full_name() if self.project_member and self.project_member.member else None)
 
     @classmethod
     def condition_status_project(cls, project):
