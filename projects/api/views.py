@@ -88,7 +88,8 @@ class MilestoneViewSet(viewsets.ModelViewSet):
                 milestone=new, project=new.project, type=Activity.TYPE_MILESTONE_STATUS_CHANGED, user=self.request.user
             )
             activity.save()
-        if old.status == Milestone.STATUS_ACCEPTED_BY_PM and new.status == Milestone.STATUS_ACCEPTED:
+        if old.status == Milestone.STATUS_ACCEPTED_BY_PM and new.status == Milestone.STATUS_ACCEPTED and \
+                new.project.user == self.request.user:
             payments_bl.create_milestone_transfer(new)
         elif old.status != Milestone.STATUS_COMPLETE and new.status == Milestone.STATUS_COMPLETE:
             email.send_milestone_completed_email(new)
