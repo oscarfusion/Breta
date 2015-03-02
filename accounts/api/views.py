@@ -1,6 +1,11 @@
+from django.contrib.auth.forms import PasswordChangeForm
 from rest_framework import filters
+from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
 from .serializers import (
@@ -9,7 +14,8 @@ from .serializers import (
 )
 
 from .permissions import (
-    UserPermissions, DeveloperPermissions, WebsitePermission, PortfolioProjectPermission, PortfolioProjectAttachmentPermission
+    UserPermissions, DeveloperPermissions, WebsitePermission, PortfolioProjectPermission,
+    PortfolioProjectAttachmentPermission
 )
 from ..models import User, Developer, PortfolioProject, PortfolioProjectAttachment, Website
 from ..email import send_welcome_email
@@ -74,3 +80,18 @@ class WebsiteViewSet(viewsets.ModelViewSet):
     queryset = Website.objects.all()
     serializer_class = WebsiteSerializer
     permission_classes = (PortfolioProjectAttachmentPermission,)
+
+
+class ChangePasswordView(generics.CreateAPIView):
+    serializer_class = None
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = (JSONRenderer,)
+
+    def create(self, request, *args, **kwargs):
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if not form.is_valid():
+            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+        form.save()
+        return Response({
+            'message': 'Password updated.'
+        }, status=status.HTTP_200_OK)

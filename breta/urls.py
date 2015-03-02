@@ -49,6 +49,7 @@ urlpatterns = patterns(
     url(r'^api-token-auth/', 'core.api.views.obtain_auth_token'),
     url(r'^api/v1/', include(router.urls)),
     url(r'^api/v1/config/', 'core.api.views.breta_config'),
+    url(r'^api/v1/change-password/', account_views.ChangePasswordView.as_view()),
     url(r'^tinymce/', include('tinymce.urls')),
 )
 
