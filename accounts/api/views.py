@@ -18,7 +18,7 @@ from .permissions import (
     PortfolioProjectAttachmentPermission
 )
 from ..models import User, Developer, PortfolioProject, PortfolioProjectAttachment, Website
-from ..email import send_welcome_email
+from .. import email
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -37,7 +37,7 @@ class UserViewSet(viewsets.ModelViewSet):
                     instance.is_active = True
             instance.set_password(password)
             instance.save()
-        send_welcome_email(instance)
+        email.send_welcome_email(instance)
         return instance
 
     def create(self, request, *args, **kwargs):
@@ -92,6 +92,7 @@ class ChangePasswordView(generics.CreateAPIView):
         if not form.is_valid():
             return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
         form.save()
+        email.send_password_changed_email(request.user)
         return Response({
             'message': 'Password updated.'
         }, status=status.HTTP_200_OK)
