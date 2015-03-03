@@ -1,0 +1,11 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}
+    New user has joined!
+{% endblock %}
+
+{% block content %}
+
+    {{ user.get_full_name }} has joined to Breta!
+
+{% endblock %}

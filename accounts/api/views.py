@@ -38,6 +38,7 @@ class UserViewSet(viewsets.ModelViewSet):
             instance.set_password(password)
             instance.save()
         email.send_welcome_email(instance)
+        email.notify_admins_about_registration(instance)
         return instance
 
     def create(self, request, *args, **kwargs):
