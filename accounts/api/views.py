@@ -19,6 +19,7 @@ from .permissions import (
 )
 from ..models import User, Developer, PortfolioProject, PortfolioProjectAttachment, Website
 from .. import email
+from .. import mailchimp_api
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -39,6 +40,7 @@ class UserViewSet(viewsets.ModelViewSet):
             instance.save()
         email.send_welcome_email(instance)
         email.notify_admins_about_registration(instance)
+        mailchimp_api.subscribe_user(instance)
         return instance
 
     def create(self, request, *args, **kwargs):

@@ -159,6 +159,9 @@ MEDIA_URL = '/media/'
 STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY')
 STRIPE_PUBLIC_KEY = os.environ.get('STRIPE_PUBLIC_KEY')
 
+MAILCHIMP_API_KEY = os.environ.get('MAILCHIMP_API_KEY')
+MAILCHIMP_DEFAULT_LIST = os.environ.get('MAILCHIMP_DEFAULT_LIST')
+
 from static_settings import *  # noqa
 
 DEFAULT_FROM_EMAIL = 'support@breta.com'
