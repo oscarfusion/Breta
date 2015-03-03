@@ -6,6 +6,7 @@ from .. import stripe_api
 
 class CreateCreditCardForm(forms.Form):
     stripeToken = forms.CharField(required=True)
+    isActive = forms.BooleanField(required=False, initial=False)
 
     def save(self, user):
         try:
@@ -16,6 +17,7 @@ class CreateCreditCardForm(forms.Form):
                 customer=user.stripe_customer,
                 stripe_card_id=credit_card.id,
                 extra_data=credit_card.to_dict(),
+                is_active=self.cleaned_data['isActive']
             )
         except Customer.DoesNotExist:
             customer = stripe_api.create_customer(self.cleaned_data['stripeToken'], user.email)
@@ -29,5 +31,6 @@ class CreateCreditCardForm(forms.Form):
                 customer=customer_obj,
                 stripe_card_id=credit_card.id,
                 extra_data=customer.cards.data[0].to_dict(),
+                is_active=self.cleaned_data['isActive']
             )
         return credit_card_obj
