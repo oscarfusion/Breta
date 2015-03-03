@@ -21,11 +21,11 @@ class CreditCard(models.Model):
     extra_data = JSONField()
     is_active = models.BooleanField(default=False)
 
-    def __save__(self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         if self.is_active:
             self.customer.credit_cards.update(is_active=False)
             self.is_active = True
-        super(self, CreditCard).save(*args, **kwargs)
+        super(CreditCard, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return u'Credit Card #{}'.format(self.pk)
@@ -63,11 +63,11 @@ class PayoutMethod(models.Model):
     country = models.CharField(max_length=255, null=True, blank=True)
     is_active = models.BooleanField(default=False)
 
-    def __save__(self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         if self.is_active:
             self.user.payout_methods.update(is_active=False)
             self.is_active = True
-        super(self, PayoutMethod).save(*args, **kwargs)
+        super(PayoutMethod, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return u'PayoutMethod #{}'.format(self.pk)
