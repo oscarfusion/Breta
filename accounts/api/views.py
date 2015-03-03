@@ -1,4 +1,5 @@
 from django.contrib.auth.forms import PasswordChangeForm
+from django.conf import settings
 from rest_framework import filters
 from rest_framework import generics
 from rest_framework import viewsets
@@ -40,7 +41,8 @@ class UserViewSet(viewsets.ModelViewSet):
             instance.save()
         email.send_welcome_email(instance)
         email.notify_admins_about_registration(instance)
-        mailchimp_api.subscribe_user(instance)
+        if not settings.TESTING:
+            mailchimp_api.subscribe_user(instance)
         return instance
 
     def create(self, request, *args, **kwargs):

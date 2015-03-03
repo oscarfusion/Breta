@@ -10,7 +10,9 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import sys
 import dj_database_url
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
