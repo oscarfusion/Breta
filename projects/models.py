@@ -259,7 +259,7 @@ def project_member_post_save(sender, instance, created=False, **kwargs):
     if created and instance.status == ProjectMember.STATUS_PENDING:
         quote = Quote(project_member=instance, amount=0)
         quote.save()
-        msg = Message.objects.create(type=Message.TYPE_QUOTE, project=instance.project, sender=instance.project.user, quote=quote)
+        msg = Message.objects.create(type=Message.TYPE_QUOTE, project=instance.project, sender=instance.project.manager, quote=quote)
         msg.save()
         recipient = MessageRecipient(message=msg, recipient=instance.member)
         recipient.save()
