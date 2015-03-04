@@ -21,7 +21,7 @@ class ProjectMessageChildrenManyRelatedField(relations.ManyRelatedField):
 class ProjectFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectFile
-        fields = ('id', 'project', 'file', 'created_at', 'author', 'task', 'milestone', 'message',)
+        fields = ('id', 'project', 'file', 'created_at', 'author', 'task', 'milestone', 'message', 'filename')
     file = serializers.FileField(use_url=True)
 
 

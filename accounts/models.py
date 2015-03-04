@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
@@ -180,3 +182,7 @@ class PortfolioProjectAttachment(models.Model):
 
     def __unicode__(self):
         return '%s - %s' % (self.project.title, self.file)
+
+    @property
+    def filename(self):
+        return os.path.basename(self.file.name)

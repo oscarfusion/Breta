@@ -1,3 +1,5 @@
+import os
+
 from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
@@ -68,6 +70,10 @@ class MessageFile(models.Model):
     message = models.ForeignKey(Message, related_name='files')
     file = models.FileField(upload_to=file_upload_to)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def filename(self):
+        return os.path.basename(self.file.name)
 
 
 def message_recipient_save(sender, instance, created=False, **kwargs):

@@ -1,4 +1,4 @@
-import uuid
+import os
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -58,9 +58,6 @@ class Project(models.Model):
         self.__original_manager = self.manager
         self.__original_brief_status = self.brief_status
 
-    def files(self):
-        return ProjectFile.objects.filter(project=self)
-
     def save(self, *args, **kwargs):
         self.slug = slugify(unicode(self.name))
         if self.__original_manager is None and self.manager is not None:
@@ -104,8 +101,6 @@ class ProjectMember(models.Model):
 
 
 def file_upload_to(instance, filename):
-    ext = filename.split('.')[-1]
-    filename = '%s.%s' % (uuid.uuid4(), ext)
     return 'project_files/%s/%s' % (instance.project.slug, filename)
 
 
@@ -120,6 +115,10 @@ class ProjectFile(models.Model):
 
     def __unicode__(self):
         return '%s - %s' % (self.project.name, self.file)
+
+    @property
+    def filename(self):
+        return os.path.basename(self.file.name)
 
 
 class Milestone(models.Model):

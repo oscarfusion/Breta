@@ -9,7 +9,7 @@ from ..models import User, Developer, Website, PortfolioProject, PortfolioProjec
 class PortfolioProjectAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PortfolioProjectAttachment
-        fields = ('id', 'project', 'file', 'created_at',)
+        fields = ('id', 'project', 'file', 'created_at', 'filename')
         read_only_fields = ('created_at',)
 
 

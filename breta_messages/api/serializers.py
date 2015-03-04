@@ -23,7 +23,7 @@ class MessageChildrenManyRelatedField(relations.ManyRelatedField):
 class MessageFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = MessageFile
-        fields = ('id', 'message', 'file', 'created_at')
+        fields = ('id', 'message', 'file', 'created_at', 'filename')
 
 
 class MessageRecipientSerializer(serializers.ModelSerializer):
