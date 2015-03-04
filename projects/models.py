@@ -61,8 +61,18 @@ class Project(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(unicode(self.name))
         if self.__original_manager is None and self.manager is not None:
+            from breta_messages.models import Message, MessageRecipient
             email.send_manager_assigned_email(self)
             email.send_project_assigned_email(self)
+            msg = Message.objects.create(
+                type=Message.TYPE_MESSAGE,
+                sender=self.manager,
+                subject='New manager %s' % self.name,
+                body='I am new manager in %s' % self.name,
+            )
+            msg.save()
+            recipient = MessageRecipient(message=msg, recipient=self.user)
+            recipient.save()
         if self.__original_brief_status == Project.BRIEF_NOT_READY and self.brief_status == Project.BRIEF_READY:
             email.send_brief_ready_email(self)
         super(Project, self).save(*args, **kwargs)
