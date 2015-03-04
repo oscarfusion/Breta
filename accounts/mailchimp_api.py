@@ -10,4 +10,4 @@ def subscribe_user(user):
     }, merge_vars={
         'FNAME': user.first_name,
         'LNAME': user.last_name
-    }, update_existing=True)
+    }, double_optin=False, send_welcome=False, update_existing=True)
