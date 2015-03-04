@@ -91,9 +91,21 @@ class ProjectMember(models.Model):
         (STATUS_ACCEPTED, 'Accepted'),
     )
 
+    TYPE_OF_WORK_DEVELOPER = 'developer'
+    TYPE_OF_WORK_DESIGNER = 'designer'
+    TYPE_OF_WORK_CONTENT = 'content'
+
+    TYPE_OF_WORK_CHOICES = (
+        (TYPE_OF_WORK_DEVELOPER, 'Developer'),
+        (TYPE_OF_WORK_DESIGNER, 'Designer'),
+        (TYPE_OF_WORK_CONTENT, 'Content'),
+    )
+
     project = models.ForeignKey(Project, related_name='memberships')
     member = models.ForeignKey(User)
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    type_of_work = models.CharField(max_length=255, choices=TYPE_OF_WORK_CHOICES, default=TYPE_OF_WORK_DEVELOPER, null=True, blank=True)
+    price_range = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):

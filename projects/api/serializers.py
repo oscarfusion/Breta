@@ -42,7 +42,7 @@ class ProjectMessageSerializer(serializers.ModelSerializer):
 class ProjectMemberSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectMember
-        fields = ('id', 'member', 'project', 'created_at', 'status')
+        fields = ('id', 'member', 'project', 'created_at', 'status', 'type_of_work', 'price_range')
 
 
 class ProjectSerializer(serializers.ModelSerializer):
