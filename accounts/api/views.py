@@ -1,11 +1,11 @@
-from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
 from django.conf import settings
 from rest_framework import filters
 from rest_framework import generics
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
@@ -100,4 +100,23 @@ class ChangePasswordView(generics.CreateAPIView):
         email.send_password_changed_email(request.user)
         return Response({
             'message': 'Password updated.'
+        }, status=status.HTTP_200_OK)
+
+
+class ResetPasswordView(generics.CreateAPIView):
+    serializer_class = None
+    permission_classes = (AllowAny,)
+    renderer_classes = (JSONRenderer,)
+
+    def create(self, request, *args, **kwargs):
+        form = PasswordResetForm(request.POST)
+        if not form.is_valid():
+            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+        form.save(
+            request=request,
+            email_template_name='emails/accounts/reset_password.html',
+            domain_override=settings.DOMAIN
+        )
+        return Response({
+            'success': True
         }, status=status.HTTP_200_OK)
