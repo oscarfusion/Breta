@@ -25,7 +25,6 @@ class ResetPasswordConfirmForm(SetPasswordForm):
         return uid
 
     def clean_token(self):
-        uid = self.cleaned_data['uid']
         token = self.cleaned_data['token']
         try:
             user = self.get_user()
