@@ -21,6 +21,7 @@ from .permissions import (
 from ..models import User, Developer, PortfolioProject, PortfolioProjectAttachment, Website
 from .. import email
 from .. import mailchimp_api
+from .forms import ResetPasswordConfirmForm
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -120,3 +121,18 @@ class ResetPasswordView(generics.CreateAPIView):
         return Response({
             'success': True
         }, status=status.HTTP_200_OK)
+
+
+class ResetPasswordConfirmView(generics.CreateAPIView):
+    serializer_class = None
+    permission_classes = (AllowAny,)
+    renderer_classes = (JSONRenderer,)
+
+    def create(self, request, *args, **kwargs):
+        form = ResetPasswordConfirmForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            return Response({
+                'success': True
+            }, status=status.HTTP_200_OK)
+        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
