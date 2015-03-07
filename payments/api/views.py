@@ -119,8 +119,7 @@ class UserHasActiveCreditCardViewSet(viewsets.ReadOnlyModelViewSet):
 
     def list(self, request, *args, **kwargs):
         try:
-            method = CreditCard.objects.select_related().get\
-                (
+            method = CreditCard.objects.select_related().get(
                 customer__user=request.user,
                 is_active=True
             )
