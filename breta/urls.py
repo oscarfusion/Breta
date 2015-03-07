@@ -29,6 +29,11 @@ router.register(r'project-members', project_views.ProjectMemberViewSet)
 router.register(r'messages', message_views.MessageViewSet)
 router.register(r'message-files', message_views.MessageFileViewSet)
 router.register(r'message-recipients', message_views.MessageRecipientViewSet)
+router.register(
+    r'credit-cards/has-active-card',
+    payments_views.UserHasActiveCreditCardViewSet,
+    base_name='active-credit-card'
+)
 router.register(r'credit-cards', payments_views.CreditCardViewSet)
 router.register(r'payout-methods', payments_views.PayoutMethodViewSet)
 router.register(r'transactions', payments_views.TransactionViewSet)

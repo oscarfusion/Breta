@@ -110,3 +110,23 @@ class UsersBalancesViewSet(viewsets.ReadOnlyModelViewSet):
                 }
             }
         return Response(data)
+
+
+class UserHasActiveCreditCardViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = None
+    permission_classes = (permissions.IsAuthenticated,)
+    renderer_classes = (JSONRenderer,)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            method = CreditCard.objects.select_related().get\
+                (
+                customer__user=request.user,
+                is_active=True
+            )
+        except CreditCard.DoesNotExist:
+            method = None
+        res_data = {
+            'hasCard': method is not None
+        }
+        return Response(res_data, status=status.HTTP_200_OK)
