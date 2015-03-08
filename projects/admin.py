@@ -43,9 +43,22 @@ class ProjectAdmin(admin.ModelAdmin):
     form = ProjectForm
 
 
+class TaskForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(TaskForm, self).__init__(*args, **kwargs)
+        self.fields['assigned'].queryset = self.parent_instance.project.members.filter(
+            projectmember__status=ProjectMember.STATUS_ACCEPTED
+        ).all()
+
+
 class TasksInline(admin.StackedInline):
     model = Task
     extra = 1
+    form = TaskForm
+
+    def get_formset(self, request, obj=None, **kwargs):
+        TaskForm.parent_instance = obj
+        return super(TasksInline, self).get_formset(request, obj, **kwargs)
 
 
 class MilestoneAdmin(admin.ModelAdmin):
