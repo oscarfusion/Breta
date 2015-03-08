@@ -91,8 +91,6 @@ class MilestoneViewSet(viewsets.ModelViewSet):
         if old.status == Milestone.STATUS_ACCEPTED_BY_PM and new.status == Milestone.STATUS_ACCEPTED and \
                 new.project.user == self.request.user:
             payments_bl.create_milestone_transfer(new)
-        elif old.status != Milestone.STATUS_COMPLETE and new.status == Milestone.STATUS_COMPLETE:
-            email.send_milestone_completed_email(new)
 
 
 class TaskViewSet(viewsets.ModelViewSet):
@@ -117,7 +115,7 @@ class TaskViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         pk = serializer.instance.id
-        old = Task.objects.get(pk)
+        old = Task.objects.get(pk=pk)
         new = serializer.save()
         if old.status != new.status:
             activity = Activity.objects.create(
@@ -125,6 +123,7 @@ class TaskViewSet(viewsets.ModelViewSet):
                 type=Activity.TYPE_TASK_STATUS_CHANGED, user=self.request.user
             )
             activity.save()
+        new.milestone.try_complete(self.request.user)
 
 
 class ProjectMessageViewSet(viewsets.ModelViewSet):

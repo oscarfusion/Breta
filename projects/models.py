@@ -180,6 +180,19 @@ class Milestone(models.Model):
     def amount(self):
         return self.tasks.aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
 
+    def try_complete(self, user):
+        from activities.models import Activity
+        count = self.tasks.count()
+        completed_count = self.tasks.filter(status=Task.STATUS_COMPLETE).count()
+        if count == completed_count and count != 0:
+            self.status = Milestone.STATUS_COMPLETE
+            self.save()
+            activity = Activity.objects.create(
+                milestone=self, project=self.project, type=Activity.TYPE_MILESTONE_STATUS_CHANGED, user=user
+            )
+            activity.save()
+            email.send_milestone_completed_email(self)
+
     def __unicode__(self):
         return '%s - %s' % (self.project.name if self.project else None, self.name)
 
@@ -268,7 +281,6 @@ def project_member_post_save(sender, instance, created=False, **kwargs):
         msg.save()
         recipient = MessageRecipient(message=msg, recipient=instance.member)
         recipient.save()
-
         email.send_developer_invited_to_project_email(instance, msg)
 
 
