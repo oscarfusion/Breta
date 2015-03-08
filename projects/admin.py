@@ -49,7 +49,7 @@ class TasksInline(admin.StackedInline):
 
 
 class MilestoneAdmin(admin.ModelAdmin):
-    fields = ('project', 'due_date', 'status', 'name', 'description', 'amount', 'paid_status', 'assigned')
+    fields = ('project', 'due_date', 'status', 'name', 'description', 'paid_status')
     inlines = [TasksInline]
 
 

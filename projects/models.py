@@ -1,9 +1,10 @@
+from decimal import Decimal
 import os
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.db.models.signals import post_save
 from django.utils.text import slugify
 
@@ -171,11 +172,13 @@ class Milestone(models.Model):
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default=STATUS_NO_STARTED)
     name = models.CharField(max_length=255)
     description = models.TextField()
-    amount = models.DecimalField(max_digits=7, decimal_places=2)
     paid_status = models.CharField(max_length=255, choices=PAID_STATUS_CHOICES, default=PAID_STATUS_DUE)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
-    assigned = models.ForeignKey(User, related_name='milestones', blank=True, null=True)
+
+    @property
+    def amount(self):
+        return self.tasks.aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
 
     def __unicode__(self):
         return '%s - %s' % (self.project.name if self.project else None, self.name)
@@ -210,6 +213,8 @@ class Task(models.Model):
     due_date = models.DateField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+    amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
+    assigned = models.ForeignKey(User, related_name='tasks', blank=True, null=True)
 
     def __unicode__(self):
         return '%s - %s' % (self.milestone.name if self.milestone else None, self.name)

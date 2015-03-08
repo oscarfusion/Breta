@@ -60,7 +60,7 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ('id', 'milestone', 'status', 'name', 'description', 'due_date', 'created_at', 'updated_at',
-                  'task_message',)
+                  'task_message', 'assigned', 'amount')
         read_only_fields = ('task_message',)
     task_message = ProjectMessageSerializer(read_only=True, required=False)
 
@@ -69,7 +69,7 @@ class MilestoneSerializer(serializers.ModelSerializer):
     class Meta:
         model = Milestone
         fields = ('id', 'project', 'name', 'description', 'due_date', 'status', 'paid_status', 'amount',
-                  'created_at', 'updated_at', 'assigned', 'tasks', 'milestone_message', 'milestone_attachments',)
+                  'created_at', 'updated_at', 'tasks', 'milestone_message', 'milestone_attachments',)
         read_only_fields = ('tasks', 'milestone_message', 'milestone_attachments',)
 
     tasks = TaskSerializer(many=True, read_only=True, required=False)
