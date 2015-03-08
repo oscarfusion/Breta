@@ -50,6 +50,7 @@ class Project(models.Model):
     manager = models.ForeignKey(User, blank=True, null=True, related_name='manager_projects')
     brief = models.TextField(blank=True, null=True)
     brief_status = models.CharField(max_length=255, choices=BRIEF_STATUS_CHOICES, default=BRIEF_NOT_READY)
+    brief_message = models.OneToOneField('ProjectMessage', related_name='project', null=True, blank=True)
 
     __original_manager = None
     __original_brief_status = None
@@ -89,6 +90,16 @@ class Project(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+def project_post_save(sender, instance, created=False, **kwargs):
+    if instance.manager is not None and instance.brief_message is None:
+        msg = ProjectMessage.objects.create(sender=instance.manager)
+        msg.save()
+        instance.brief_message = msg
+        instance.save()
+
+post_save.connect(project_post_save, sender=Project)
 
 
 class ProjectMember(models.Model):
@@ -251,6 +262,8 @@ class ProjectMessage(models.Model):
         elif self.milestone:
             return '%s - Main' % self.milestone.name
         else:
+            if not self.body:
+                return str(self.pk)
             if len(self.body) > 15:
                 return self.body[0:15]
             else:
