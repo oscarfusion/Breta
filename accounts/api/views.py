@@ -35,9 +35,10 @@ class UserViewSet(viewsets.ModelViewSet):
         instance = serializer.save()
         password = self.request.DATA.get('password')
         if password:
-            if 'HTTP_REFERER' in self.request.stream.META:
-                if 'project-owner' in self.request.stream.META['HTTP_REFERER']:
-                    instance.is_active = True
+            # if 'HTTP_REFERER' in self.request.stream.META:
+            #     if 'project-owner' in self.request.stream.META['HTTP_REFERER']:
+            #         instance.is_active = True
+            instance.is_active = False
             instance.set_password(password)
             instance.save()
         email.send_welcome_email(instance)
