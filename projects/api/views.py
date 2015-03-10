@@ -12,6 +12,7 @@ from .permissions import ProjectPermissions, ProjectFilePermissions, MilestonePe
     ProjectMessagePermission, ProjectMemberPermission, QuotePermission
 from ..models import Project, ProjectFile, Milestone, Task, ProjectMessage, ProjectMember, Quote
 from ..utils import sort_project_messages
+from .. import permissions as bl_permissions
 from .. import email
 from .. import bl
 
@@ -83,6 +84,14 @@ class MilestoneViewSet(viewsets.ModelViewSet):
         pk = serializer.instance.id
         old = Milestone.objects.get(pk=pk)
         new = serializer.save()
+        p = bl_permissions.MilestonePermissions(old, new, self.request.user)
+        if new.status == Milestone.STATUS_ACCEPTED_BY_PM:
+            if not p.can_change_status_to_pm_accepted():
+                new.status = old.status
+        if new.status == Milestone.STATUS_ACCEPTED:
+            if not p.can_change_status_to_accepted():
+                new.status = old.status
+        new.save()
         if old.status != new.status:
             activity = Activity.objects.create(
                 milestone=new, project=new.project, type=Activity.TYPE_MILESTONE_STATUS_CHANGED, user=self.request.user
@@ -90,7 +99,8 @@ class MilestoneViewSet(viewsets.ModelViewSet):
             activity.save()
         if old.status == Milestone.STATUS_ACCEPTED_BY_PM and new.status == Milestone.STATUS_ACCEPTED and \
                 new.project.user == self.request.user:
-            payments_bl.create_milestone_transfer(new)
+            pass
+            # payments_bl.create_milestone_transfer(new)
 
 
 class TaskViewSet(viewsets.ModelViewSet):
