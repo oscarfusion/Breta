@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q, Sum
 from django.db.models.signals import post_save
+from django.utils import timezone
 from django.utils.text import slugify
 
 from accounts.models import User
@@ -51,14 +52,17 @@ class Project(models.Model):
     brief = models.TextField(blank=True, null=True)
     brief_status = models.CharField(max_length=255, choices=BRIEF_STATUS_CHOICES, default=BRIEF_NOT_READY)
     brief_message = models.OneToOneField('ProjectMessage', related_name='project', null=True, blank=True)
+    brief_last_edited = models.DateTimeField(default=timezone.now)
 
     __original_manager = None
     __original_brief_status = None
+    __original_brief = None
 
     def __init__(self, *args, **kwargs):
         super(Project, self).__init__(*args, **kwargs)
         self.__original_manager = self.manager
         self.__original_brief_status = self.brief_status
+        self.__original_brief = self.brief
 
     def save(self, *args, **kwargs):
         self.slug = slugify(unicode(self.name))
@@ -77,6 +81,8 @@ class Project(models.Model):
             recipient.save()
         if self.__original_brief_status == Project.BRIEF_NOT_READY and self.brief_status == Project.BRIEF_READY:
             email.send_brief_ready_email(self)
+        if self.brief != self.__original_brief:
+            self.brief_last_edited = timezone.now()
         super(Project, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
