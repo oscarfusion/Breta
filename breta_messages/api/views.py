@@ -147,7 +147,7 @@ class InboxMessagesCount(viewsets.ReadOnlyModelViewSet):
             Q(recipient=request.user) &
             Q(deleted_at__isnull=True) &
             Q(read_at__isnull=True)
-        ).count() or 0
+        ).count()
         data = {
             'count': count
         }
