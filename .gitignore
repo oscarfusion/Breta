@@ -8,3 +8,5 @@ project_files/*
 mediafiles/
 .coverage
 htmlcov/
+*.sublime-project
+*.sublime-workspace

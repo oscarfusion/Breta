@@ -41,6 +41,10 @@ class UserManager(BaseUserManager):
                                  **extra_fields)
 
 
+def avatar_upload_to(instance, filename):
+    return 'avatars/%d - %s' % (instance.id, filename)
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -60,6 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         help_text=_('Designates whether this user should be treated as '
                     'active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    avatar = models.FileField(upload_to=avatar_upload_to, blank=True, null=True)
 
     objects = UserManager()
 
@@ -95,10 +100,6 @@ def init_new_user(sender, instance, signal, created, **kwargs):
         Token.objects.create(user=instance)
 
 
-def avatar_upload_to(instance, filename):
-    return 'avatars/%d - %s' % (instance.id, filename)
-
-
 class Developer(models.Model):
     DEVELOPER = 'DEV'
     DESIGNER = 'DES'
@@ -126,7 +127,6 @@ class Developer(models.Model):
     skills = ArrayField(dbtype='varchar')
     availability = models.CharField(max_length=255, choices=AVAILABLE_CHOICES, default=AVAILABLE_NOW)
     project_preferences = BitField(flags=PROJECT_PREFERENCES_FLAGS)
-    avatar = models.FileField(upload_to=avatar_upload_to, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
