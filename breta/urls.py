@@ -26,6 +26,11 @@ router.register(r'milestones', project_views.MilestoneViewSet)
 router.register(r'tasks', project_views.TaskViewSet)
 router.register(r'project-messages', project_views.ProjectMessageViewSet)
 router.register(r'project-members', project_views.ProjectMemberViewSet)
+router.register(
+    r'messages/inbox-messages',
+    message_views.InboxMessagesCount,
+    base_name='inbox-messages-amount'
+)
 router.register(r'messages', message_views.MessageViewSet)
 router.register(r'message-files', message_views.MessageFileViewSet)
 router.register(r'message-recipients', message_views.MessageRecipientViewSet)
