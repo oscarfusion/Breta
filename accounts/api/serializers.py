@@ -48,7 +48,7 @@ class DeveloperSerializer(serializers.ModelSerializer):
     class Meta:
         model = Developer
         fields = ('id', 'user', 'type', 'title', 'bio', 'skills', 'availability', 'websites', 'portfolio_projects',
-                  'avatar', 'project_preferences', 'created_at', 'updated_at',)
+                  'project_preferences', 'created_at', 'updated_at',)
         read_only_fields = ('created_at', 'updated_at', 'websites',)
 
     websites = WebsiteSerializer(many=True, read_only=True)
@@ -61,7 +61,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user', 'location', 'is_active',
-                  'developer',)
+                  'developer', 'avatar')
         read_only_fields = ('is_current_user', 'city', 'is_active', 'developer',)
 
     is_current_user = serializers.SerializerMethodField()
