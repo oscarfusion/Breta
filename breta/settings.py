@@ -150,6 +150,7 @@ JENKINS_TASKS = (
 
 CORS_ORIGIN_WHITELIST = (
     'localhost:4200',
+    'easy.breta.com:4200'
 )
 
 # Static files (CSS, JavaScript, Images)
