@@ -1,4 +1,5 @@
 import os
+import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
@@ -45,6 +46,10 @@ def avatar_upload_to(instance, filename):
     return 'avatars/%d - %s' % (instance.id, filename)
 
 
+def get_referral_code():
+    return str(uuid.uuid4())
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
@@ -65,6 +70,8 @@ class User(AbstractBaseUser, PermissionsMixin):
                     'active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     avatar = models.FileField(upload_to=avatar_upload_to, blank=True, null=True)
+    referral_code = models.CharField(max_length=255, blank=True, null=True)
+    referrer = models.ForeignKey('self', related_name='invited_users', blank=True, null=True)
 
     objects = UserManager()
 
@@ -80,6 +87,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.get_full_name()
 
     def save(self, *args, **kwargs):
+        if not self.referral_code:
+            self.referral_code = get_referral_code()
         if self.__original_is_active is False and self.is_active is True and self.developer.exists():
             email.send_developer_accepted_email(self)
         super(User, self).save(*args, **kwargs)
