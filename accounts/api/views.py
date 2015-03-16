@@ -153,7 +153,7 @@ class EmailViewSet(viewsets.ModelViewSet):
     queryset = Email.objects.all()
 
     def create(self, request, *args, **kwargs):
-        form = EmailForm(request.POST)
+        form = EmailForm(request.data)
         if form.is_valid():
             form.save()
         return Response({
