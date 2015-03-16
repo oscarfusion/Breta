@@ -32,7 +32,15 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ('first_name', 'last_name')
 
     def perform_create(self, serializer):
-        instance = serializer.save()
+        referral_code = serializer.initial_data['referral_code']
+        if referral_code:
+            try:
+                referrer = User.objects.get(referral_code=referral_code)
+            except User.DoesNotExist:
+                referrer = None
+            instance = serializer.save(referrer=referrer, referral_code=None)
+        else:
+            instance = serializer.save()
         password = self.request.DATA.get('password')
         if password:
             # if 'HTTP_REFERER' in self.request.stream.META:
@@ -40,7 +48,7 @@ class UserViewSet(viewsets.ModelViewSet):
             #         instance.is_active = True
             instance.is_active = False
             instance.set_password(password)
-            instance.save()
+        instance.save()
         email.send_welcome_email(instance)
         email.notify_admins_about_registration(instance)
         if not settings.TESTING:
