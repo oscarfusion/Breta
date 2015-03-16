@@ -11,17 +11,17 @@ from rest_framework.response import Response
 
 from .serializers import (
     UserSerializer, DeveloperSerializer, PortfolioProjectSerializer,
-    PortfolioProjectAttachmentSerializer, WebsiteSerializer,
+    PortfolioProjectAttachmentSerializer, WebsiteSerializer, EmailSerializer
 )
 
 from .permissions import (
     UserPermissions, DeveloperPermissions, WebsitePermission, PortfolioProjectPermission,
-    PortfolioProjectAttachmentPermission
+    PortfolioProjectAttachmentPermission, EmailPermissions
 )
-from ..models import User, Developer, PortfolioProject, PortfolioProjectAttachment, Website
+from ..models import User, Developer, PortfolioProject, PortfolioProjectAttachment, Website, Email
 from .. import email
 from .. import mailchimp_api
-from .forms import ResetPasswordConfirmForm
+from .forms import ResetPasswordConfirmForm, EmailForm
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -145,3 +145,17 @@ class ResetPasswordConfirmView(generics.CreateAPIView):
                 'success': True
             }, status=status.HTTP_200_OK)
         return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class EmailViewSet(viewsets.ModelViewSet):
+    serializer_class = EmailSerializer
+    permission_classes = (EmailPermissions,)
+    queryset = Email.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        form = EmailForm(request.POST)
+        if form.is_valid():
+            form.save()
+        return Response({
+                'success': True
+        }, status=status.HTTP_200_OK)

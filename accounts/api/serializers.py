@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from bitfield import BitHandler
 from rest_framework import serializers
 
-from ..models import User, Developer, Website, PortfolioProject, PortfolioProjectAttachment
+from ..models import User, Developer, Website, PortfolioProject, PortfolioProjectAttachment, Email
 
 
 class PortfolioProjectAttachmentSerializer(serializers.ModelSerializer):
@@ -76,3 +76,9 @@ class UserSerializer(serializers.ModelSerializer):
     def get_developer(self, obj):
         dev = obj.developer.first()
         return dev.id if dev else None
+
+
+class EmailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Email
+        fields = ('id', 'email', 'created_at')

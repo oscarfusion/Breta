@@ -13,6 +13,7 @@ from rest_framework.authtoken.models import Token
 from bitfield import BitField
 
 from . import email
+from . import mailchimp_api
 
 
 class UserManager(BaseUserManager):
@@ -195,3 +196,22 @@ class PortfolioProjectAttachment(models.Model):
     @property
     def filename(self):
         return os.path.basename(self.file.name)
+
+
+class Email(models.Model):
+    email = models.EmailField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.email
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            mailchimp_api.subscribe_by_email(self.email)
+        super(Email, self).save(*args, **kwargs)
+
+
+@receiver(post_save, sender=Email)
+def email_post_save(sender, instance, signal, created, **kwargs):
+    if created:
+        mailchimp_api.subscribe_by_email(instance.email)

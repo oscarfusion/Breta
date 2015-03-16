@@ -6,6 +6,8 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 
+from ..models import Email
+
 
 class ResetPasswordConfirmForm(SetPasswordForm):
     uid = forms.CharField(max_length=255, required=True, )
@@ -37,3 +39,9 @@ class ResetPasswordConfirmForm(SetPasswordForm):
     def save(self, commit=True):
         self.user = self.get_user()
         super(ResetPasswordConfirmForm, self).save(commit)
+
+
+class EmailForm(forms.ModelForm):
+    class Meta:
+        model = Email
+        fields = ('email',)

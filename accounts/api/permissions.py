@@ -49,3 +49,11 @@ class PortfolioProjectPermission(DeveloperPermissions):
 class PortfolioProjectAttachmentPermission(DeveloperPermissions):
     def has_object_permission(self, request, view, obj):
         return obj.project.developer.user == request.user
+
+
+class EmailPermissions(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.method == 'POST'
+
+    def has_object_permission(self, request, view, obj):
+        return False

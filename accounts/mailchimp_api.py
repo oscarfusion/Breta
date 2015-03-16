@@ -11,3 +11,12 @@ def subscribe_user(user):
         'FNAME': user.first_name,
         'LNAME': user.last_name
     }, double_optin=False, send_welcome=False, update_existing=True)
+
+
+def subscribe_by_email(email):
+    if settings.TESTING:
+        return
+    mailchimp_api = mailchimp.Mailchimp(settings.MAILCHIMP_API_KEY)
+    mailchimp_api.lists.subscribe(settings.MAILCHIMP_DEFAULT_LIST, {
+        'email': email
+    }, double_optin=False, send_welcome=False, update_existing=True)
