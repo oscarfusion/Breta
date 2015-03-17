@@ -10,7 +10,7 @@ def send_welcome_email(user):
 
 def send_developer_accepted_email(user):
     login_url = '{}/login'.format(settings.DOMAIN)
-    return send_email([user.email], 'You accepted to beta', 'emails/accounts/developer_accepted.html', {'user': user, 'login_url': login_url})
+    return send_email([user.email], 'You accepted to breta', 'emails/accounts/developer_accepted.html', {'user': user, 'login_url': login_url})
 
 
 def send_password_changed_email(user):
@@ -19,3 +19,7 @@ def send_password_changed_email(user):
 
 def notify_admins_about_registration(user):
     return send_email_to_admins('%s joined!' % user.get_full_name(), 'emails/accounts/user_joined.html', {'user': user})
+
+
+def send_invite_email(email, referral_link):
+    return send_email([email], 'Join to breta', 'emails/accounts/invite_user.html', {'referral_link': referral_link})

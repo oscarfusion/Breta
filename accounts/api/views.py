@@ -21,7 +21,7 @@ from .permissions import (
 from ..models import User, Developer, PortfolioProject, PortfolioProjectAttachment, Website, Email
 from .. import email
 from .. import mailchimp_api
-from .forms import ResetPasswordConfirmForm, EmailForm
+from .forms import ResetPasswordConfirmForm, EmailForm, InviteUserForm
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -179,3 +179,18 @@ class EmailViewSet(viewsets.ModelViewSet):
             return Response(EmailSerializer(instance).data, status=status.HTTP_200_OK)
         else:
             return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class InvityByEmailView(generics.CreateAPIView):
+    serializer_class = None
+    permission_classes = (AllowAny,)
+    renderer_classes = (JSONRenderer,)
+
+    def create(self, request, *args, **kwargs):
+        form = InviteUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return Response({
+                'success': True
+            }, status=status.HTTP_200_OK)
+        return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)

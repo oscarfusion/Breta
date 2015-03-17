@@ -63,6 +63,7 @@ urlpatterns = patterns(
     url(r'^api/v1/change-password/', account_views.ChangePasswordView.as_view()),
     url(r'^api/v1/reset-password/$', account_views.ResetPasswordView.as_view()),
     url(r'^api/v1/reset-password/confirm/', account_views.ResetPasswordConfirmView.as_view()),
+    url(r'^api/v1/invite-user/', account_views.InvityByEmailView.as_view()),
     url(r'^tinymce/', include('tinymce.urls')),
 )
 

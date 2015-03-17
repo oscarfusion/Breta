@@ -7,6 +7,7 @@ from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode
 
 from ..models import Email
+from .. import email
 
 
 class ResetPasswordConfirmForm(SetPasswordForm):
@@ -45,3 +46,11 @@ class EmailForm(forms.ModelForm):
     class Meta:
         model = Email
         fields = ('email',)
+
+
+class InviteUserForm(forms.Form):
+    email = forms.EmailField(required=True)
+    referral_link = forms.CharField(required=True)
+
+    def save(self, *args, **kwargs):
+        email.send_invite_email(self.cleaned_data['email'], self.cleaned_data['referral_link'])
