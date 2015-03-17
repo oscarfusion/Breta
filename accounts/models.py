@@ -125,10 +125,8 @@ class Developer(models.Model):
     )
 
     PROJECT_PREFERENCES_FLAGS = (
-        ('lorem', 'Lorem',),
-        ('sit_amet_consecteur', 'Sit Amet Consecteur',),
-        ('ipsum_dolor', 'Ipsum Dolor',),
-        ('adiposcing_elit', 'Adiposcing Elit',),
+        ('small', 'Small',),
+        ('big', 'Big',),
     )
 
     user = models.ForeignKey(User, unique=True, related_name='developer')
