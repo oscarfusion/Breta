@@ -81,4 +81,4 @@ class UserSerializer(serializers.ModelSerializer):
 class EmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Email
-        fields = ('id', 'email', 'created_at')
+        fields = ('id', 'email', 'referral_code', 'created_at')

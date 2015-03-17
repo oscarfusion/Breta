@@ -73,6 +73,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     avatar = models.FileField(upload_to=avatar_upload_to, blank=True, null=True)
     referral_code = models.CharField(max_length=255, blank=True, null=True)
     referrer = models.ForeignKey('self', related_name='invited_users', blank=True, null=True)
+    referrer_email = models.EmailField(blank=True, null=True)
 
     objects = UserManager()
 
@@ -201,11 +202,14 @@ class PortfolioProjectAttachment(models.Model):
 class Email(models.Model):
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    referral_code = models.CharField(max_length=255, blank=True, null=True)
 
     def __unicode__(self):
         return self.email
 
     def save(self, *args, **kwargs):
+        if not self.referral_code:
+            self.referral_code = get_referral_code()
         if not self.pk:
             mailchimp_api.subscribe_by_email(self.email)
         super(Email, self).save(*args, **kwargs)

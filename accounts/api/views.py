@@ -38,7 +38,13 @@ class UserViewSet(viewsets.ModelViewSet):
                 referrer = User.objects.get(referral_code=referral_code)
             except User.DoesNotExist:
                 referrer = None
-            instance = serializer.save(referrer=referrer, referral_code=None)
+
+            try:
+                email_obj = Email.objects.get(referral_code=referral_code)
+            except:
+                email_obj = None
+            referrer_email = email_obj.email if email_obj else None
+            instance = serializer.save(referrer=referrer, referral_code=None, referrer_email=referrer_email)
         else:
             instance = serializer.save()
         password = self.request.DATA.get('password')
@@ -48,7 +54,14 @@ class UserViewSet(viewsets.ModelViewSet):
             #         instance.is_active = True
             instance.is_active = False
             instance.set_password(password)
+        try:
+            email_obj = Email.objects.get(email=instance.email)
+        except Email:
+            email_obj = None
+        if email_obj:
+            instance.referral_code = email_obj.referral_code
         instance.save()
+        User.objects.filter(referrer_email=instance.email).update(referrer=instance)
         email.send_welcome_email(instance)
         email.notify_admins_about_registration(instance)
         if not settings.TESTING:
@@ -154,8 +167,15 @@ class EmailViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         form = EmailForm(request.data)
+        instance = None
         if form.is_valid():
-            form.save()
-        return Response({
-                'success': True
-        }, status=status.HTTP_200_OK)
+            instance = form.save()
+        else:
+            try:
+                instance = Email.objects.get(email=form.data['email'])
+            except Email.DoesNotExist:
+                instance = None
+        if instance:
+            return Response(EmailSerializer(instance).data, status=status.HTTP_200_OK)
+        else:
+            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
