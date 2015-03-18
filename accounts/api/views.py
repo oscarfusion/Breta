@@ -33,7 +33,8 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ('first_name', 'last_name')
 
     def perform_create(self, serializer):
-        referral_code = serializer.initial_data['referral_code']
+        # referral_code = serializer.initial_data['referral_code']
+        referral_code = serializer.initial_data.get('referral_code', None)
         if referral_code:
             try:
                 referrer = User.objects.get(referral_code=referral_code)
@@ -57,7 +58,7 @@ class UserViewSet(viewsets.ModelViewSet):
             instance.set_password(password)
         try:
             email_obj = Email.objects.get(email=instance.email)
-        except Email:
+        except Email.DoesNotExist:
             email_obj = None
         if email_obj:
             instance.referral_code = email_obj.referral_code

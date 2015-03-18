@@ -28,7 +28,7 @@ class MilestoneFactory(factory.django.DjangoModelFactory):
     description = factory.Sequence(lambda n: 'My description %d' % n)
     due_date = FuzzyDate(timezone.now().date())
     project = factory.SubFactory('projects.tests.factories.ProjectFactory')
-    amount = FuzzyDecimal(100)
+    # amount = FuzzyDecimal(100)
 
 
 class TaskFactory(factory.django.DjangoModelFactory):
@@ -40,6 +40,8 @@ class TaskFactory(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: 'Test name %d' % n)
     description = factory.Sequence(lambda n: 'Test description %d' % n)
     due_date = FuzzyDate(timezone.now().date())
+    assigned = factory.SubFactory('accounts.tests.factories.UserFactory')
+    amount = FuzzyDecimal(100)
 
 
 class ProjectMemberFactory(factory.django.DjangoModelFactory):

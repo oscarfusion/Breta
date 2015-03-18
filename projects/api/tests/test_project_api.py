@@ -89,7 +89,7 @@ class ProjectApiTestCase(APITestCase):
 
 class MilestonesAPITestCase(APITestCase):
     def fake_data(self, project=None, name='Test milestone', description='Milestone description',
-                  amount=123.45, status=Milestone.STATUS_IN_PROGRESS, paid_status=Milestone.PAID_STATUS_DUE,
+                  status=Milestone.STATUS_IN_PROGRESS, paid_status=Milestone.PAID_STATUS_DUE,
                   due_date=timezone.now().date()):
         if project is None:
             project = ProjectFactory()
@@ -97,7 +97,6 @@ class MilestonesAPITestCase(APITestCase):
             'project': project.id,
             'name': name,
             'description': description,
-            'amount': amount,
             'status': status,
             'paid_status': paid_status,
             'due_date': due_date
@@ -135,7 +134,7 @@ class MilestonesAPITestCase(APITestCase):
         self.assertEqual(milestone['description'], data['description'])
         self.assertEqual(milestone['status'], Milestone.STATUS_IN_PROGRESS)
         self.assertEqual(milestone['paid_status'], data['paid_status'])
-        self.assertEqual(milestone['amount'], str(data['amount']))
+        self.assertEqual(milestone['amount'], 0)
         self.assertEqual(milestone['project'], data['project'])
         url = reverse('activity-list')
         response = self.client.get(url, {'project': project.id})
