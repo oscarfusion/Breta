@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import PasswordChangeForm, PasswordResetForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
 from rest_framework import filters
 from rest_framework import generics
@@ -21,7 +21,7 @@ from .permissions import (
 from ..models import User, Developer, PortfolioProject, PortfolioProjectAttachment, Website, Email
 from .. import email
 from .. import mailchimp_api
-from .forms import ResetPasswordConfirmForm, EmailForm, InviteUserForm
+from .forms import ResetPasswordConfirmForm, EmailForm, InviteUserForm, ResetPasswordForm
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -132,7 +132,7 @@ class ResetPasswordView(generics.CreateAPIView):
     renderer_classes = (JSONRenderer,)
 
     def create(self, request, *args, **kwargs):
-        form = PasswordResetForm(request.POST)
+        form = ResetPasswordForm(request.POST)
         if not form.is_valid():
             return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
         form.save(

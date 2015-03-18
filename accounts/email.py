@@ -27,3 +27,7 @@ def send_invite_email(email, referral_link):
 
 def send_user_subscribed_email(email):
     return send_email([email], 'Subscribing to breta', 'emails/accounts/user_subscribed.html', {})
+
+
+def send_password_reset_email(email, context):
+    return send_email([email], 'Password reset on breta', 'emails/accounts/reset_password.html', context)
