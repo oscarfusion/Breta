@@ -21,6 +21,7 @@ from .permissions import (
 from ..models import User, Developer, PortfolioProject, PortfolioProjectAttachment, Website, Email
 from .. import email
 from .. import mailchimp_api
+from ..utils import get_client_ip
 from .forms import ResetPasswordConfirmForm, EmailForm, InviteUserForm, ResetPasswordForm
 
 
@@ -60,6 +61,7 @@ class UserViewSet(viewsets.ModelViewSet):
             email_obj = None
         if email_obj:
             instance.referral_code = email_obj.referral_code
+        instance.ip_address = get_client_ip(self.request)
         instance.save()
         User.objects.filter(referrer_email=instance.email).update(referrer=instance)
         email.send_welcome_email(instance)

@@ -28,7 +28,7 @@ DEBUG = False
 
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['easy.breta.com']
 
 
 # Application definition
@@ -69,14 +69,14 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
-    'pipeline.middleware.MinifyHTMLMiddleware',
+    # 'pipeline.middleware.MinifyHTMLMiddleware',
 )
 
 ROOT_URLCONF = 'breta.urls'
 
 WSGI_APPLICATION = 'breta.wsgi.application'
 
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+# STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "breta/static"),
@@ -85,7 +85,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'pipeline.finders.PipelineFinder',
+    # 'pipeline.finders.PipelineFinder',
 )
 
 # Database
@@ -167,7 +167,7 @@ MAILCHIMP_DEFAULT_LIST = os.environ.get('MAILCHIMP_DEFAULT_LIST')
 
 from static_settings import *  # noqa
 
-DEFAULT_FROM_EMAIL = 'support@breta.com'
+DEFAULT_FROM_EMAIL = 'Breta team <support@breta.com>'
 ADMINS = ['elliot@breta.com']
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 

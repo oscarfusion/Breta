@@ -75,6 +75,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     referrer = models.ForeignKey('self', related_name='invited_users', blank=True, null=True)
     referrer_email = models.EmailField(blank=True, null=True)
 
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+
     objects = UserManager()
 
     USERNAME_FIELD = 'email'

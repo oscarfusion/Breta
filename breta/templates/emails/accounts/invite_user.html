@@ -1,13 +1,13 @@
 {% extends 'emails/base.html' %}
 
 {% block title %}
-    Hello!
+    Hi!
 {% endblock %}
 
 {% block content %}
 
-    <p>Your invite code to join BRETA!</p>
+    <p>Your friend invited you to join Breta!</p>
 
-    <p>Please, register using this link: <a href="{{ referral_link }}">{{ referral_link }}</a></p>
+    <p>Register using their link <a href="{{ referral_link }}">{{ referral_link }}</a>. You'll both earn discounts on your project!</p>
 
 {% endblock %}

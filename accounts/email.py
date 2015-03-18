@@ -10,11 +10,11 @@ def send_welcome_email(user):
 
 def send_developer_accepted_email(user):
     login_url = '{}/login'.format(settings.DOMAIN)
-    return send_email([user.email], 'You accepted to breta', 'emails/accounts/developer_accepted.html', {'user': user, 'login_url': login_url})
+    return send_email([user.email], 'You\'re accepted!', 'emails/accounts/developer_accepted.html', {'user': user, 'login_url': login_url})
 
 
 def send_password_changed_email(user):
-    return send_email([user.email], 'You password was changed', 'emails/accounts/password_changed.html', {'user': user})
+    return send_email([user.email], 'You password on Breta was changed', 'emails/accounts/password_changed.html', {'user': user})
 
 
 def notify_admins_about_registration(user):
@@ -22,11 +22,11 @@ def notify_admins_about_registration(user):
 
 
 def send_invite_email(email, referral_link):
-    return send_email([email], 'Join to breta', 'emails/accounts/invite_user.html', {'referral_link': referral_link})
+    return send_email([email], 'Thanks, and welcome to Breta :)', 'emails/accounts/invite_user.html', {'referral_link': referral_link})
 
 
 def send_user_subscribed_email(email):
-    return send_email([email], 'Subscribing to breta', 'emails/accounts/user_subscribed.html', {})
+    return send_email([email], 'Thanks for subscribing to our newsletter!', 'emails/accounts/user_subscribed.html', {})
 
 
 def send_password_reset_email(email, context):

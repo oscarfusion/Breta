@@ -23,6 +23,11 @@ server {
         proxy_set_header SCRIPT_NAME /app;
     }
 
+    location /app/static {
+        autoindex on;
+        alias /www/backend/breta/staticfiles;
+    }
+
     root /www/frontend/dist;
     index index.html;
     location / {
