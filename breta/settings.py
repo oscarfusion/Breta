@@ -45,7 +45,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'django_jenkins',
-    # 'pipeline',
+    'pipeline',
     'widget_tweaks',
     'corsheaders',
     'constance',
