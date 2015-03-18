@@ -201,6 +201,7 @@ class Email(models.Model):
     email = models.EmailField(unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     referral_code = models.CharField(max_length=255, blank=True, null=True)
+    from_landing = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.email
@@ -210,6 +211,8 @@ class Email(models.Model):
             self.referral_code = get_referral_code()
         if not self.pk:
             mailchimp_api.subscribe_by_email(self.email)
+            if self.from_landing:
+                email.send_user_subscribed_email(self.email)
         super(Email, self).save(*args, **kwargs)
 
 

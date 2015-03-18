@@ -45,7 +45,7 @@ class ResetPasswordConfirmForm(SetPasswordForm):
 class EmailForm(forms.ModelForm):
     class Meta:
         model = Email
-        fields = ('email',)
+        fields = ('email', 'from_landing')
 
 
 class InviteUserForm(forms.Form):

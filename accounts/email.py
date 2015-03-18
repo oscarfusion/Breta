@@ -23,3 +23,7 @@ def notify_admins_about_registration(user):
 
 def send_invite_email(email, referral_link):
     return send_email([email], 'Join to breta', 'emails/accounts/invite_user.html', {'referral_link': referral_link})
+
+
+def send_user_subscribed_email(email):
+    return send_email([email], 'Subscribing to breta', 'emails/accounts/user_subscribed.html', {})
