@@ -1,5 +1,9 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from djorm_pgjson.fields import JSONField
+
+from . import utils
 
 
 class Customer(models.Model):
@@ -128,3 +132,19 @@ class Transaction(models.Model):
             return self.payout_method.user
         else:
             return self.milestone.project.user
+
+    # def save(self, *args, **kwargs):
+    #     if not self.pk:
+    #         self.displayed_at = self.created_at
+    #         if self.transaction_type == self.MILESTONE:
+    #             self.displayed_at = utils.transaction_display_at(self.created_at)
+    #     super(Transaction, self).save(*args, **kwargs)
+
+
+@receiver(post_save, sender=Transaction)
+def transaction_post_save(sender, instance, signal, created, **kwargs):
+    if created:
+        instance.displayed_at = instance.created_at
+        if instance.transaction_type == instance.MILESTONE:
+            instance.displayed_at = utils.transaction_display_at(instance.created_at)
+        instance.save()
