@@ -173,6 +173,7 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_CONFIG = {
     'BRETA_FEE': (10, 'Percent of price users pays as remuneration for using Breta'),
+    'DISABLE_PAYOUTS': (False, 'Disable payouts and withdraws.'),
 }
 
 DOMAIN = 'https://easy.breta.com'

@@ -131,6 +131,7 @@ class UserHasActiveCreditCardViewSet(viewsets.ReadOnlyModelViewSet):
         except CreditCard.DoesNotExist:
             method = None
         res_data = {
-            'hasCard': method is not None
+            'hasCard': method is not None,
+            'isDeveloper': request.user.developer.first() is not None
         }
         return Response(res_data, status=status.HTTP_200_OK)
