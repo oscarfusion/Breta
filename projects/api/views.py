@@ -158,7 +158,8 @@ class ProjectMemberViewSet(viewsets.ModelViewSet):
 class QuoteViewSet(viewsets.ModelViewSet):
     queryset = Quote.objects.filter(
         Q(status=Quote.STATUS_PENDING_OWNER) |
-        Q(status=Quote.STATUS_ACCEPTED)
+        Q(status=Quote.STATUS_ACCEPTED) |
+        Q(status=Quote.STATUS_PENDING_MEMBER)
     ).select_related().all()
     serializer_class = QuoteSerializer
     permission_classes = (QuotePermission,)

@@ -20,5 +20,5 @@ class PayoutMethodSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
-        fields = ('id', 'credit_card', 'created_at', 'updated_at', 'amount', 'transaction_type', 'milestone', 'milestone_name', 'project_name')
-        read_only_fields = ('created_at', 'updated_at', 'id')
+        fields = ('id', 'credit_card', 'created_at', 'updated_at', 'amount', 'transaction_type', 'milestone', 'milestone_name', 'project_name', 'displayed_at')
+        read_only_fields = ('created_at', 'updated_at', 'id', 'displayed_at')

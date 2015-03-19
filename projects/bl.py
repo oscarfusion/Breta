@@ -4,7 +4,7 @@ from . import email
 def quote_submitted_to_project_owner(quote):
     from .models import Quote
     project = quote.project_member.project
-    developer = quote.project_member.developer.first()
+    developer = quote.project_member.member.developer.first()
     submitted_quotes_count = Quote.objects.filter(
         Quote.condition_status_project(project),
         Quote.condition_status_developer_type(developer.type),
