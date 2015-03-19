@@ -10,3 +10,4 @@ mediafiles/
 htmlcov/
 *.sublime-project
 *.sublime-workspace
+staticfiles/
