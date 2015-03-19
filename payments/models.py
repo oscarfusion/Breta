@@ -94,12 +94,14 @@ class Transaction(models.Model):
     MILESTONE = 'milestone'
     CREDIT = 'credit'
     PAYOUT = 'payout'
+    REFERRAL_PAYMENT = 'referral-payment'
 
     TRANSACTION_TYPE_CHOICES = (
         (ESCROW, 'Payment to Escrow'),
         (MILESTONE, 'Payment to Milestone'),
         (CREDIT, 'Credit'),
         (PAYOUT, 'Payout'),
+        (REFERRAL_PAYMENT, 'Referral payment'),
     )
 
     payout_method = models.ForeignKey(PayoutMethod, related_name='transactions', blank=True, null=True)
@@ -108,7 +110,8 @@ class Transaction(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     stripe_id = models.CharField(max_length=255, null=True, blank=True)
     extra_data = JSONField()
-
+    user = models.ForeignKey('accounts.User', null=True, blank=True)
+    user_email = models.EmailField(null=True, blank=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     transaction_type = models.CharField(max_length=255, choices=TRANSACTION_TYPE_CHOICES)
     milestone = models.ForeignKey('projects.Milestone', null=True, blank=True)
