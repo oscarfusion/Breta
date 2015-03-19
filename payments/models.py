@@ -108,6 +108,7 @@ class Transaction(models.Model):
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     transaction_type = models.CharField(max_length=255, choices=TRANSACTION_TYPE_CHOICES)
     milestone = models.ForeignKey('projects.Milestone', null=True, blank=True)
+    displayed_at = models.DateTimeField(null=True, blank=True)
 
     def __unicode__(self):
         return u'Transaction #{}'.format(self.pk)
