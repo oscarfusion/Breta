@@ -22,7 +22,7 @@ def notify_admins_about_registration(user):
 
 
 def send_invite_email(email, referral_link):
-    return send_email([email], 'Thanks, and welcome to Breta :)', 'emails/accounts/invite_user.html', {'referral_link': referral_link})
+    return send_email([email], 'A friend sent you an invitation to Breta', 'emails/accounts/invite_user.html', {'referral_link': referral_link})
 
 
 def send_user_subscribed_email(email):
