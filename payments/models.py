@@ -133,18 +133,11 @@ class Transaction(models.Model):
         else:
             return self.milestone.project.user
 
-    # def save(self, *args, **kwargs):
-    #     if not self.pk:
-    #         self.displayed_at = self.created_at
-    #         if self.transaction_type == self.MILESTONE:
-    #             self.displayed_at = utils.transaction_display_at(self.created_at)
-    #     super(Transaction, self).save(*args, **kwargs)
-
 
 @receiver(post_save, sender=Transaction)
 def transaction_post_save(sender, instance, signal, created, **kwargs):
     if created:
         instance.displayed_at = instance.created_at
-        if instance.transaction_type == instance.MILESTONE:
+        if instance.transaction_type in [instance.MILESTONE, instance.CREDIT, instance, instance.PAYOUT]:
             instance.displayed_at = utils.transaction_display_at(instance.created_at)
         instance.save()
