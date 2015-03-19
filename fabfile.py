@@ -6,7 +6,7 @@ RSYNC_EXCLUDES = ['local_settings.py', '.git', '*.pyc']
 
 
 def rsync():
-    rsync_project(remote_dir='/www/backend', exclude=RSYNC_EXCLUDES)
+    rsync_project(remote_dir='/www/backend', exclude=RSYNC_EXCLUDES, delete=True)
 
 
 def install_dependencies():
