@@ -76,16 +76,16 @@ class CreateTransactionTestCase(TestCase):
     """
     @todo fix test, when will be correct paying for milestones
     """
-    # @patch('payments.stripe_api.create_transaction', lambda *a, **k: stripe_transaction)
-    # def test_partial_payment(self):
-    #     milestone = MilestoneFactory(amount=Decimal(100))
-    #     user = milestone.project.user
-    #     customer = CustomerFactory(user=user)
-    #     credit_card = CreditCardFactory(customer=customer)
-    #     TransactionFactory(credit_card=credit_card, transaction_type=Transaction.ESCROW, amount=Decimal(80))
-    #     create_transaction(credit_card.id, user, None, transaction_type=Transaction.MILESTONE, milestone_id=milestone.id)
-    #     self.assertEqual(Transaction.objects.count(), 3)
-    #     Transaction.objects.filter(amount=Decimal(80), transaction_type=Transaction.MILESTONE, credit_card__isnull=True).exists()
-    #     Transaction.objects.filter(amount=Decimal(20), transaction_type=Transaction.MILESTONE, credit_card=credit_card).exists()
-    #     milestone = Milestone.objects.get(pk=milestone.id)
-    #     self.assertTrue(milestone.is_paid())
+    @patch('payments.stripe_api.create_transaction', lambda *a, **k: stripe_transaction)
+    def test_partial_payment(self):
+        milestone = MilestoneFactory(amount=Decimal(100))
+        user = milestone.project.user
+        customer = CustomerFactory(user=user)
+        credit_card = CreditCardFactory(customer=customer)
+        TransactionFactory(credit_card=credit_card, transaction_type=Transaction.ESCROW, amount=Decimal(80))
+        create_transaction(credit_card.id, user, None, transaction_type=Transaction.MILESTONE, milestone_id=milestone.id)
+        self.assertEqual(Transaction.objects.count(), 2)
+        Transaction.objects.filter(amount=Decimal(80), transaction_type=Transaction.MILESTONE, credit_card__isnull=True).exists()
+        Transaction.objects.filter(amount=Decimal(20), transaction_type=Transaction.MILESTONE, credit_card=credit_card).exists()
+        milestone = Milestone.objects.get(pk=milestone.id)
+        self.assertTrue(milestone.is_paid())
