@@ -75,6 +75,7 @@ class Project(models.Model):
                 sender=self.manager,
                 subject='New manager %s' % self.name,
                 body='I am new manager in %s' % self.name,
+                sent_at=timezone.now(),
             )
             msg.save()
             recipient = MessageRecipient(message=msg, recipient=self.user)
