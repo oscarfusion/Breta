@@ -1,0 +1,5 @@
+- name: create data directory for redis
+  file: path=/data/redis state=directory mode=6777
+
+- name: run redis container
+  docker: image=redis:2.8 ports=6379:6379 name=myredis restart_policy="always" volumes="/data/redis:/data"

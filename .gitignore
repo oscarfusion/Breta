@@ -11,3 +11,4 @@ htmlcov/
 *.sublime-project
 *.sublime-workspace
 staticfiles/
+celerybeat-schedule

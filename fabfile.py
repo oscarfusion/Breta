@@ -2,7 +2,7 @@ from fabric.api import env, run, prefix
 from fabric.contrib.project import rsync_project
 
 env.hosts = ['root@104.131.243.227']
-RSYNC_EXCLUDES = ['local_settings.py', '.git', '*.pyc', 'htmlcov', 'mediafiles', 'server']
+RSYNC_EXCLUDES = ['local_settings.py', '.git', '*.pyc', 'htmlcov', 'mediafiles', 'server', 'celerybeat-schedule']
 
 
 def rsync():
