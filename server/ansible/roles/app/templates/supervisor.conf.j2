@@ -2,3 +2,26 @@
 command = /www/backend/breta/gunicorn_start.sh
 user = root
 redirect_stderr = true
+
+
+[program:breta_celery]
+command=/www/backend/venv/bin/celery worker --app=breta.celery -l debug
+directory=/www/backend/breta
+user = celery
+stdout_logfile=/var/log/breta_celeryd.log
+stderr_logfile=/var/log/breta_celeryd.log
+autostart=true
+autorestart=true
+startsecs=10
+stopwaitsecs=600
+
+[program:breta_beat]
+command=/www/backend/venv/bin/celery -A breta.celery beat -s /home/celery/celerybeat-schedule --pidfile=/home/celery/celerybeat.pid
+directory=/www/backend/breta
+user = celery
+stdout_logfile=/var/log/breta_celery_beat.log
+stderr_logfile=/var/log/breta_celery_beat.log
+autostart=true
+autorestart=true
+startsecs=10
+stopwaitsecs=600

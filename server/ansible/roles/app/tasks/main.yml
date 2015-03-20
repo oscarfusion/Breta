@@ -1,3 +1,7 @@
+- group: name=celery
+- user: name=celery group=celery
+- file: path=/home/celery state=directory owner=celery group=celery mode=774
+
 - name: install libraries
   apt: name={{ item }} state=present update_cache=yes
   with_items:
