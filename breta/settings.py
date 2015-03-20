@@ -54,6 +54,7 @@ INSTALLED_APPS = (
 
     'accounts',
     'activities',
+    'core',
     'breta_messages',
     'projects',
     'payments',
@@ -181,6 +182,8 @@ CONSTANCE_CONFIG = {
 
 DOMAIN = 'https://easy.breta.com'
 API_DOMAIN = 'https://easy.breta.com/app'
+
+BROKER_URL = 'redis://localhost:6379/0'
 
 try:
     from local_settings import *  # noqa
