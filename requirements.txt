@@ -1,3 +1,4 @@
+dj-static==0.0.6
 dj_database_url==0.3.0
 django-annoying==0.8.0
 django-cities-light==3.0.2
