@@ -9,6 +9,7 @@ from django.db.models.signals import post_save
 from django.utils import timezone
 from django.utils.text import slugify
 from constance import config
+from bitfield import BitField
 
 from accounts.models import User
 
@@ -322,11 +323,22 @@ class Quote(models.Model):
         (STATUS_ACCEPTED, 'Accepted'),
     )
 
+    REFUSE_NOT_AVAILABLE = 'not-available'
+    REFUSE_BUDGET_IS_UNREASONABLE = 'not-available'
+    REFUSE_DONT_LIKE_PROJECT = 'wrong-project-type'
+
+    REFUSE_FLAGS = (
+        (REFUSE_NOT_AVAILABLE, 'Im\' not available'),
+        (REFUSE_BUDGET_IS_UNREASONABLE, 'Budget is unreasonable'),
+        (REFUSE_DONT_LIKE_PROJECT, 'This isn\'t the type of project I like'),
+    )
+
     project_member = models.ForeignKey(ProjectMember, related_name='quotes')
     amount = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default=STATUS_PENDING_MEMBER)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    refuse_reasons = BitField(flags=REFUSE_FLAGS, default=0)
 
     def __unicode__(self):
         return u'%s - %s' % (self.project_member.project.name if self.project_member and self.project_member.project else None, self.project_member.member.get_full_name() if self.project_member and self.project_member.member else None)
