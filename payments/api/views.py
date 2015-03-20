@@ -91,9 +91,13 @@ class TransactionViewSet(viewsets.ModelViewSet):
             obj = self.perform_create(serializer)
         except StripeError as e:
             return Response({'credit_card': e.message}, status=status.HTTP_400_BAD_REQUEST)
-        serializer.instance = obj
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        if obj is not None:
+            serializer.instance = obj
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response({
+            'success': True
+        }, status=status.HTTP_201_CREATED)
 
     def perform_create(self, serializer):
         instance = bl.create_transaction(self.request.data.get('credit_card'), self.request.user, self.request.data.get('amount'), self.request.data['transaction_type'], self.request.data.get('milestone'))

@@ -1,13 +1,13 @@
 from decimal import Decimal
 from django.core.exceptions import PermissionDenied
 from django.test import TestCase
+from constance import config
 from mock import patch, Mock
 
 from accounts.tests.factories import UserFactory
-from projects.models import Milestone
 from projects.tests.factories import MilestoneFactory, TaskFactory
-from .factories import CreditCardFactory, CustomerFactory, TransactionFactory
-from ..bl import create_transaction
+from .factories import CreditCardFactory, CustomerFactory
+from ..bl import create_transaction, get_user_balance, get_fee_and_referrer_amount
 from ..exceptions import PaymentException
 from ..models import Transaction
 
@@ -38,11 +38,14 @@ class CreateTransactionTestCase(TestCase):
         user = milestone.project.user
         customer = CustomerFactory(user=user)
         credit_card = CreditCardFactory(customer=customer)
-        transaction = create_transaction(credit_card.id, user, Decimal(100), transaction_type=Transaction.MILESTONE, milestone_id=milestone.id)
-        self.assertEqual(transaction.amount, Decimal(100))
+        create_transaction(credit_card.id, user, Decimal(300), transaction_type=Transaction.ESCROW, milestone_id=None)
+        total_amount = Decimal(100)
+        create_transaction(credit_card.id, user, total_amount, transaction_type=Transaction.MILESTONE, milestone_id=milestone.id)
+        final_amount = total_amount - Decimal(str(total_amount * 1 / config.BRETA_FEE))
+        transaction = Transaction.objects.filter(milestone__id=milestone.id).first()
+        self.assertEqual(transaction.amount, final_amount)
         self.assertEqual(transaction.milestone_id, milestone.id)
         self.assertEqual(transaction.transaction_type, Transaction.MILESTONE)
-        self.assertEqual(transaction.stripe_id, 'transaction_id')
 
     def test_create_milestone_from_escrow_hould_not_be_allowed_for_amount_more_than_in_escrow(self):
         user = UserFactory()
@@ -51,18 +54,39 @@ class CreateTransactionTestCase(TestCase):
 
     @patch('payments.stripe_api.create_transaction', lambda *a, **k: stripe_transaction)
     def test_for_milestone_should_use_milestone_amount(self):
-        milestone = MilestoneFactory(amount=Decimal(1000))
+        milestone = MilestoneFactory()
         milestone.save()
         task = TaskFactory(milestone=milestone, amount=Decimal(1000))
         task.save()
         user = milestone.project.user
         customer = CustomerFactory(user=user)
         credit_card = CreditCardFactory(customer=customer)
-        transaction = create_transaction(credit_card.id, user, Decimal(100), transaction_type=Transaction.MILESTONE, milestone_id=milestone.id)
-        self.assertEqual(transaction.amount, Decimal(1000))
+        total_amount = Decimal(1000)
+        final_amount = total_amount - Decimal(str(total_amount * 1 / config.BRETA_FEE))
+        create_transaction(credit_card.id, user, Decimal(1500), transaction_type=Transaction.ESCROW, milestone_id=None)
+        create_transaction(credit_card.id, user, Decimal(1000), transaction_type=Transaction.MILESTONE, milestone_id=milestone.id)
+        transaction = Transaction.objects.filter(milestone__id=milestone.id).first()
+        self.assertEqual(transaction.amount, final_amount)
         self.assertEqual(transaction.milestone_id, milestone.id)
         self.assertEqual(transaction.transaction_type, Transaction.MILESTONE)
-        self.assertEqual(transaction.stripe_id, 'transaction_id')
+
+    @patch('payments.stripe_api.create_transaction', lambda *a, **k: stripe_transaction)
+    def test_payout_transaction(self):
+        milestone = MilestoneFactory()
+        milestone.save()
+        assigned = UserFactory()
+        task = TaskFactory(milestone=milestone, amount=Decimal(1000), assigned=assigned)
+        task.save()
+        user = milestone.project.user
+        customer = CustomerFactory(user=user)
+        credit_card = CreditCardFactory(customer=customer)
+        create_transaction(credit_card.id, user, Decimal(1500), transaction_type=Transaction.ESCROW, milestone_id=None)
+        assigned_balance = get_user_balance(assigned.id)
+        self.assertEqual(assigned_balance, 0)
+        create_transaction(credit_card.id, user, Decimal(1000), transaction_type=Transaction.MILESTONE, milestone_id=milestone.id)
+        expected_amount = task.amount - Decimal(str(task.amount * config.BRETA_FEE / 100))
+        assigned_balance = get_user_balance(assigned.id)
+        self.assertEqual(assigned_balance, expected_amount)
 
     def test_escrow_without_credit_card_should_not_be_possible(self):
         user = UserFactory()
@@ -73,19 +97,47 @@ class CreateTransactionTestCase(TestCase):
         card = CreditCardFactory()
         self.assertRaises(PermissionDenied, create_transaction, card.id, user, Decimal(100), transaction_type=Transaction.ESCROW)
 
-    """
-    @todo fix test, when will be correct paying for milestones
-    """
+
+class TestEscrowAmount(TestCase):
     @patch('payments.stripe_api.create_transaction', lambda *a, **k: stripe_transaction)
-    def test_partial_payment(self):
-        milestone = MilestoneFactory(amount=Decimal(100))
-        user = milestone.project.user
+    def test_escrow_amount_equals_zero(self):
+        user = UserFactory()
+        amount = get_user_balance(user.id)
+        self.assertEqual(amount, Decimal(0))
+
+    @patch('payments.stripe_api.create_transaction', lambda *a, **k: stripe_transaction)
+    def test_escrow_amount_equals_number(self):
+        user = UserFactory()
         customer = CustomerFactory(user=user)
         credit_card = CreditCardFactory(customer=customer)
-        TransactionFactory(credit_card=credit_card, transaction_type=Transaction.ESCROW, amount=Decimal(80))
-        create_transaction(credit_card.id, user, None, transaction_type=Transaction.MILESTONE, milestone_id=milestone.id)
-        self.assertEqual(Transaction.objects.count(), 2)
-        Transaction.objects.filter(amount=Decimal(80), transaction_type=Transaction.MILESTONE, credit_card__isnull=True).exists()
-        Transaction.objects.filter(amount=Decimal(20), transaction_type=Transaction.MILESTONE, credit_card=credit_card).exists()
-        milestone = Milestone.objects.get(pk=milestone.id)
-        self.assertTrue(milestone.is_paid())
+        total_amount = Decimal(1000)
+        create_transaction(credit_card.id, user, total_amount, transaction_type=Transaction.ESCROW, milestone_id=None)
+        amount = get_user_balance(user.id)
+        self.assertEqual(amount, total_amount)
+
+    @patch('payments.stripe_api.create_transaction', lambda *a, **k: stripe_transaction)
+    def test_two_escrow_payments(self):
+        user = UserFactory()
+        customer = CustomerFactory(user=user)
+        credit_card = CreditCardFactory(customer=customer)
+        total_amount_1 = Decimal(1000)
+        total_amount_2 = Decimal(2000)
+        create_transaction(credit_card.id, user, total_amount_1, transaction_type=Transaction.ESCROW, milestone_id=None)
+        create_transaction(credit_card.id, user, total_amount_2, transaction_type=Transaction.ESCROW, milestone_id=None)
+        amount = get_user_balance(user.id)
+        self.assertEqual(amount, total_amount_1 + total_amount_2)
+
+
+class TestCalculatingFeeAndReferralAmount(TestCase):
+    def test_raises_assertion_error(self):
+        amount = Decimal(0.0)
+        self.assertRaises(AssertionError, get_fee_and_referrer_amount, amount)
+
+    def test_expected_results(self):
+        amount = Decimal(100)
+        expected_total_fee = amount * Decimal(str(config.BRETA_FEE / 100.0))
+        expected_referrer_amount = amount * Decimal(str(config.REFERRAL_TAX_PERCENT / 100.0))
+        expected_final_fee = expected_total_fee - expected_referrer_amount
+        fee, referral_amount = get_fee_and_referrer_amount(amount)
+        self.assertEqual(expected_final_fee, fee)
+        self.assertEqual(expected_referrer_amount, referral_amount)

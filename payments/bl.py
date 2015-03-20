@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
-from constance import settings
+from constance import config
 
 from accounts.models import User
 from projects.models import Milestone
@@ -13,8 +13,6 @@ from .models import Transaction, CreditCard, PayoutMethod
 
 
 def get_user_balance(user_id):
-    # escrow_sum = Transaction.objects.filter(credit_card__customer__user_id=user_id, transaction_type=Transaction.ESCROW).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
-    # paid_to_milestones_sum = Transaction.objects.filter(credit_card__customer__user_id=user_id, transaction_type=Transaction.MILESTONE, credit_card__isnull=True).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
     escrow_sum = Transaction.objects.filter(receiver__id=user_id).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
     referral_sum = Transaction.objects.filter(referrer__id=user_id).aggregate(Sum('referrer_amount')).get('referrer_amount__sum') or Decimal(0)
     paid_sum = Transaction.objects.filter(payer__id=user_id).aggregate(Sum('amount')).get('amount_sum') or Decimal(0)
@@ -22,8 +20,8 @@ def get_user_balance(user_id):
 
 
 def get_fee_and_referrer_amount(amount):
-    total_fee = amount * Decimal(str(1.0 / settings.BRETA_FEE))
-    referer_amount = amount * Decimal(str(1.0 / settings.REFERRAL_TAX_PERCENT))
+    total_fee = amount * Decimal(str(config.BRETA_FEE / 100.0))
+    referer_amount = amount * Decimal(str(config.REFERRAL_TAX_PERCENT / 100.0))
     final_fee = total_fee - referer_amount
     assert final_fee > 0, (amount, final_fee)
     return final_fee, referer_amount
@@ -35,6 +33,8 @@ def create_transaction(credit_card_id, user, amount=None, transaction_type=Trans
         email.send_payment_confirmation_email(transaction)
     elif transaction_type == Transaction.MILESTONE:
         transaction = create_milestone_transaction(credit_card_id, user, milestone_id)
+    elif transaction_type == Transaction.PAYOUT:
+        transaction = create_payout_transaction(user, amount)
     else:
         raise NotImplementedError()
     return transaction
@@ -75,7 +75,7 @@ def create_milestone_transaction(credit_card_id, user, milestone_id):
         if user.referrer:
             fee, referrer_amount = get_fee_and_referrer_amount(task_amount)
         else:
-            fee = task_amount * Decimal(str(1.0 / settings.BRETA_FEE))
+            fee = task_amount * Decimal(str(config.BRETA_FEE / 100.0))
             referrer_amount = 0
         task_amount -= fee
         transaction = Transaction.objects.create(
@@ -87,7 +87,8 @@ def create_milestone_transaction(credit_card_id, user, milestone_id):
             fee=fee,
             referrer_amount=referrer_amount,
             referrer=user.referrer,
-            referrer_email=user.referrer_email
+            referrer_email=user.referrer_email,
+            milestone_id=milestone_id
         )
         email.send_payment_confirmation_email(transaction)
     milestone.set_as_paid()
@@ -95,16 +96,15 @@ def create_milestone_transaction(credit_card_id, user, milestone_id):
     return None
 
 
-def create_milestone_transfer(milestone):
-    amount = milestone.amount
-    payout_method = PayoutMethod.objects.filter(user=milestone.assigned, is_active=True).first()
-    if payout_method:
-        transfer = stripe_api.create_transfer(amount, payout_method.stripe_recipient_id, 'Transfer for milestone {}'.format(milestone.id))
+def create_payout_transaction(user, amount):
+    payout_method = PayoutMethod.objects.filter(user=user, is_active=True).first()
+    user_escrow_amount = get_user_balance(user.id)
+    if payout_method and user_escrow_amount >= amount:
+        transfer = stripe_api.create_transfer(amount, payout_method.stripe_recipient_id, 'Withdraw transfer')
         Transaction.objects.create(
             payout_method=payout_method,
             stripe_id=transfer.id,
             extra_data=transfer.to_dict(),
             amount=amount,
             transaction_type=Transaction.PAYOUT,
-            milestone=milestone
         )

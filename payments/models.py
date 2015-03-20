@@ -116,7 +116,7 @@ class Transaction(models.Model):
     referrer_email = models.EmailField(null=True, blank=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     referrer_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    fee = models.DecimalField(max_digits=12, decimal_places=12, null=True, blank=True)
+    fee = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     transaction_type = models.CharField(max_length=255, choices=TRANSACTION_TYPE_CHOICES)
     milestone = models.ForeignKey('projects.Milestone', null=True, blank=True)
     displayed_at = models.DateTimeField(null=True, blank=True)
@@ -133,12 +133,9 @@ class Transaction(models.Model):
         return self.milestone.project.name if self.milestone and self.milestone.project else None
 
     def get_user(self):
-        if self.credit_card_id:
-            return self.credit_card.customer.user
-        elif self.payout_method:
-            return self.payout_method.user
-        else:
-            return self.milestone.project.user
+        if self.transaction_type == Transaction.ESCROW:
+            return self.receiver
+        return self.payer
 
 
 @receiver(post_save, sender=Transaction)
