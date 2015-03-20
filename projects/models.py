@@ -8,6 +8,7 @@ from django.db.models import Q, Sum
 from django.db.models.signals import post_save
 from django.utils import timezone
 from django.utils.text import slugify
+from constance import config
 
 from accounts.models import User
 
@@ -196,7 +197,8 @@ class Milestone(models.Model):
 
     @property
     def amount(self):
-        return self.tasks.aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
+        amount = self.tasks.aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
+        return amount + amount * Decimal(str(config.PO_FEE / 100.0))
 
     def try_complete(self, user):
         from activities.models import Activity

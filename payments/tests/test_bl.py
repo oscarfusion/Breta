@@ -135,7 +135,7 @@ class TestCalculatingFeeAndReferralAmount(TestCase):
 
     def test_expected_results(self):
         amount = Decimal(100)
-        expected_total_fee = amount * Decimal(str(config.BRETA_FEE / 100.0))
+        expected_total_fee = amount * Decimal(str(config.PO_FEE / 100.0)) + amount * Decimal(str(config.DEVELOPER_FEE))
         expected_referrer_amount = amount * Decimal(str(config.REFERRAL_TAX_PERCENT / 100.0))
         expected_final_fee = expected_total_fee - expected_referrer_amount
         fee, referral_amount = get_fee_and_referrer_amount(amount)

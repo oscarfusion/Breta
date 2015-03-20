@@ -20,7 +20,7 @@ def get_user_balance(user_id):
 
 
 def get_fee_and_referrer_amount(amount):
-    total_fee = amount * Decimal(str(config.BRETA_FEE / 100.0))
+    total_fee = amount * Decimal(str(config.PO_FEE / 100.0)) + amount * Decimal(str(config.DEVELOPER_FEE))
     referer_amount = amount * Decimal(str(config.REFERRAL_TAX_PERCENT / 100.0))
     final_fee = total_fee - referer_amount
     assert final_fee > 0, (amount, final_fee)
@@ -75,9 +75,9 @@ def create_milestone_transaction(credit_card_id, user, milestone_id):
         if user.referrer:
             fee, referrer_amount = get_fee_and_referrer_amount(task_amount)
         else:
-            fee = task_amount * Decimal(str(config.BRETA_FEE / 100.0))
+            fee = task_amount * Decimal(str(config.PO_FEE / 100.0)) + task_amount * Decimal(str(config.DEVELOPER_FEE / 100.0))
             referrer_amount = 0
-        task_amount -= fee
+        task_amount -= task_amount * Decimal(str(config.DEVELOPER_FEE / 100.0))
         transaction = Transaction.objects.create(
             transaction_type=Transaction.MILESTONE,
             amount=task_amount,

@@ -173,6 +173,8 @@ CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_CONFIG = {
     'BRETA_FEE': (10, 'Percent of price users pays as remuneration for using Breta'),
+    'PO_FEE': (30, 'Percent of price project owner\'s pays as remuneration for using BRETA'),
+    'DEVELOPER_FEE': (10, 'Percent of price project owner\'s pays as remuneration for using BRETA'),
     'DISABLE_PAYOUTS': (False, 'Disable payouts and withdraws'),
     'REFERRAL_TAX_PERCENT': (1, 'Percent, which every user pays for their referrers if their exist')
 }
