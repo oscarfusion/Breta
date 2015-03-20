@@ -2,7 +2,9 @@ from decimal import Decimal
 
 from django.core.exceptions import PermissionDenied
 from django.db.models import Sum
+from constance import settings
 
+from accounts.models import User
 from projects.models import Milestone
 from . import stripe_api
 from . import email
@@ -11,19 +13,30 @@ from .models import Transaction, CreditCard, PayoutMethod
 
 
 def get_user_balance(user_id):
-    escrow_sum = Transaction.objects.filter(credit_card__customer__user_id=user_id, transaction_type=Transaction.ESCROW).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
-    paid_to_milestones_sum = Transaction.objects.filter(credit_card__customer__user_id=user_id, transaction_type=Transaction.MILESTONE, credit_card__isnull=True).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
-    return escrow_sum - paid_to_milestones_sum
+    # escrow_sum = Transaction.objects.filter(credit_card__customer__user_id=user_id, transaction_type=Transaction.ESCROW).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
+    # paid_to_milestones_sum = Transaction.objects.filter(credit_card__customer__user_id=user_id, transaction_type=Transaction.MILESTONE, credit_card__isnull=True).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
+    escrow_sum = Transaction.objects.filter(receiver__id=user_id).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
+    referral_sum = Transaction.objects.filter(referrer__id=user_id).aggregate(Sum('referrer_amount')).get('referrer_amount__sum') or Decimal(0)
+    paid_sum = Transaction.objects.filter(payer__id=user_id).aggregate(Sum('amount')).get('amount_sum') or Decimal(0)
+    return escrow_sum + referral_sum - paid_sum
+
+
+def get_fee_and_referrer_amount(amount):
+    total_fee = amount * Decimal(str(1.0 / settings.BRETA_FEE))
+    referer_amount = amount * Decimal(str(1.0 / settings.REFERRAL_TAX_PERCENT))
+    final_fee = total_fee - referer_amount
+    assert final_fee > 0, (amount, final_fee)
+    return final_fee, referer_amount
 
 
 def create_transaction(credit_card_id, user, amount=None, transaction_type=Transaction.ESCROW, milestone_id=None):
     if transaction_type == Transaction.ESCROW:
         transaction = create_escrow_transaction(credit_card_id, user, amount)
+        email.send_payment_confirmation_email(transaction)
     elif transaction_type == Transaction.MILESTONE:
         transaction = create_milestone_transaction(credit_card_id, user, milestone_id)
     else:
         raise NotImplementedError()
-    email.send_payment_confirmation_email(transaction)
     return transaction
 
 
@@ -41,6 +54,7 @@ def create_escrow_transaction(credit_card_id, user, amount):
         amount=amount,
         transaction_type=Transaction.ESCROW,
         milestone_id=None,
+        receiver=user
     )
     return instance
 
@@ -51,32 +65,34 @@ def create_milestone_transaction(credit_card_id, user, milestone_id):
         raise PaymentException('You should not pay for foreign milestone')
     amount = milestone.amount
     user_escrow_amount = get_user_balance(user.id)
-    if user_escrow_amount > 0:
-        amount_from_escrow = amount if user_escrow_amount >= amount else user_escrow_amount
-        instance = Transaction.objects.create(
+    assert user_escrow_amount > amount, (amount, user_escrow_amount,)
+    for task in milestone.tasks.values('assigned').annotate(Sum('amount')):
+        try:
+            receiver = User.objects.get(pk=task.get('assigned'))
+        except User.DoesNotExist:
+            receiver
+        task_amount = task.get('amount__sum', Decimal(0))
+        if user.referrer:
+            fee, referrer_amount = get_fee_and_referrer_amount(task_amount)
+        else:
+            fee = task_amount * Decimal(str(1.0 / settings.BRETA_FEE))
+            referrer_amount = 0
+        task_amount -= fee
+        transaction = Transaction.objects.create(
+            transaction_type=Transaction.MILESTONE,
+            amount=task_amount,
             credit_card_id=None,
-            stripe_id=None,
-            amount=amount_from_escrow,
-            transaction_type=Transaction.MILESTONE,
-            milestone=milestone,
+            payer=user,
+            receiver=receiver,
+            fee=fee,
+            referrer_amount=referrer_amount,
+            referrer=user.referrer,
+            referrer_email=user.referrer_email
         )
-        amount = amount - amount_from_escrow
-    if amount > 0:
-        credit_card = CreditCard.objects.get(pk=credit_card_id)
-        if credit_card.customer.user != user:
-            raise PermissionDenied()
-        transaction = stripe_api.create_transaction(Decimal(amount), user.stripe_customer.stripe_customer_id, credit_card.stripe_card_id, user.email)
-        instance = Transaction.objects.create(
-            credit_card_id=credit_card_id,
-            stripe_id=transaction.id,
-            extra_data=transaction.to_dict(),
-            amount=amount,
-            transaction_type=Transaction.MILESTONE,
-            milestone=milestone,
-        )
+        email.send_payment_confirmation_email(transaction)
     milestone.set_as_paid()
     milestone.save()
-    return instance
+    return None
 
 
 def create_milestone_transfer(milestone):

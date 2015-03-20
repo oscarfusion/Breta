@@ -110,9 +110,13 @@ class Transaction(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     stripe_id = models.CharField(max_length=255, null=True, blank=True)
     extra_data = JSONField()
-    user = models.ForeignKey('accounts.User', null=True, blank=True)
-    user_email = models.EmailField(null=True, blank=True)
+    payer = models.ForeignKey('accounts.User', null=True, blank=True, related_name='payment_transactions')
+    receiver = models.ForeignKey('accounts.User', null=True, blank=True, related_name='received_transactions')
+    referrer = models.ForeignKey('accounts.User', null=True, blank=True, related_name='referrals_transactions')
+    referrer_email = models.EmailField(null=True, blank=True)
     amount = models.DecimalField(max_digits=12, decimal_places=2)
+    referrer_amount = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    fee = models.DecimalField(max_digits=12, decimal_places=12, null=True, blank=True)
     transaction_type = models.CharField(max_length=255, choices=TRANSACTION_TYPE_CHOICES)
     milestone = models.ForeignKey('projects.Milestone', null=True, blank=True)
     displayed_at = models.DateTimeField(null=True, blank=True)
@@ -141,6 +145,6 @@ class Transaction(models.Model):
 def transaction_post_save(sender, instance, signal, created, **kwargs):
     if created:
         instance.displayed_at = instance.created_at
-        if instance.transaction_type in [instance.MILESTONE, instance.CREDIT, instance, instance.PAYOUT]:
+        if instance.transaction_type in [Transaction.MILESTONE, Transaction.CREDIT, Transaction.PAYOUT]:
             instance.displayed_at = utils.transaction_display_at(instance.created_at)
         instance.save()
