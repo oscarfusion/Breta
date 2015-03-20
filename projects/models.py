@@ -324,7 +324,7 @@ class Quote(models.Model):
     )
 
     REFUSE_NOT_AVAILABLE = 'not-available'
-    REFUSE_BUDGET_IS_UNREASONABLE = 'not-available'
+    REFUSE_BUDGET_IS_UNREASONABLE = 'buget-unreasonable'
     REFUSE_DONT_LIKE_PROJECT = 'wrong-project-type'
 
     REFUSE_FLAGS = (

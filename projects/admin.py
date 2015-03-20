@@ -1,5 +1,8 @@
 from django import forms
 from django.contrib import admin
+from bitfield import BitField
+from bitfield.admin import BitFieldListFilter
+from bitfield.forms import BitFieldCheckboxSelectMultiple
 from tinymce.widgets import TinyMCE
 
 
@@ -68,6 +71,14 @@ class MilestoneAdmin(admin.ModelAdmin):
 
 class QuoteAdmin(admin.ModelAdmin):
     list_display = ('project_member', 'amount', 'status', 'created_at')
+
+    formfield_overrides = {
+        BitField: {'widget': BitFieldCheckboxSelectMultiple}
+    }
+
+    list_filter = (
+        ('refuse_reasons', BitFieldListFilter,),
+    )
 
 
 admin.site.register(Project, ProjectAdmin)
