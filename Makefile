@@ -30,4 +30,4 @@ shell:
 	python manage.py shell
 
 celery:
-	celery -A breta worker -l info
+	celery -A breta worker -l info -B

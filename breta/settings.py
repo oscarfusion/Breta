@@ -185,6 +185,17 @@ API_DOMAIN = 'https://easy.breta.com/app'
 
 BROKER_URL = 'redis://localhost:6379/0'
 
+from datetime import timedelta
+
+CELERYBEAT_SCHEDULE = {
+    'test-task-beat': {
+        'task': 'core.tasks.debug_task',
+        'schedule': timedelta(seconds=60),
+    },
+}
+
+CELERY_TIMEZONE = 'UTC'
+
 try:
     from local_settings import *  # noqa
 except ImportError:
