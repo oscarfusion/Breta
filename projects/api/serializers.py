@@ -1,5 +1,7 @@
+from django.core.exceptions import ValidationError
 from rest_framework import relations
 from rest_framework import serializers
+from bitfield import BitHandler
 
 from accounts.api.serializers import UserSerializer
 
@@ -80,14 +82,29 @@ class MilestoneSerializer(serializers.ModelSerializer):
     milestone_attachments = ProjectFileSerializer(many=True, read_only=True, required=False)
 
 
+class RefuseReasonsBitField(serializers.Field):
+    def to_internal_value(self, data):
+        result = BitHandler(0, [k for k, v in Quote.REFUSE_FLAGS])
+        for k in data:
+            try:
+                setattr(result, str(k), True)
+            except AttributeError:
+                raise ValidationError('Unknown choice: %r' % (k,))
+        return int(result)
+
+    def to_representation(self, value):
+        return value
+
+
 class QuoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Quote
-        fields = ('id', 'status', 'project_member', 'amount', 'created_at', 'updated_at', 'member_type')
+        fields = ('id', 'status', 'project_member', 'amount', 'created_at', 'updated_at', 'member_type', 'refuse_reasons')
         read_only_fields = ('project_member', 'member_type')
 
     project_member = ProjectMemberSerializer(required=False, read_only=True)
     member_type = serializers.SerializerMethodField()
+    refuse_reasons = RefuseReasonsBitField()
 
     def get_member_type(self, obj):
         if obj.project_member.member.developer.all().first():
