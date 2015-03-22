@@ -15,7 +15,7 @@ from .models import Transaction, CreditCard, PayoutMethod
 def get_user_balance(user_id):
     escrow_sum = Transaction.objects.filter(receiver__id=user_id).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
     referral_sum = Transaction.objects.filter(referrer__id=user_id).aggregate(Sum('referrer_amount')).get('referrer_amount__sum') or Decimal(0)
-    paid_sum = Transaction.objects.filter(payer__id=user_id).aggregate(Sum('amount')).get('amount_sum') or Decimal(0)
+    paid_sum = Transaction.objects.filter(payer__id=user_id).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
     return escrow_sum + referral_sum - paid_sum
 
 
@@ -65,7 +65,10 @@ def create_milestone_transaction(credit_card_id, user, milestone_id):
         raise PaymentException('You should not pay for foreign milestone')
     amount = milestone.amount
     user_escrow_amount = get_user_balance(user.id)
-    assert user_escrow_amount > amount, (amount, user_escrow_amount,)
+    if user_escrow_amount < amount:
+        diff = Decimal(amount - user_escrow_amount)
+        transaction = create_escrow_transaction(credit_card_id, user, diff)
+        email.send_payment_confirmation_email(transaction)
     for task in milestone.tasks.values('assigned').annotate(Sum('amount')):
         try:
             receiver = User.objects.get(pk=task.get('assigned'))
