@@ -93,7 +93,11 @@ class RefuseReasonsBitField(serializers.Field):
         return int(result)
 
     def to_representation(self, value):
-        return value
+        result = []
+        for v in value:
+            if v[1]:
+                result.append(v[0])
+        return result
 
 
 class QuoteSerializer(serializers.ModelSerializer):
