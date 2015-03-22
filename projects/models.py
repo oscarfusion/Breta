@@ -79,9 +79,7 @@ class Project(models.Model):
                 body='I am new manager in %s' % self.name,
                 sent_at=timezone.now(),
             )
-            msg.save()
-            recipient = MessageRecipient(message=msg, recipient=self.user)
-            recipient.save()
+            MessageRecipient.objects.create(message=msg, recipient=self.user)
         if self.__original_brief_status == Project.BRIEF_NOT_READY and self.brief_status == Project.BRIEF_READY:
             email.send_brief_ready_email(self)
         if self.brief != self.__original_brief:
@@ -300,7 +298,7 @@ def project_member_post_save(sender, instance, created=False, **kwargs):
     if created and instance.status == ProjectMember.STATUS_PENDING:
         quote = Quote(project_member=instance, amount=0)
         quote.save()
-        msg = Message.objects.create(type=Message.TYPE_QUOTE, project=instance.project, sender=instance.project.manager, quote=quote)
+        msg = Message.objects.create(type=Message.TYPE_QUOTE, project=instance.project, sender=instance.project.manager, quote=quote, sent_at=timezone.now())
         msg.save()
         recipient = MessageRecipient(message=msg, recipient=instance.member)
         recipient.save()
