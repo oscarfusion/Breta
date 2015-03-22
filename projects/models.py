@@ -55,6 +55,7 @@ class Project(models.Model):
     brief_status = models.CharField(max_length=255, choices=BRIEF_STATUS_CHOICES, default=BRIEF_NOT_READY)
     brief_message = models.OneToOneField('ProjectMessage', related_name='project', null=True, blank=True)
     brief_last_edited = models.DateTimeField(default=timezone.now)
+    timeline = models.IntegerField(default=0)
 
     __original_manager = None
     __original_brief_status = None

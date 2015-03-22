@@ -52,7 +52,7 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = ('id', 'project_type', 'name', 'idea', 'description', 'user', 'price_range',
                   'slug', 'created_at', 'updated_at', 'files', 'memberships', 'manager', 'brief_status',
-                  'brief', 'brief_message', 'brief_last_edited')
+                  'brief', 'brief_message', 'brief_last_edited', 'timeline')
         read_only_fields = ('slug', 'files', 'user', 'memberships', 'manager', 'brief', 'brief_message',
                             'brief_last_edited')
 
