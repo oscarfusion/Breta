@@ -28,6 +28,11 @@ server {
         alias /www/backend/breta/staticfiles;
     }
 
+    location /app/media {
+        autoindex on;
+        alias /www/backend/breta/mediafiles;
+    }
+
     root /www/frontend/dist;
     index index.html;
     location / {
