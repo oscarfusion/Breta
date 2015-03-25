@@ -110,7 +110,7 @@ class PortfolioProjectAttachmentViewSet(viewsets.ModelViewSet):
 class WebsiteViewSet(viewsets.ModelViewSet):
     queryset = Website.objects.all()
     serializer_class = WebsiteSerializer
-    permission_classes = (PortfolioProjectAttachmentPermission,)
+    permission_classes = (WebsitePermission,)
 
 
 class ChangePasswordView(generics.CreateAPIView):
