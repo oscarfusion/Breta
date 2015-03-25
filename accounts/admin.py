@@ -94,6 +94,11 @@ class DeveloperAdmin(admin.ModelAdmin):
         ('project_preferences', BitFieldListFilter,),
     )
 
+
+class EmailAdmin(admin.ModelAdmin):
+    list_display = ('email', 'created_at', 'ip_address',)
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Developer, DeveloperAdmin)
-admin.site.register(Email)
+admin.site.register(Email, EmailAdmin)

@@ -204,10 +204,13 @@ class PortfolioProjectAttachment(models.Model):
 
 
 class Email(models.Model):
+    class Meta:
+        verbose_name_plural = 'Newsletter signups'
     email = models.EmailField(unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Joined date')
     referral_code = models.CharField(max_length=255, blank=True, null=True)
     from_landing = models.BooleanField(default=False)
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
 
     def __unicode__(self):
         return self.email

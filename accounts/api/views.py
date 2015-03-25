@@ -173,6 +173,8 @@ class EmailViewSet(viewsets.ModelViewSet):
         instance = None
         if form.is_valid():
             instance = form.save()
+            instance.ip_address = get_client_ip(request)
+            instance.save()
         else:
             try:
                 instance = Email.objects.get(email=form.data['email'])
