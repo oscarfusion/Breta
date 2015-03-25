@@ -29,7 +29,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if 'type' in self.request.QUERY_PARAMS:
             if self.request.QUERY_PARAMS['type'] == 'my':
                 return Project.objects.select_related().filter(
-                    Q(user=self.request.user) | Q(members=self.request.user)
+                    Q(user=self.request.user) | Q(members=self.request.user) | Q(manager=self.request.user)
                 ).distinct()
         return Project.objects.select_related().filter(
             Q(user=self.request.user) | Q(members=self.request.user)

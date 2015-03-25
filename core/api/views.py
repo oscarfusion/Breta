@@ -48,6 +48,8 @@ obtain_auth_token = ObtainAuthToken.as_view()
 def breta_config(request):
     return {
         'config': {
-            'bretaFee': config.BRETA_FEE
+            'bretaFee': config.BRETA_FEE,
+            'developerFee': config.DEVELOPER_FEE,
+            'poFee': config.PO_FEE
         }
     }
