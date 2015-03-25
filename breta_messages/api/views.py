@@ -49,14 +49,14 @@ class MessageViewSet(viewsets.ModelViewSet):
             msgs_type = self.request.QUERY_PARAMS['type']
             if msgs_type == 'inbox':
                 return queryset.filter(
-                    Q(type=Message.TYPE_MESSAGE) &
+                    (Q(type=Message.TYPE_MESSAGE) | Q(type=Message.TYPE_QUOTE)) &
                     Q(parent__isnull=True) &
                     (Q(children__recipients=self.request.user) | Q(recipients=self.request.user)) &
                     Q(message_recipients__deleted_at__isnull=True)
                 ).distinct()
             if msgs_type == 'sent':
                 return queryset.filter(
-                    Q(type=Message.TYPE_MESSAGE) & ((
+                    (Q(type=Message.TYPE_MESSAGE) | Q(type=Message.TYPE_QUOTE)) & ((
                         Q(sender=self.request.user) &
                         Q(sent_at__isnull=False) &
                         Q(sender_deleted_at__isnull=True) &
