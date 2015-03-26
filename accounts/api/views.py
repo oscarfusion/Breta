@@ -157,6 +157,7 @@ class ResetPasswordConfirmView(generics.CreateAPIView):
         form = ResetPasswordConfirmForm(request.user, request.POST)
         if form.is_valid():
             form.save()
+            email.send_password_reset_confirmation_email(form.get_user())
             return Response({
                 'success': True
             }, status=status.HTTP_200_OK)

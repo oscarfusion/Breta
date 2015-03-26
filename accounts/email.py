@@ -31,3 +31,7 @@ def send_user_subscribed_email(email):
 
 def send_password_reset_email(email, context):
     return send_email([email], 'Password reset on breta', 'emails/accounts/reset_password.html', context)
+
+
+def send_password_reset_confirmation_email(user):
+    return send_email([user.email], 'Your password has been successfully changed', 'emails/accounts/reset_password_confirm.html', {'user': user})
