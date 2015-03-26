@@ -59,6 +59,7 @@ class PayoutMethodViewSet(viewsets.ModelViewSet):
             obj = self.perform_create(serializer)
         except StripeError as e:
             return Response({e.json_body['error']['param']: e.message}, status=status.HTTP_400_BAD_REQUEST)
+        email.send_new_payout_method_email(obj)
         serializer.instance = obj
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

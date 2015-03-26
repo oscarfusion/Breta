@@ -1,0 +1,13 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}
+    Hello, {{ payout_method.user.first_name }}!
+{% endblock %}
+
+{% block content %}
+
+    <p>New payout method was added.</p>
+
+    <p>You can manage your payout methods here: <a href="{{ transactions_url }}">{{ transactions_url }}</a></p>
+
+{% endblock %}
