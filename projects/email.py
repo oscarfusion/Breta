@@ -44,3 +44,7 @@ def send_project_completed_email(project):
     for member in project.memberships.filter(status=ProjectMember.STATUS_ACCEPTED):
         emails.append(member.member.email)
     return send_email(emails, 'Project is completed', 'emails/projects/project_completed.html', {'project': project})
+
+
+def send_milestone_due_today(milestone):
+    return send_email([milestone.project.manager.email], 'Milestone due', 'emails/projects/milestone_due_today.html', {'milestone': milestone})

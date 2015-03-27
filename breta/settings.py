@@ -185,13 +185,17 @@ API_DOMAIN = 'https://easy.breta.com/app'
 
 BROKER_URL = 'redis://localhost:6379/0'
 
-from datetime import timedelta
+from datetime import timedelta  # noqa
 
 CELERYBEAT_SCHEDULE = {
     'test-task-beat': {
         'task': 'core.tasks.debug_task',
         'schedule': timedelta(seconds=60),
     },
+    'milestones-due-today': {
+        'task': 'projects.tasks.milestones_due_today',
+        'schedule': timedelta(days=1),
+    }
 }
 
 CELERY_TIMEZONE = 'UTC'

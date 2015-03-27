@@ -194,6 +194,7 @@ class Milestone(models.Model):
     paid_status = models.CharField(max_length=255, choices=PAID_STATUS_CHOICES, default=PAID_STATUS_DUE)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+    is_due_email_sent = models.BooleanField(default=False)
 
     @property
     def amount(self):
