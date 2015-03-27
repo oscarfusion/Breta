@@ -36,3 +36,11 @@ def send_quote_accepted_email_to_developer(project_member):
 
 def send_milestone_completed_email(milestone):
     return send_email([milestone.project.user.email], 'Milestone completed', 'emails/projects/milestone_completed.html', {'milestone': milestone})
+
+
+def send_project_completed_email(project):
+    from .models import ProjectMember
+    emails = [project.user.email, project.manager.email]
+    for member in project.memberships.filter(status=ProjectMember.STATUS_ACCEPTED):
+        emails.append(member.member.email)
+    return send_email(emails, 'Project is completed', 'emails/projects/project_completed.html', {'project': project})
