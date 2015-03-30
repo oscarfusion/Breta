@@ -120,6 +120,7 @@ class Transaction(models.Model):
     transaction_type = models.CharField(max_length=255, choices=TRANSACTION_TYPE_CHOICES)
     milestone = models.ForeignKey('projects.Milestone', null=True, blank=True)
     displayed_at = models.DateTimeField(null=True, blank=True)
+    is_confirm_email_sent = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'Transaction #{}'.format(self.pk)
