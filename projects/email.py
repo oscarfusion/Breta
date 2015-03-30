@@ -56,3 +56,7 @@ def send_milestone_accepted_by_pm_email(milestone):
 
 def send_milestone_accepted_email(milestone):
     return send_email([milestone.project.manager.email], 'Milestone "{}" is accepted'.format(milestone.name), 'emails/projects/milestone_accepted.html', {'milestone': milestone})
+
+
+def send_brief_accepted_email(project):
+    return send_email([project.manager.email], 'Brief is accepted', 'emails/projects/brief_accepted.html', {'project': project})

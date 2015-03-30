@@ -43,11 +43,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
         )
 
     def perform_update(self, serializer):
+        old_status = serializer.instance.brief_status
         if self.request.user != serializer.instance.user:
-            old_status = serializer.instance.brief_status
-            serializer.save(brief_status=old_status)
+            instance = serializer.save(brief_status=old_status)
         else:
-            serializer.save()
+            instance = serializer.save()
+        if instance.brief_status == Project.BRIEF_ACCEPTED and old_status == Project.BRIEF_READY:
+            email.send_brief_accepted_email(instance)
 
 
 class ProjectFileViewSet(viewsets.ModelViewSet):
