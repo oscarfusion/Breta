@@ -110,4 +110,5 @@ def create_payout_transaction(user, amount):
             extra_data=transfer.to_dict(),
             amount=amount,
             transaction_type=Transaction.PAYOUT,
+            receiver=user
         )

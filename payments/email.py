@@ -16,3 +16,13 @@ def send_new_payment_method_email(payment_method):
 def send_new_payout_method_email(payout_method):
     transactions_url = '{}/payments'.format(settings.DOMAIN)
     return send_email([payout_method.user.email], 'New payout method added', 'emails/payments/new_payout_method.html', {'payout_method': payout_method, 'transactions_url': transactions_url})
+
+
+def send_payment_received_email(transaction):
+    transactions_url = '{}/payments'.format(settings.DOMAIN)
+    return send_email([transaction.receiver.email], 'New payment received', 'emails/payments/payment_received.html', {'transaction': transaction, 'transactions_url': transactions_url})
+
+
+def send_payout_confirmation_email(transaction):
+    transactions_url = '{}/payments'.format(settings.DOMAIN)
+    return send_email([transaction.receiver.email], 'Payout confirmation', 'emails/payments/payout_confirmation.html', {'transaction': transaction, 'transactions_url': transactions_url})

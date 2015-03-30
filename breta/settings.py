@@ -186,11 +186,12 @@ API_DOMAIN = 'https://easy.breta.com/app'
 BROKER_URL = 'redis://localhost:6379/0'
 
 from datetime import timedelta  # noqa
+from celery import schedules  # noqa
 
 CELERYBEAT_SCHEDULE = {
-    'test-task-beat': {
-        'task': 'core.tasks.debug_task',
-        'schedule': timedelta(seconds=60),
+    'transaction-received': {
+        'task': 'payments.tasks.transaction_received',
+        'schedule': schedules.crontab(day_of_week=4, hour=10, minute=0),
     },
     'milestones-due-today': {
         'task': 'projects.tasks.milestones_due_today',

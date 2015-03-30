@@ -1,0 +1,13 @@
+{% extends 'emails/base.html' %}
+
+{% block title %}
+    Hello, {{ transaction.receiver.first_name }}!
+{% endblock %}
+
+{% block content %}
+
+    <p>You have withdrawn: ${{ transaction.amount }}</p>
+
+    <p>You can see full list of your transaction here: <a href="{{ transactions_url }}">{{ transactions_url }}</a></p>
+
+{% endblock %}
