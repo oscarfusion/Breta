@@ -51,4 +51,8 @@ def send_milestone_due_today(milestone):
 
 
 def send_milestone_accepted_by_pm_email(milestone):
-    return send_email([milestone.project.user.email], 'Milestone "{}"" is accepted by project manager'.format(milestone.name), 'emails/projects/milestone_accepted_by_pm.html', {'milestone': milestone})
+    return send_email([milestone.project.user.email], 'Milestone "{}" is accepted by project manager'.format(milestone.name), 'emails/projects/milestone_accepted_by_pm.html', {'milestone': milestone})
+
+
+def send_milestone_accepted_email(milestone):
+    return send_email([milestone.project.manager.email], 'Milestone "{}" is accepted'.format(milestone.name), 'emails/projects/milestone_accepted.html', {'milestone': milestone})

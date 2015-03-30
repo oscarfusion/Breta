@@ -294,6 +294,8 @@ def task_milestone_post_save(sender, instance, created=False, **kwargs):
             email.send_project_completed_email(instance.project)
         if instance.status == Milestone.STATUS_ACCEPTED_BY_PM:
             email.send_milestone_accepted_by_pm_email(instance)
+        if instance.status == Milestone.STATUS_ACCEPTED:
+            email.send_milestone_accepted_email(instance)
 
 
 post_save.connect(task_milestone_post_save, sender=Task)
