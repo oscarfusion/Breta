@@ -97,6 +97,7 @@ class DeveloperAdmin(admin.ModelAdmin):
 
 class EmailAdmin(admin.ModelAdmin):
     list_display = ('email', 'created_at', 'ip_address',)
+    readonly_fields = ('created_at', 'ip_address',)
 
 
 admin.site.register(User, UserAdmin)
