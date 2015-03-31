@@ -21,6 +21,10 @@ def notify_admins_about_registration(user):
     return send_email_to_admins('%s joined!' % user.get_full_name(), 'emails/accounts/user_joined.html', {'user': user})
 
 
+def notify_admins_about_newsletter_signup(email):
+    return send_email_to_admins('%s has been subscribed to news on Breta' % email, 'emails/accounts/email_subscribed.html', {'email': email})
+
+
 def send_invite_email(email, referral_link):
     return send_email([email], 'A friend sent you an invitation to Breta', 'emails/accounts/invite_user.html', {'referral_link': referral_link})
 

@@ -176,6 +176,7 @@ class EmailViewSet(viewsets.ModelViewSet):
             instance = form.save()
             instance.ip_address = get_client_ip(request)
             instance.save()
+            email.notify_admins_about_newsletter_signup(instance.email)
         else:
             try:
                 instance = Email.objects.get(email=form.data['email'])
