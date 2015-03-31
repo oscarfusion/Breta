@@ -81,9 +81,10 @@ class TransactionViewSet(viewsets.ModelViewSet):
     def get_queryset(self, *args, **kwargs):
         return Transaction.objects.select_related('milestone', 'milestone__project').filter(
             Q(credit_card__customer__user=self.request.user) |
-            Q(milestone__project__user=self.request.user) |
+            Q(payer=self.request.user) |
+            Q(receiver=self.request.user) |
             Q(payout_method__user=self.request.user)
-        ).filter(Q(displayed_at__lt=timezone.now())).all()
+        ).filter(Q(displayed_at__lte=timezone.now())).all()
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
