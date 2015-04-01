@@ -13,6 +13,9 @@ class Activity(models.Model):
     TYPE_NEW_MILESTONE = 'new-milestone'
     TYPE_TASK_STATUS_CHANGED = 'task-status-changed'
     TYPE_MILESTONE_STATUS_CHANGED = 'milestone-status-changed'
+    TYPE_PROJECT_COMPLETED = 'project-completed'
+    TYPE_MILESTONE_ACCEPTED = 'milestone-accepted'
+    TYPE_MILESTONE_ACCEPTED_BY_PM = 'milestone-accepted-by-pm'
 
     TYPE_CHOICES = (
         (TYPE_NEW_PROJECT, 'New project created'),
@@ -20,6 +23,9 @@ class Activity(models.Model):
         (TYPE_NEW_MILESTONE, 'New milestone created'),
         (TYPE_TASK_STATUS_CHANGED, 'Task status changed'),
         (TYPE_MILESTONE_STATUS_CHANGED, 'Milestone status changed'),
+        (TYPE_PROJECT_COMPLETED, 'Project completed'),
+        (TYPE_MILESTONE_ACCEPTED, 'Milestone accepted'),
+        (TYPE_MILESTONE_ACCEPTED_BY_PM, 'Milestone accepted by PM'),
     )
 
     type = models.CharField(max_length=255, choices=TYPE_CHOICES)
