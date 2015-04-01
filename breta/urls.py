@@ -32,6 +32,11 @@ router.register(
     message_views.InboxMessagesCount,
     base_name='inbox-messages-amount'
 )
+router.register(
+    r'messages/unread-messages',
+    message_views.UnreadMessageViewSet,
+    base_name='unread-messages'
+)
 router.register(r'messages', message_views.MessageViewSet)
 router.register(r'message-files', message_views.MessageFileViewSet)
 router.register(r'message-recipients', message_views.MessageRecipientViewSet)

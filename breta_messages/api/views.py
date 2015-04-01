@@ -152,3 +152,23 @@ class InboxMessagesCount(viewsets.ReadOnlyModelViewSet):
             'count': count
         }
         return Response(data, status=status.HTTP_200_OK)
+
+
+class UnreadMessageViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = MessageSerializer
+    permission_classes = (MessagePermission,)
+    renderer_classes = (JSONRenderer,)
+
+    def list(self, request, *args, **kwargs):
+        obj = MessageRecipient.objects.filter(
+            Q(recipient=request.user) &
+            Q(deleted_at__isnull=True) &
+            Q(read_at__isnull=True)
+        ).first()
+        if obj:
+            data = {
+                'recipient': MessageRecipientSerializer(obj).data,
+                'message': MessageSerializer(obj.message).data
+            }
+            return Response(data)
+        return Response(MessageSerializer(None).data)
