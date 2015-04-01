@@ -31,3 +31,6 @@ shell:
 
 celery:
 	celery -A breta worker -l info -B
+
+smtp:
+	python -m smtpd -n -c DebuggingServer localhost:1025
