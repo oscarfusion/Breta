@@ -169,7 +169,9 @@ MAILCHIMP_DEFAULT_LIST = os.environ.get('MAILCHIMP_DEFAULT_LIST')
 from static_settings import *  # noqa
 
 DEFAULT_FROM_EMAIL = 'Breta team <support@breta.com>'
-ADMINS = ['elliot@breta.com']
+ADMINS = (
+    ('Elliot', 'elliot@breta.com',),
+)
 CONSTANCE_BACKEND = 'constance.backends.database.DatabaseBackend'
 
 CONSTANCE_CONFIG = {
