@@ -73,7 +73,7 @@ def create_milestone_transaction(credit_card_id, user, milestone_id):
         try:
             receiver = User.objects.get(pk=task.get('assigned'))
         except User.DoesNotExist:
-            receiver
+            receiver = None
         task_amount = task.get('amount__sum', Decimal(0))
         if user.referrer:
             fee, referrer_amount = get_fee_and_referrer_amount(task_amount)

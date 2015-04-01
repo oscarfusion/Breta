@@ -281,6 +281,7 @@ class ProjectMessage(models.Model):
 
 
 def task_milestone_post_save(sender, instance, created=False, **kwargs):
+    from activities.models import Activity
     if created:
         if sender is Task:
             message = ProjectMessage(task=instance)
@@ -290,7 +291,6 @@ def task_milestone_post_save(sender, instance, created=False, **kwargs):
             return
         message.save()
     if sender is Milestone:
-        from activities.models import Activity
         if instance.status == Milestone.STATUS_ACCEPTED and instance.project.milestones.filter(~(Q(status=Milestone.STATUS_ACCEPTED))).count() == 0:
             email.send_project_completed_email(instance.project)
             Activity.objects.create(
@@ -304,7 +304,7 @@ def task_milestone_post_save(sender, instance, created=False, **kwargs):
                 type=Activity.TYPE_MILESTONE_ACCEPTED_BY_PM,
                 project=instance.project,
                 milestone=instance,
-                user=instance.project.user
+                user=instance.project.manager
             )
         if instance.status == Milestone.STATUS_ACCEPTED:
             email.send_milestone_accepted_email(instance)

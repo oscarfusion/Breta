@@ -1,8 +1,5 @@
 from django.db import models
 
-from accounts.models import User
-from projects.models import Project, Task, Milestone
-
 
 class Activity(models.Model):
     class Meta:
@@ -29,10 +26,10 @@ class Activity(models.Model):
     )
 
     type = models.CharField(max_length=255, choices=TYPE_CHOICES)
-    user = models.ForeignKey(User, related_name='activities', null=True, blank=True)
-    project = models.ForeignKey(Project, related_name='project_activities', null=True, blank=True)
-    milestone = models.ForeignKey(Milestone, null=True, blank=True)
-    task = models.ForeignKey(Task, null=True, blank=True)
+    user = models.ForeignKey('accounts.User', related_name='activities', null=True, blank=True)
+    project = models.ForeignKey('projects.Project', related_name='project_activities', null=True, blank=True)
+    milestone = models.ForeignKey('projects.Milestone', null=True, blank=True)
+    task = models.ForeignKey('projects.Task', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     text = models.TextField(null=True, blank=True)
 
