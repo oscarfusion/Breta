@@ -4,6 +4,9 @@ from django.template.loader import render_to_string
 
 
 def send_email(to, subject, template, context):
+    context.update({
+        'notification_settings_url': '{}/profile/edit/settings'.format(settings.DOMAIN)
+    })
     content = render_to_string(template, context)
     return send_mail(
         subject=subject,
@@ -15,6 +18,9 @@ def send_email(to, subject, template, context):
 
 
 def send_email_to_admins(subject, template, context):
+    context.update({
+        'notification_settings_url': '{}/profile/edit/settings'.format(settings.DOMAIN)
+    })
     content = render_to_string(template, context)
     return mail_admins(
         message=content,

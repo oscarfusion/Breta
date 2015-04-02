@@ -78,7 +78,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     is_current_user = serializers.SerializerMethodField()
     developer = serializers.SerializerMethodField()
-    settings = JSONFieldSerializer()
+    settings = JSONFieldSerializer(required=False)
 
     def get_is_current_user(self, obj):
         if 'request' in self.context:
