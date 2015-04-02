@@ -30,10 +30,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
             if self.request.QUERY_PARAMS['type'] == 'my':
                 return Project.objects.select_related().filter(
                     Q(user=self.request.user) | Q(members=self.request.user) | Q(manager=self.request.user)
-                ).distinct()
+                ).distinct('id')
         return Project.objects.select_related().filter(
             Q(user=self.request.user) | Q(members=self.request.user)
-        ).distinct()
+        ).distinct('id')
 
     def perform_create(self, obj):
         obj.save(user=self.request.user)

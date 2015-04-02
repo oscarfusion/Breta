@@ -61,15 +61,24 @@ class DeveloperSerializer(serializers.ModelSerializer):
     project_preferences = SerializedBitField()
 
 
+class JSONFieldSerializer(serializers.Field):
+    def to_internal_value(self, data):
+        return data
+
+    def to_representation(self, value):
+        return value
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user', 'location', 'is_active',
-                  'developer', 'avatar', 'referral_code', 'referrer', 'payout_method_exists')
+                  'developer', 'avatar', 'referral_code', 'referrer', 'payout_method_exists', 'settings')
         read_only_fields = ('is_current_user', 'city', 'is_active', 'developer', 'referral_code', 'referrer')
 
     is_current_user = serializers.SerializerMethodField()
     developer = serializers.SerializerMethodField()
+    settings = JSONFieldSerializer()
 
     def get_is_current_user(self, obj):
         if 'request' in self.context:

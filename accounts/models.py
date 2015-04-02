@@ -9,6 +9,7 @@ from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import ugettext as _
 from djorm_pgarray.fields import ArrayField
+from djorm_pgjson.fields import JSONField
 from rest_framework.authtoken.models import Token
 from bitfield import BitField
 
@@ -74,8 +75,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     referral_code = models.CharField(max_length=255, blank=True, null=True)
     referrer = models.ForeignKey('self', related_name='invited_users', blank=True, null=True)
     referrer_email = models.EmailField(blank=True, null=True)
-
     ip_address = models.GenericIPAddressField(blank=True, null=True)
+    settings = JSONField()
 
     objects = UserManager()
 
