@@ -9,8 +9,9 @@ def send_welcome_email(user):
 
 
 def send_developer_accepted_email(user):
-    login_url = '{}/login'.format(settings.DOMAIN)
-    return send_email([user.email], 'You\'re accepted!', 'emails/accounts/developer_accepted.html', {'user': user, 'login_url': login_url})
+    if user.settings.get('developer_accepted', True):
+        login_url = '{}/login'.format(settings.DOMAIN)
+        return send_email([user.email], 'You\'re accepted!', 'emails/accounts/developer_accepted.html', {'user': user, 'login_url': login_url})
 
 
 def send_password_changed_email(user):
