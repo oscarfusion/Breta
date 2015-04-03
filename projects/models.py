@@ -96,6 +96,14 @@ class Project(models.Model):
     def get_admin_link(self):
         return '{}{}'.format(settings.API_DOMAIN, reverse('admin:projects_project_change', args=(self.id,)))
 
+    @property
+    def progress(self):
+        amount = self.milestones.count()
+        if amount == 0:
+            return 0
+        completed = self.milestones.filter(status=Milestone.STATUS_ACCEPTED).count()
+        return float('%.2f' % (completed * 1.0 / amount)) * 100
+
     def __unicode__(self):
         return self.name
 
