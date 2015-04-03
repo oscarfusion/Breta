@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from core.email import send_email
+from core.email import send_email, send_email_to_admins
 
 
 def send_payment_confirmation_email(transaction):
@@ -31,3 +31,11 @@ def send_payout_confirmation_email(transaction):
     if transaction.receiver.settings.get('payout_confirmation_email', True):
         transactions_url = '{}/payments'.format(settings.DOMAIN)
         return send_email([transaction.receiver.email], 'Payout confirmation', 'emails/payments/payout_confirmation.html', {'transaction': transaction, 'transactions_url': transactions_url})
+
+
+def send_paypal_payout_request_to_admins(user, amount):
+    context = {
+        'user': user,
+        'amount': amount
+    }
+    return send_email_to_admins('New PayPal-withdraw request', 'emails/payments/paypal_request.html', context)

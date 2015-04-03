@@ -94,6 +94,7 @@ class Transaction(models.Model):
     MILESTONE = 'milestone'
     CREDIT = 'credit'
     PAYOUT = 'payout'
+    PAYPAL_PAYOUT = 'paypal-payout'
     REFERRAL_PAYMENT = 'referral-payment'
 
     TRANSACTION_TYPE_CHOICES = (
@@ -101,6 +102,7 @@ class Transaction(models.Model):
         (MILESTONE, 'Payment to Milestone'),
         (CREDIT, 'Credit'),
         (PAYOUT, 'Payout'),
+        (PAYPAL_PAYOUT, 'PayPal payout'),
         (REFERRAL_PAYMENT, 'Referral payment'),
     )
 
@@ -143,6 +145,6 @@ class Transaction(models.Model):
 def transaction_post_save(sender, instance, signal, created, **kwargs):
     if created:
         instance.displayed_at = instance.created_at
-        if instance.transaction_type in [Transaction.MILESTONE, Transaction.CREDIT, Transaction.PAYOUT]:
+        if instance.transaction_type in [Transaction.MILESTONE, Transaction.CREDIT, Transaction.PAYOUT, Transaction.PAYPAL_PAYOUT]:
             instance.displayed_at = utils.transaction_display_at(instance.created_at)
         instance.save()

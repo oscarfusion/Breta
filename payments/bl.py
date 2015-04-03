@@ -28,6 +28,8 @@ def get_fee_and_referrer_amount(amount):
 
 
 def create_transaction(credit_card_id, user, amount=None, transaction_type=Transaction.ESCROW, milestone_id=None):
+    if amount:
+        amount = Decimal(amount)
     if transaction_type == Transaction.ESCROW:
         transaction = create_escrow_transaction(credit_card_id, user, amount)
         email.send_payment_confirmation_email(transaction)
@@ -35,6 +37,8 @@ def create_transaction(credit_card_id, user, amount=None, transaction_type=Trans
         transaction = create_milestone_transaction(credit_card_id, user, milestone_id)
     elif transaction_type == Transaction.PAYOUT:
         transaction = create_payout_transaction(user, amount)
+    elif transaction_type == Transaction.PAYPAL_PAYOUT:
+        transaction = create_paypal_payout(user, amount)
     else:
         raise NotImplementedError()
     return transaction
@@ -104,11 +108,24 @@ def create_payout_transaction(user, amount):
     user_escrow_amount = get_user_balance(user.id)
     if payout_method and user_escrow_amount >= amount:
         transfer = stripe_api.create_transfer(amount, payout_method.stripe_recipient_id, 'Withdraw transfer')
-        Transaction.objects.create(
+        instance = Transaction.objects.create(
             payout_method=payout_method,
             stripe_id=transfer.id,
             extra_data=transfer.to_dict(),
             amount=amount,
             transaction_type=Transaction.PAYOUT,
-            receiver=user
+            payer=user
         )
+        return instance
+
+
+def create_paypal_payout(user, amount):
+    user_escrow_amount = get_user_balance(user.id)
+    if user_escrow_amount >= amount:
+        email.send_paypal_payout_request_to_admins(user, amount)
+        instance = Transaction.objects.create(
+            transaction_type=Transaction.PAYPAL_PAYOUT,
+            amount=amount,
+            payer=user
+        )
+        return instance
