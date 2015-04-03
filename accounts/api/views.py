@@ -62,6 +62,7 @@ class UserViewSet(viewsets.ModelViewSet):
             email_obj = None
         if email_obj:
             instance.referral_code = email_obj.referral_code
+            email_obj.delete()
         instance.ip_address = get_client_ip(self.request)
         instance.save()
         User.objects.filter(referrer_email=instance.email).update(referrer=instance)
@@ -98,13 +99,13 @@ class DeveloperViewSet(viewsets.ModelViewSet):
 class PortfolioProjectViewSet(viewsets.ModelViewSet):
     queryset = PortfolioProject.objects.all()
     serializer_class = PortfolioProjectSerializer
-    permission_classes = (WebsitePermission,)
+    permission_classes = (PortfolioProjectPermission,)
 
 
 class PortfolioProjectAttachmentViewSet(viewsets.ModelViewSet):
     queryset = PortfolioProjectAttachment.objects.all()
     serializer_class = PortfolioProjectAttachmentSerializer
-    permission_classes = (PortfolioProjectPermission,)
+    permission_classes = (PortfolioProjectAttachmentPermission,)
 
 
 class WebsiteViewSet(viewsets.ModelViewSet):
