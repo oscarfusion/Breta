@@ -49,9 +49,10 @@ class ProjectAdmin(admin.ModelAdmin):
 class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(TaskForm, self).__init__(*args, **kwargs)
-        self.fields['assigned'].queryset = self.parent_instance.project.members.filter(
-            projectmember__status=ProjectMember.STATUS_ACCEPTED
-        ).all()
+        if self.parent_instance:  # if we are creating new milestone
+            self.fields['assigned'].queryset = self.parent_instance.project.members.filter(
+                projectmember__status=ProjectMember.STATUS_ACCEPTED
+            ).all()
 
 
 class TasksInline(admin.StackedInline):
