@@ -4,6 +4,7 @@ from bitfield import BitHandler
 from rest_framework import serializers
 
 from ..models import User, Developer, Website, PortfolioProject, PortfolioProjectAttachment, Email
+from ..utils import filter_user_data
 
 
 class PortfolioProjectAttachmentSerializer(serializers.ModelSerializer):
@@ -73,7 +74,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user', 'location', 'is_active',
-                  'developer', 'avatar', 'referral_code', 'referrer', 'payout_method_exists', 'settings')
+                  'developer', 'avatar', 'referral_code', 'referrer', 'payout_method_exists', 'settings', 'paypal_email')
         read_only_fields = ('is_current_user', 'city', 'is_active', 'developer', 'referral_code', 'referrer')
 
     is_current_user = serializers.SerializerMethodField()
@@ -84,11 +85,20 @@ class UserSerializer(serializers.ModelSerializer):
         if 'request' in self.context:
             return self.context['request'].user.id == obj.id
         else:
-            return True
+            return False
 
     def get_developer(self, obj):
         dev = obj.developer.first()
         return dev.id if dev else None
+
+    def to_representation(self, obj):
+        data = super(UserSerializer, self).to_representation(obj)
+        return filter_user_data(data)
+
+    @property
+    def data(self):
+        res = super(UserSerializer, self).data
+        return filter_user_data(res)
 
 
 class EmailSerializer(serializers.ModelSerializer):

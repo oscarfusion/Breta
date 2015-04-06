@@ -121,6 +121,7 @@ def create_payout_transaction(user, amount):
 
 def create_paypal_payout(user, amount):
     user_escrow_amount = get_user_balance(user.id)
+    assert user.paypal_email, 'User %s does not have paypal email' % user.get_full_name()
     if user_escrow_amount >= amount:
         email.send_paypal_payout_request_to_admins(user, amount)
         instance = Transaction.objects.create(

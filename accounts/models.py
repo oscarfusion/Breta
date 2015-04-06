@@ -77,6 +77,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     referrer_email = models.EmailField(blank=True, null=True)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     settings = JSONField()
+    paypal_email = models.EmailField(blank=True, null=True)
 
     objects = UserManager()
 

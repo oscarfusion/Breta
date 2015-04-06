@@ -86,7 +86,9 @@ class UserViewSet(viewsets.ModelViewSet):
         If provided 'pk' is "me" then return the current user.
         """
         if pk == 'me':
-            return Response(UserSerializer(request.user).data)
+            return Response(UserSerializer(request.user, context={
+                'request': request
+            }).data)
         return super(UserViewSet, self).retrieve(request, pk)
 
 

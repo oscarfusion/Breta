@@ -8,6 +8,6 @@
 
     <p>{{ user.get_full_name }} requested ${{ amount }} via PayPal.</p>
 
-    <p>User's email is <a href="mailto:{{ user.email }}">{{ user.email }}</a></p>
+    <p>User's email is <a href="mailto:{{ user.paypal_email }}">{{ user.paypal_email }}</a></p>
 
 {% endblock %}

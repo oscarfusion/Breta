@@ -11,7 +11,7 @@ from ..utils import sort_project_messages
 
 class ProjectMessageChildrenField(relations.Field):
     def to_representation(self, value):
-        return ProjectMessageSerializer(value).data
+        return ProjectMessageSerializer(value, context=self.context).data
 
 
 class ProjectMessageChildrenManyRelatedField(relations.ManyRelatedField):
@@ -38,7 +38,10 @@ class ProjectMessageSerializer(serializers.ModelSerializer):
         child_relation=ProjectMessageChildrenField(), read_only=True, required=False
     )
     message_attachments = ProjectFileSerializer(many=True, read_only=True, required=False)
-    sender = UserSerializer(read_only=True, required=False)
+    sender = serializers.SerializerMethodField('get_sender_data', read_only=True, required=False)
+
+    def get_sender_data(self, obj):
+        return UserSerializer(obj.sender, context=self.context).data if obj.sender else None
 
 
 class ProjectMemberSerializer(serializers.ModelSerializer):
