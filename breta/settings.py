@@ -179,7 +179,9 @@ CONSTANCE_CONFIG = {
     'PO_FEE': (30, 'Percent of price project owner\'s pays as remuneration for using BRETA'),
     'DEVELOPER_FEE': (10, 'Percent of price project owner\'s pays as remuneration for using BRETA'),
     'DISABLE_PAYOUTS': (False, 'Disable payouts and withdraws'),
-    'REFERRAL_TAX_PERCENT': (1, 'Percent, which every user pays for their referrers if their exist')
+    'REFERRAL_TAX_PERCENT': (1, 'Percent, which every user pays for their referrers if their exist'),
+    'DEMO_MANAGER_ID': (0, 'Demo manager ID'),
+    'DEMO_DEVELOPER_ID': (0, 'Demo developer ID'),
 }
 
 DOMAIN = 'https://easy.breta.com'

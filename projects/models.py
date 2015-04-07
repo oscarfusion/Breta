@@ -56,6 +56,7 @@ class Project(models.Model):
     brief_message = models.OneToOneField('ProjectMessage', related_name='project', null=True, blank=True)
     brief_last_edited = models.DateTimeField(default=timezone.now)
     timeline = models.IntegerField(default=0)
+    is_demo = models.BooleanField(default=False)
 
     __original_manager = None
     __original_brief_status = None

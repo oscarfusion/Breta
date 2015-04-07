@@ -9,6 +9,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
+from projects.utils import create_demo_project_for_po
+
 from .serializers import (
     UserSerializer, DeveloperSerializer, PortfolioProjectSerializer,
     PortfolioProjectAttachmentSerializer, WebsiteSerializer, EmailSerializer
@@ -33,7 +35,6 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ('first_name', 'last_name')
 
     def perform_create(self, serializer):
-        # referral_code = serializer.initial_data['referral_code']
         referral_code = serializer.initial_data.get('referral_code', None)
         if referral_code:
             try:
@@ -70,6 +71,7 @@ class UserViewSet(viewsets.ModelViewSet):
         email.notify_admins_about_registration(instance)
         if not settings.TESTING:
             mailchimp_api.subscribe_user(instance)
+        create_demo_project_for_po(instance)
         return instance
 
     def create(self, request, *args, **kwargs):
@@ -96,6 +98,12 @@ class DeveloperViewSet(viewsets.ModelViewSet):
     queryset = Developer.objects.all()
     serializer_class = DeveloperSerializer
     permission_classes = (DeveloperPermissions,)
+
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        from projects.models import Project
+        # remove project owner's demo project if user is registered as developer
+        Project.objects.filter(user=instance.user, is_demo=True).delete()
 
 
 class PortfolioProjectViewSet(viewsets.ModelViewSet):

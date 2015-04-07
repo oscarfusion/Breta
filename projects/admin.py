@@ -45,6 +45,9 @@ class ProjectAdmin(admin.ModelAdmin):
     inlines = (ProjectMemberInline, ProjectFileInline, MilestoneInline)
     form = ProjectForm
 
+    def get_queryset(self, request):
+        return Project.objects.filter(is_demo=False).all()
+
 
 class TaskForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
