@@ -4,7 +4,6 @@ from rest_framework import viewsets
 from rest_framework.parsers import FileUploadParser, MultiPartParser
 
 from activities.models import Activity
-from payments import bl as payments_bl
 
 from .serializers import ProjectSerializer, ProjectFileSerializer, MilestoneSerializer, TaskSerializer, \
     ProjectMessageSerializer, ProjectMemberSerializer, QuoteSerializer
@@ -29,8 +28,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
         if 'type' in self.request.QUERY_PARAMS:
             if self.request.QUERY_PARAMS['type'] == 'my':
                 return Project.objects.select_related().filter(
-                    Q(user=self.request.user) | Q(members=self.request.user) | Q(manager=self.request.user)
+                    Q(user=self.request.user) |
+                    Q(manager=self.request.user) | (
+                        Q(members=self.request.user) & Q(memberships__status=ProjectMember.STATUS_ACCEPTED)
+                    )
                 ).distinct('id')
+        # return projects info if we have an active quote for it
         return Project.objects.select_related().filter(
             Q(user=self.request.user) | Q(members=self.request.user)
         ).distinct('id')
@@ -99,10 +102,6 @@ class MilestoneViewSet(viewsets.ModelViewSet):
                 milestone=new, project=new.project, type=Activity.TYPE_MILESTONE_STATUS_CHANGED, user=self.request.user
             )
             activity.save()
-        if old.status == Milestone.STATUS_ACCEPTED_BY_PM and new.status == Milestone.STATUS_ACCEPTED and \
-                new.project.user == self.request.user:
-            pass
-            # payments_bl.create_milestone_transfer(new)
 
 
 class TaskViewSet(viewsets.ModelViewSet):
