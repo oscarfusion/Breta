@@ -9,7 +9,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 
-from projects.utils import create_demo_project_for_po
+from projects.utils import create_demo_project_for_po, create_demo_project_for_developer
 
 from .serializers import (
     UserSerializer, DeveloperSerializer, PortfolioProjectSerializer,
@@ -104,6 +104,8 @@ class DeveloperViewSet(viewsets.ModelViewSet):
         from projects.models import Project
         # remove project owner's demo project if user is registered as developer
         Project.objects.filter(user=instance.user, is_demo=True).delete()
+        # and create demo project for developers
+        create_demo_project_for_developer(instance.user)
 
 
 class PortfolioProjectViewSet(viewsets.ModelViewSet):

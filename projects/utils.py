@@ -4,6 +4,8 @@ from django.utils.text import slugify
 from django.utils.timezone import make_aware, get_current_timezone, now, timedelta
 from constance import config
 
+from accounts.models import User
+
 
 def sort_project_messages(iterable):
     qs = sorted(list(iterable), key=lambda x: x.created_at or make_aware(
@@ -22,14 +24,8 @@ def sort_project_messages(iterable):
     return res
 
 
-def create_demo_project_for_po(user):
-    from accounts.models import User
+def create_demo_project(owner, manager, developer):
     from .models import Project, Milestone, Task, ProjectMember, ProjectMessage
-    try:
-        demo_manager = User.objects.get(pk=int(config.DEMO_MANAGER_ID))
-        demo_developer = User.objects.get(pk=int(config.DEMO_DEVELOPER_ID))
-    except User.DoesNotExist:
-        return
     name = u'Your first project'
     project = Project.objects.create(
         project_type=Project.WEBSITE,
@@ -44,7 +40,7 @@ def create_demo_project_for_po(user):
         """,
         price_range='1000,5000',
         slug=slugify(name),
-        manager=demo_manager,
+        manager=manager,
         brief="""
         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
         Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
@@ -54,14 +50,14 @@ def create_demo_project_for_po(user):
         """,
         brief_status=Project.BRIEF_READY,
         is_demo=True,
-        user=user
+        user=owner
     )
     brief_msg = ProjectMessage.objects.create(sender=project.manager)
     project.brief_message = brief_msg
     project.save()
     ProjectMember.objects.create(
         project=project,
-        member=demo_developer,
+        member=developer,
         status=ProjectMember.STATUS_ACCEPTED,
         type_of_work=ProjectMember.TYPE_OF_WORK_DEVELOPER,
         price_range='100,750'
@@ -87,7 +83,7 @@ def create_demo_project_for_po(user):
         """,
         due_date=now() - timedelta(days=10),
         amount=Decimal(500),
-        assigned=demo_developer
+        assigned=developer
     )
     Task.objects.create(
         milestone=milestone_1,
@@ -99,13 +95,13 @@ def create_demo_project_for_po(user):
         """,
         due_date=now() - timedelta(days=8),
         amount=Decimal(300),
-        assigned=demo_developer
+        assigned=developer
     )
     milestone_2 = Milestone.objects.create(
         project=project,
         due_date=now() + timedelta(days=10),
         name='Second milestone',
-        status=Milestone.STATUS_NO_STARTED,
+        status=Milestone.STATUS_IN_PROGRESS,
         description="""
         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
         Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
@@ -122,7 +118,7 @@ def create_demo_project_for_po(user):
         """,
         due_date=now() + timedelta(days=3),
         amount=Decimal(300),
-        assigned=demo_developer
+        assigned=developer
     )
     Task.objects.create(
         milestone=milestone_2,
@@ -134,13 +130,13 @@ def create_demo_project_for_po(user):
         """,
         due_date=now() + timedelta(days=6),
         amount=Decimal(300),
-        assigned=demo_developer
+        assigned=developer
     )
     milestone_3 = Milestone.objects.create(
         project=project,
         due_date=now() + timedelta(days=20),
         name='Third milestone',
-        status=Milestone.STATUS_IN_PROGRESS,
+        status=Milestone.STATUS_NO_STARTED,
         description="""
         Lorem Ipsum is simply dummy text of the printing and typesetting industry.
         Lorem Ipsum has been the industry's standard dummy text ever since the 1500s,
@@ -157,6 +153,23 @@ def create_demo_project_for_po(user):
         """,
         due_date=now() + timedelta(days=15),
         amount=Decimal(300),
-        assigned=demo_developer
+        assigned=developer
     )
     return project
+
+
+def create_demo_project_for_po(user):
+    try:
+        manager = User.objects.get(pk=int(config.DEMO_MANAGER_ID))
+        developer = User.objects.get(pk=int(config.DEMO_DEVELOPER_ID))
+    except User.DoesNotExist:
+        return None
+    return create_demo_project(owner=user, manager=manager, developer=developer)
+
+
+def create_demo_project_for_developer(user):
+    try:
+        manager = User.objects.get(pk=int(config.DEMO_MANAGER_ID))
+    except User.DoesNotExist:
+        return None
+    return create_demo_project(owner=manager, manager=manager, developer=user)
