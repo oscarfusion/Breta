@@ -41,6 +41,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def perform_create(self, obj):
         obj.save(user=self.request.user)
         email.send_new_project_email(obj.instance)
+        email.send_new_project_email_to_admin(obj.instance)
         Activity.objects.create(
             project=obj.instance, type=Activity.TYPE_NEW_PROJECT, user=self.request.user
         )

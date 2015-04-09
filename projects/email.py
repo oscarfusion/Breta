@@ -1,4 +1,8 @@
-from core.email import send_email
+from core.email import send_email, send_email_to_admins
+
+
+def send_new_project_email_to_admin(project):
+    return send_email_to_admins('New project created!', 'emails/projects/new_project_admin.html', {'project': project})
 
 
 def send_new_project_email(project):
