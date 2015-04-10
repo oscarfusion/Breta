@@ -29,7 +29,7 @@ class AuthTokenSerializer(serializers.Serializer):
             user = authenticate(email=email, password=password)
 
             if user:
-                if not user.is_active:
+                if not user.is_active and user.signup_completed:
                     msg = _('User account is disabled.')
                     raise exceptions.ValidationError(msg)
             else:
@@ -41,4 +41,3 @@ class AuthTokenSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
-

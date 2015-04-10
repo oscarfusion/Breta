@@ -74,7 +74,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'email', 'phone', 'city', 'is_current_user', 'location', 'is_active',
-                  'developer', 'avatar', 'referral_code', 'referrer', 'payout_method_exists', 'settings', 'paypal_email')
+                  'developer', 'avatar', 'referral_code', 'referrer', 'payout_method_exists', 'settings', 'paypal_email',
+                  'signup_completed', 'user_type')
         read_only_fields = ('is_current_user', 'city', 'is_active', 'developer', 'referral_code', 'referrer')
 
     is_current_user = serializers.SerializerMethodField()
