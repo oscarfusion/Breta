@@ -53,6 +53,16 @@ def get_referral_code():
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    PROJECT_OWNER = 'project-owner'
+    DEVELOPER = 'developer'
+    OTHER = 'other'
+
+    USER_TYPES = (
+        (PROJECT_OWNER, 'Project Owner'),
+        (DEVELOPER, 'Developer'),
+        (OTHER, 'Other'),
+    )
+
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
@@ -78,6 +88,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     settings = JSONField()
     paypal_email = models.EmailField(blank=True, null=True)
+    signup_completed = models.BooleanField(default=False)
+    user_type = models.CharField(max_length=255, choices=USER_TYPES, null=True, blank=True)
 
     objects = UserManager()
 
