@@ -1,2 +1,5 @@
 [production]
 root@104.131.243.227
+
+[production:vars]
+env=production

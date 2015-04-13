@@ -1,7 +1,11 @@
 from fabric.api import env, run, prefix
 from fabric.contrib.project import rsync_project
 
-env.hosts = ['root@104.131.243.227']
+env.roledefs = {
+    'dev': ['root@188.166.2.13'],
+    'prod': ['root@104.131.243.227'],
+}
+
 RSYNC_EXCLUDES = ['local_settings.py', '.git', '*.pyc', 'htmlcov', 'mediafiles', 'server', 'celerybeat-schedule']
 
 
@@ -41,4 +45,4 @@ def deploy():
     syncdb()
     collect_static()
     run('chmod -R 0755 /www')
-    run('supervisorctl restart breta')
+    run('supervisorctl restart all')

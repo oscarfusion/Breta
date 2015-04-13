@@ -1,6 +1,11 @@
-- hosts: all
+- hosts: production
   sudo: true
   roles:
     - app
     - postgres
     - redis
+
+- hosts: dev
+  sudo: true
+  roles:
+    - app

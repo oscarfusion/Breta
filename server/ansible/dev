@@ -1,0 +1,5 @@
+[dev]
+root@188.166.2.13
+
+[dev:vars]
+env=dev

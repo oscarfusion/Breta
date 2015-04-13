@@ -1,10 +1,18 @@
 server {
-    listen 443;
-    server_name easy.breta.com;
+    
+    {% if env == 'production' %}
+        listen 443;
+        server_name easy.breta.com;
+    {% else %}
+        listen 80;
+        server_name breta.lyapun.me;
+    {% endif %}
 
-    ssl on;
-    ssl_certificate /root/dokku/tls/breta/server.crt;
-    ssl_certificate_key /root/dokku/tls/breta/server.key;
+    {% if env == 'production' %}
+        ssl on;
+        ssl_certificate /root/dokku/tls/breta/server.crt;
+        ssl_certificate_key /root/dokku/tls/breta/server.key;
+    {% endif %}
 
     access_log /var/log/nginx/breta.access.log;
     error_log /var/log/nginx/breta.error.log;
