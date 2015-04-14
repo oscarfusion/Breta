@@ -39,8 +39,8 @@ class DeveloperSerializer(serializers.ModelSerializer):
     websites = WebsiteSerializer(many=True, read_only=True)
     portfolio_projects = PortfolioProjectSerializer(many=True, read_only=True)
 
-    project_preferences = SerializedBitField()
-    type = SerializedBareField()
+    project_preferences = SerializedBitField(required=False)
+    type = SerializedBareField(required=False)
 
 
 class UserSerializer(serializers.ModelSerializer):

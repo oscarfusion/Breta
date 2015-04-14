@@ -151,9 +151,9 @@ class Developer(models.Model):
     )
 
     user = models.ForeignKey(User, unique=True, related_name='developer')
-    type = MultiSelectField(choices=TYPE_CHOICES, default=DEVELOPER)
-    title = models.CharField(max_length=255)
-    bio = models.TextField()
+    type = MultiSelectField(choices=TYPE_CHOICES, default=DEVELOPER, blank=True, null=True)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    bio = models.TextField(null=True, blank=True)
     skills = ArrayField(dbtype='varchar')
     availability = models.CharField(max_length=255, choices=AVAILABLE_CHOICES, default=AVAILABLE_NOW)
     project_preferences = BitField(flags=PROJECT_PREFERENCES_FLAGS)
