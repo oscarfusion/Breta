@@ -44,5 +44,5 @@ def deploy():
     install_dependencies()
     syncdb()
     collect_static()
-    run('chmod -R 0755 /www')
+    run('chmod -R 0777 /www')
     run('supervisorctl restart all')
