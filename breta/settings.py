@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'constance',
     'constance.backends.database',
     'tinymce',
+    'multiselectfield',
 
     'accounts',
     'activities',

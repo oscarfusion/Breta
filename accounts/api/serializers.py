@@ -1,10 +1,8 @@
-from django.core.exceptions import ValidationError
-
-from bitfield import BitHandler
 from rest_framework import serializers
 
 from ..models import User, Developer, Website, PortfolioProject, PortfolioProjectAttachment, Email
 from ..utils import filter_user_data
+from .fields import SerializedBitField, SerializedBareField
 
 
 class PortfolioProjectAttachmentSerializer(serializers.ModelSerializer):
@@ -31,24 +29,6 @@ class WebsiteSerializer(serializers.ModelSerializer):
         read_only_fields = ('created_at', 'updated_at',)
 
 
-class SerializedBitField(serializers.Field):
-    def to_internal_value(self, data):
-        result = BitHandler(0, [k for k, v in Developer.PROJECT_PREFERENCES_FLAGS])
-        for k in data:
-            try:
-                setattr(result, str(k), True)
-            except AttributeError:
-                raise ValidationError('Unknown choice: %r' % (k,))
-        return int(result)
-
-    def to_representation(self, value):
-        result = []
-        for v in value:
-            if v[1]:
-                result.append(v[0])
-        return result
-
-
 class DeveloperSerializer(serializers.ModelSerializer):
     class Meta:
         model = Developer
@@ -60,14 +40,7 @@ class DeveloperSerializer(serializers.ModelSerializer):
     portfolio_projects = PortfolioProjectSerializer(many=True, read_only=True)
 
     project_preferences = SerializedBitField()
-
-
-class JSONFieldSerializer(serializers.Field):
-    def to_internal_value(self, data):
-        return data
-
-    def to_representation(self, value):
-        return value
+    type = SerializedBareField()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -80,7 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     is_current_user = serializers.SerializerMethodField()
     developer = serializers.SerializerMethodField()
-    settings = JSONFieldSerializer(required=False)
+    settings = SerializedBareField(required=False)
 
     def get_is_current_user(self, obj):
         if 'request' in self.context:

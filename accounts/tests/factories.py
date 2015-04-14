@@ -1,5 +1,4 @@
 import factory
-from factory.fuzzy import FuzzyChoice
 
 from ..models import Developer
 
@@ -23,4 +22,4 @@ class DeveloperFactory(factory.django.DjangoModelFactory):
     title = factory.Sequence(lambda n: 'Cool developer%d' % n)
     bio = factory.Sequence(lambda n: 'Cool developer%d' % n)
     availability = factory.Sequence(lambda n: 'Available%d' % n)
-    type = FuzzyChoice(Developer.TYPE_CHOICES)
+    type = factory.Sequence(lambda n: Developer.DEVELOPER)

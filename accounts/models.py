@@ -10,6 +10,7 @@ from django.utils import timezone
 from django.utils.translation import ugettext as _
 from djorm_pgarray.fields import ArrayField
 from djorm_pgjson.fields import JSONField
+from multiselectfield import MultiSelectField
 from rest_framework.authtoken.models import Token
 from bitfield import BitField
 
@@ -150,7 +151,7 @@ class Developer(models.Model):
     )
 
     user = models.ForeignKey(User, unique=True, related_name='developer')
-    type = models.CharField(max_length=255, choices=TYPE_CHOICES, default=DEVELOPER)
+    type = MultiSelectField(choices=TYPE_CHOICES, default=DEVELOPER)
     title = models.CharField(max_length=255)
     bio = models.TextField()
     skills = ArrayField(dbtype='varchar')

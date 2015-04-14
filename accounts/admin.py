@@ -6,6 +6,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from bitfield import BitField
 from bitfield.forms import BitFieldCheckboxSelectMultiple
 from bitfield.admin import BitFieldListFilter
+from multiselectfield import MultiSelectField, MultiSelectFormField
 
 from .models import User, Developer, Website, PortfolioProject, PortfolioProjectAttachment, Email
 
@@ -90,7 +91,8 @@ class DeveloperAdmin(admin.ModelAdmin):
     search_fields = ('type',)
 
     formfield_overrides = {
-        BitField: {'widget': BitFieldCheckboxSelectMultiple}
+        BitField: {'widget': BitFieldCheckboxSelectMultiple},
+        MultiSelectField: {'widget': MultiSelectFormField},
     }
 
     list_filter = (
