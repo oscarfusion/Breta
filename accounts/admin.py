@@ -48,8 +48,8 @@ class AdminUserChangeForm(UserChangeForm):
 class UserAdmin(DjangoUserAdmin):
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'avatar', 'referral_code', 'referrer', 'referrer_email', 'ip_address', 'paypal_email', 'settings')}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'phone', 'location', 'avatar', 'referral_code', 'referrer', 'referrer_email', 'ip_address', 'paypal_email', 'settings', 'user_type')}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'signup_completed',
                                        'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
