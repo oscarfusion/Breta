@@ -82,6 +82,12 @@ class Project(models.Model):
                 sent_at=timezone.now(),
             )
             MessageRecipient.objects.create(message=msg, recipient=self.user)
+            if self.brief_message is None:
+                msg = ProjectMessage.objects.create(sender=self.manager)
+                msg.save()
+                self.brief_message = msg
+            if self.brief_message.sender != self.manager:
+                self.brief_message.sender = self.manager
         if self.__original_brief_status == Project.BRIEF_NOT_READY and self.brief_status == Project.BRIEF_READY:
             email.send_brief_ready_email(self)
         if self.brief != self.__original_brief:
@@ -107,16 +113,6 @@ class Project(models.Model):
 
     def __unicode__(self):
         return self.name
-
-
-def project_post_save(sender, instance, created=False, **kwargs):
-    if instance.manager is not None and instance.brief_message is None:
-        msg = ProjectMessage.objects.create(sender=instance.manager)
-        msg.save()
-        instance.brief_message = msg
-        instance.save()
-
-post_save.connect(project_post_save, sender=Project)
 
 
 class ProjectMember(models.Model):
