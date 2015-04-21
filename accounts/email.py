@@ -5,7 +5,7 @@ from core.email import send_email, send_email_to_admins
 
 def send_welcome_email(user):
     template = 'emails/accounts/welcome_developer.html' if user.developer.first() else 'emails/accounts/welcome.html'
-    return send_email([user.email], 'Welcome to breta.com', template, {'user': user})
+    return send_email([user.email], 'Welcome to Breta. Let\'s get started!', template, {'user': user})
 
 
 def send_account_activated_email(user):
@@ -18,11 +18,11 @@ def send_password_changed_email(user):
 
 
 def notify_admins_about_registration(user):
-    return send_email_to_admins('%s joined!' % user.get_full_name(), 'emails/accounts/user_joined.html', {'user': user})
+    return send_email_to_admins('New user - %s' % user.get_full_name(), 'emails/accounts/user_joined.html', {'user': user})
 
 
 def notify_admins_about_newsletter_signup(email):
-    return send_email_to_admins('%s has been subscribed to news on Breta' % email, 'emails/accounts/email_subscribed.html', {'email': email})
+    return send_email_to_admins('Newsletter subscriber - %s' % email, 'emails/accounts/email_subscribed.html', {'email': email})
 
 
 def send_invite_email(email, referral_link):
