@@ -1,13 +1,13 @@
 {% extends 'emails/base.html' %}
 
 {% block title %}
-    Hello, {{ project.user.first_name }}!
+    Hi {{ project.user.first_name }},
 {% endblock %}
 
 {% block content %}
 
-    <p>Manager was assigned to your project - {{ project.name }}.</p>
+    <p>A concierge has been assigned to {{ project.name }}. You'll be receiving your free blueprint shortly.</p>
 
-    <p>You can access your project using link: <a href="{{ project.get_absolute_url }}">{{ project.get_absolute_url }}</a></p>
+    <p>You can always access your project by <a href="{{ project.get_absolute_url }}">clicking here</a>.</p>
 
 {% endblock %}
