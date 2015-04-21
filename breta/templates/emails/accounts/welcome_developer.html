@@ -1,11 +1,21 @@
-{% extends 'emails/base.html' %}
+{% extends 'emails/clean.html' %}
 
 {% block title %}
-    Hello, {{ user.first_name }}!
+    Hi {{ user.first_name }},
 {% endblock %}
 
 {% block content %}
-
-    Welcome to breta.com!
-
+<p>&nbsp;</p>
+Welcome to Breta, a place to easily create custom apps and websites at a flexible cost. 
+<p>&nbsp;</p>
+What you can expect<br>
+- Every client on our site is vetted, and has verified payment information.<br>
+- We handle all payments, contracts, negotiations, and legal for you.<br>
+- All projects include a concierge, making sure requirements are on target.<br>
+- We scope the project for you. No more wasting time with annoying clients.
+<p>&nbsp;</p>
+Welcome to an exciting new way for freelancers to work. Less stress and less hassle.
+-The breta team
+<p>&nbsp;</p>
+P.S. We would love to hear how we could make freelancing easier. Simply reply to this email to tell us, and we'll send you some free swag!
 {% endblock %}
