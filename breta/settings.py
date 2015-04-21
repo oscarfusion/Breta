@@ -169,7 +169,7 @@ MAILCHIMP_DEFAULT_LIST = os.environ.get('MAILCHIMP_DEFAULT_LIST')
 
 from static_settings import *  # noqa
 
-DEFAULT_FROM_EMAIL = 'Breta team <support@breta.com>'
+DEFAULT_FROM_EMAIL = 'Breta <support@breta.com>'
 ADMINS = (
     ('Elliot', 'elliot@breta.com',),
 )
