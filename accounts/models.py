@@ -108,8 +108,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     def save(self, *args, **kwargs):
         if not self.referral_code:
             self.referral_code = get_referral_code()
-        if self.__original_is_active is False and self.is_active is True and self.developer.exists():
-            email.send_developer_accepted_email(self)
+        if self.__original_is_active is False and self.is_active is True:
+            email.send_account_activated_email(self)
         super(User, self).save(*args, **kwargs)
 
     def get_short_name(self):
