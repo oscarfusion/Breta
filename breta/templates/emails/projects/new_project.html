@@ -1,25 +1,25 @@
 {% extends 'emails/base.html' %}
 
 {% block title %}
-    Hello, {{ project.user.first_name }}!
+    Hi {{ project.user.first_name }},
 {% endblock %}
 
 {% block content %}
+Welcome to Breta, a place to easily create custom apps and websites at a flexible cost. 
 
-Welcome to Breta, a place to create better websites and apps - with confidence.
+What you can expect
+- Everyone gets a free custom blueprint. No credit card necessary.
+- Our intelligent platform guides and manages your project. Stress-free.
+- You'll get a dedicated concierge who's with you every step of the way.
+- We guarantee there's no need to worry about quality or reliability.
 
-Here's how it works
+Your free blueprint has been added to the queue, and you should receive it from your concierge in 48 hours.
 
-- Every time you start a project, you'll get a custom blueprint - for free.
-- All projects get access to a dedicated concierge and the best developers & designers from around the globe.  
-- Your concierge will manage the project so you don't have to. Totally stress-free, right?
-- Everything you do on Breta is quality guaranteed, and comes with a price match promise.
-
-The team thanks you for submitting your project, and for joining :)
-
-    <p>You can access your project using this link: <a href="{{ project.get_absolute_url }}">{{ project.get_absolute_url }}</a></p>
+<p>You can access your project by <a href="{{ project.get_absolute_url }}">clicking here</a>.</p>
 
 
-Your dedicated concierge will be in touch soon with your free blueprint, but don't hesitate to drop us a line at any time!
+Thanks for joining!
+-The breta team
 
+P.S. Our price match promise will match a quoted price from any agency. We won't be beat!
 {% endblock %}
