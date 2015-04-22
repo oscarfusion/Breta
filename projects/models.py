@@ -72,8 +72,9 @@ class Project(models.Model):
         self.slug = slugify(unicode(self.name))
         if self.__original_manager is None and self.manager is not None:
             from breta_messages.models import Message, MessageRecipient
-            email.send_manager_assigned_email(self)
-            email.send_project_assigned_email(self)
+            if not self.is_demo:
+                email.send_manager_assigned_email(self)
+                email.send_project_assigned_email(self)
             msg = Message.objects.create(
                 type=Message.TYPE_MESSAGE,
                 sender=self.manager,
@@ -217,7 +218,8 @@ class Milestone(models.Model):
                 milestone=self, project=self.project, type=Activity.TYPE_MILESTONE_STATUS_CHANGED, user=user
             )
             activity.save()
-            email.send_milestone_completed_email(self)
+            if not self.project.is_demo:
+                email.send_milestone_completed_email(self)
 
     def __unicode__(self):
         return '%s - %s' % (self.project.name if self.project else None, self.name)
@@ -297,14 +299,16 @@ def task_milestone_post_save(sender, instance, created=False, **kwargs):
         message.save()
     if sender is Milestone:
         if instance.status == Milestone.STATUS_ACCEPTED and instance.project.milestones.filter(~(Q(status=Milestone.STATUS_ACCEPTED))).count() == 0:
-            email.send_project_completed_email(instance.project)
+            if not instance.project.is_demo:
+                email.send_project_completed_email(instance.project)
             Activity.objects.create(
                 type=Activity.TYPE_PROJECT_COMPLETED,
                 project=instance.project,
                 user=instance.project.user
             )
         if instance.status == Milestone.STATUS_ACCEPTED_BY_PM:
-            email.send_milestone_accepted_by_pm_email(instance)
+            if not instance.project.is_demo:
+                email.send_milestone_accepted_by_pm_email(instance)
             Activity.objects.create(
                 type=Activity.TYPE_MILESTONE_ACCEPTED_BY_PM,
                 project=instance.project,
@@ -312,7 +316,8 @@ def task_milestone_post_save(sender, instance, created=False, **kwargs):
                 user=instance.project.manager
             )
         if instance.status == Milestone.STATUS_ACCEPTED:
-            email.send_milestone_accepted_email(instance)
+            if not instance.project.is_demo:
+                email.send_milestone_accepted_email(instance)
             Activity.objects.create(
                 type=Activity.TYPE_MILESTONE_ACCEPTED,
                 project=instance.project,
