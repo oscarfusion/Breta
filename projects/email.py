@@ -7,12 +7,12 @@ def send_new_project_email_to_admin(project):
 
 def send_new_project_email(project):
     if project.user.settings.get('new_project', True):
-        return send_email([project.user.email], 'Thank you for submitting new project', 'emails/projects/new_project.html', {'project': project})
+        return send_email([project.user.email], 'Welcome to Breta. Let\'s get started!', 'emails/projects/new_project.html', {'project': project})
 
 
 def send_manager_assigned_email(project):
     if project.user.settings.get('manager_assigned', True):
-        return send_email([project.user.email], 'Manager assigned to your project', 'emails/projects/manager_assigned.html', {'project': project})
+        return send_email([project.user.email], 'A concierge has been assigned to your project', 'emails/projects/manager_assigned.html', {'project': project})
 
 
 def send_brief_ready_email(project):
