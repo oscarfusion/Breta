@@ -7,7 +7,6 @@ from django.utils.encoding import force_text, force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth import get_user_model
 
-from ..models import Email
 from .. import email
 
 
@@ -17,9 +16,9 @@ class ResetPasswordForm(PasswordResetForm):
              email_template_name='registration/password_reset_email.html',
              use_https=False, token_generator=default_token_generator,
              from_email=None, request=None, html_email_template_name=None):
-        UserModel = get_user_model()()
+        UserModel = get_user_model()  # noqa
         email_val = self.cleaned_data["email"]
-        active_users = UserModel._default_manager.filter(
+        active_users = UserModel.objects.filter(
             email__iexact=email_val, is_active=True)
         for user in active_users:
             # Make sure that no email is sent to a user that actually has
@@ -76,10 +75,22 @@ class ResetPasswordConfirmForm(SetPasswordForm):
         super(ResetPasswordConfirmForm, self).save(commit)
 
 
-class EmailForm(forms.ModelForm):
-    class Meta:
-        model = Email
-        fields = ('email', 'from_landing')
+class EmailForm(forms.Form):
+    email = forms.EmailField(required=True)
+    from_landing = forms.BooleanField(required=False)
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        try:
+            get_user_model().objects.get(email=email)
+        except get_user_model().DoesNotExist:
+            return email
+        raise ValidationError('Email is already used.')
+
+    def save(self):
+        instance = get_user_model().objects.create(email=self.cleaned_data['email'])
+        instance.set_unusable_password()
+        return instance
 
 
 class InviteUserForm(forms.Form):

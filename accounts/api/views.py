@@ -13,7 +13,7 @@ from projects.utils import create_demo_project_for_po, create_demo_project_for_d
 
 from .serializers import (
     UserSerializer, DeveloperSerializer, PortfolioProjectSerializer,
-    PortfolioProjectAttachmentSerializer, WebsiteSerializer, EmailSerializer
+    PortfolioProjectAttachmentSerializer, WebsiteSerializer
 )
 
 from .permissions import (
@@ -83,8 +83,31 @@ class UserViewSet(viewsets.ModelViewSet):
         elif was_subscribed_to_newsletters and not subscribe_to_newsletters:
             mailchimp_api.unsubscribe_user(instance)
 
+    def check_email(self, email):
+        try:
+            user = User.objects.get(email=email)
+            if user and not user.has_usable_password():
+                return user
+            else:
+                return None
+        except User.DoesNotExist:
+            return None
+
     def create(self, request, *args, **kwargs):
-        resp = super(UserViewSet, self).create(request, args, kwargs)
+        if 'email' in request.data:
+            user = self.check_email(request.data['email'])
+        else:
+            user = None
+        if user:
+            serializer = self.get_serializer(data=request.data, instance=user)
+        else:
+            serializer = self.get_serializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        resp = Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
         if resp.status_code != 201:
             return resp
         user_id = resp.data['id']
@@ -187,25 +210,30 @@ class ResetPasswordConfirmView(generics.CreateAPIView):
 
 
 class EmailViewSet(viewsets.ModelViewSet):
-    serializer_class = EmailSerializer
+    serializer_class = UserSerializer
     permission_classes = (EmailPermissions,)
-    queryset = Email.objects.all()
+    queryset = User.objects.all()
 
     def create(self, request, *args, **kwargs):
-        form = EmailForm(request.data)
+        form = EmailForm(request.POST)
         instance = None
         if form.is_valid():
             instance = form.save()
             instance.ip_address = get_client_ip(request)
             instance.save()
+            mailchimp_api.subscribe_by_email(instance.email)
+            email.send_user_subscribed_email(instance.email)
             email.notify_admins_about_newsletter_signup(instance.email)
         else:
-            try:
-                instance = Email.objects.get(email=form.data['email'])
-            except Email.DoesNotExist:
+            if 'email' in request.POST:
+                try:
+                    instance = User.objects.get(email=request.POST['email'])
+                except User.DoesNotExist:
+                    instance = None
+            else:
                 instance = None
         if instance:
-            return Response(EmailSerializer(instance).data, status=status.HTTP_200_OK)
+            return Response({'referralLink': instance.referral_code}, status=status.HTTP_200_OK)
         else:
             return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
