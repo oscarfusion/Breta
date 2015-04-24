@@ -106,10 +106,10 @@ class Project(models.Model):
 
     @property
     def progress(self):
-        amount = self.milestones.count()
+        amount = Task.objects.filter(milestone__project=self.id).count()
         if amount == 0:
             return 0
-        completed = self.milestones.filter(status=Milestone.STATUS_ACCEPTED).count()
+        completed = Task.objects.filter(milestone__project=self.id, status=Task.STATUS_COMPLETE).count()
         return float('%.2f' % (completed * 1.0 / amount)) * 100
 
     def __unicode__(self):
