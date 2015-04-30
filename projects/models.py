@@ -257,11 +257,22 @@ class Task(models.Model):
     amount = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     assigned = models.ForeignKey(User, related_name='tasks', blank=True, null=True)
 
+    __original_assigned = None
+
+    def __init__(self, *args, **kwargs):
+        super(Task, self).__init__(*args, **kwargs)
+        self.__original_assigned = self.assigned
+
     def __unicode__(self):
         return '%s - %s' % (self.milestone.name if self.milestone else None, self.name)
 
     def get_absolute_url(self):
         return '{}/projects/{}/tasks/{}'.format(settings.DOMAIN, self.milestone.project_id, self.id)
+
+    def save(self, *args, **kwargs):
+        super(Task, self).save(*args, **kwargs)
+        if self.__original_assigned != self.assigned:
+            email.send_task_assigned_email(self.assigned, self)
 
 
 class ProjectMessage(models.Model):

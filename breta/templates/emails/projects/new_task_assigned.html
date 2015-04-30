@@ -1,0 +1,12 @@
+{% extends 'emails/clean.html' %}
+
+{% block title %}
+    Hi {{ user.first_name }},
+{% endblock %}
+
+{% block content %}
+<p>
+    Task "{{ task.name }}" is assigned to you.
+</p>
+Access task by <a href="{{ task.get_absolute_url }}">clicking here</a>.
+{% endblock %}

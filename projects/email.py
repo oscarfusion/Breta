@@ -82,3 +82,8 @@ def send_milestone_accepted_email(milestone):
 def send_brief_accepted_email(project):
     if project.manager.settings.get('brief_accepted', True):
         return send_email([project.manager.email], 'Brief is accepted', 'emails/projects/brief_accepted.html', {'project': project})
+
+
+def send_task_assigned_email(user, task):
+    if user.settings.get('new_task_assigned', True):
+        return send_email([user.email], 'New task assigned', 'emails/projects/new_task_assigned.html', {'user': user, 'task': task})

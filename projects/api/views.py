@@ -35,7 +35,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
                 ).distinct('id')
         # return projects info if we have an active quote for it
         return Project.objects.select_related().filter(
-            Q(user=self.request.user) | Q(members=self.request.user)
+            Q(user=self.request.user) |
+            Q(members=self.request.user) |
+            Q(manager=self.request.user)
         ).distinct('id')
 
     def perform_create(self, obj):

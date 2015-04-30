@@ -9,8 +9,11 @@ class ProjectPermissions(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         return (
-            request.user.is_authenticated() and
-            (obj.user == request.user or request.user in obj.members.all())
+            request.user.is_authenticated() and (
+                obj.user == request.user or
+                obj.manager == request.user or
+                request.user in obj.members.all()
+            )
         )
 
 
