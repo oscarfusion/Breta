@@ -14,6 +14,7 @@ from payments.api import views as payments_views
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'activities', activity_views.ActivityViewSet)
 router.register(r'users', account_views.UserViewSet)
+router.register(r'users-search', account_views.UsersSearchViewSet)
 router.register(r'developers', account_views.DeveloperViewSet)
 router.register(r'portfolio-projects', account_views.PortfolioProjectViewSet)
 router.register(r'portfolio-project-attachments', account_views.PortfolioProjectAttachmentViewSet)

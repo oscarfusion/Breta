@@ -75,6 +75,12 @@ class UserSerializer(serializers.ModelSerializer):
         return filter_user_data(res)
 
 
+class UserSearchSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'first_name', 'last_name',)
+
+
 class EmailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Email

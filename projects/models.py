@@ -138,7 +138,7 @@ class ProjectMember(models.Model):
     )
 
     project = models.ForeignKey(Project, related_name='memberships')
-    member = models.ForeignKey(User)
+    member = models.ForeignKey(User, related_name='project_memberships')
     status = models.CharField(max_length=255, choices=STATUS_CHOICES, default=STATUS_PENDING)
     type_of_work = models.CharField(max_length=255, choices=TYPE_OF_WORK_CHOICES, default=TYPE_OF_WORK_DEVELOPER, null=True, blank=True)
     price_range = models.CharField(max_length=255, null=True, blank=True)

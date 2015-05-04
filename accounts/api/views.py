@@ -13,7 +13,7 @@ from projects.utils import create_demo_project_for_po, create_demo_project_for_d
 
 from .serializers import (
     UserSerializer, DeveloperSerializer, PortfolioProjectSerializer,
-    PortfolioProjectAttachmentSerializer, WebsiteSerializer
+    PortfolioProjectAttachmentSerializer, WebsiteSerializer, UserSearchSerializer
 )
 
 from .permissions import (
@@ -251,3 +251,41 @@ class InvityByEmailView(generics.CreateAPIView):
                 'success': True
             }, status=status.HTTP_200_OK)
         return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UsersSearchViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSearchSerializer
+    permission_classes = (UserPermissions, )
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('first_name', 'last_name')
+
+    def get_queryset(self):
+        user = self.request.user
+        users_ids = []
+
+        # if user is project owner
+        for project in user.projects.select_related('manager', 'members').all():
+            if project.manager:
+                users_ids.append(project.manager.id)
+            users_ids.extend(list(project.members.values_list('id', flat=True)))
+
+        # if user is project manager
+        for project in user.manager_projects.select_related('member', 'project', 'project__members', 'project__user').all():
+            users_ids.append(project.user.id)
+            users_ids.extend(list(project.members.values_list('id', flat=True)))
+
+        # if user is developer
+        for proj_member in user.project_memberships.select_related('member', 'project', 'project__members', 'project__manager', 'project__user').all():
+            users_ids.append(proj_member.project.user.id)
+            if proj_member.project.manager:
+                users_ids.append(proj_member.project.manager.id)
+            users_ids.extend(list(proj_member.project.members.values_list('id', flat=True)))
+
+        users_ids = list(set(users_ids))  # remove duplicates
+
+        # remove own id
+        if user.id in users_ids:
+            users_ids.remove(user.id)
+
+        return User.objects.filter(id__in=users_ids)
