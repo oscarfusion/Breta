@@ -271,7 +271,7 @@ class Task(models.Model):
 
     def save(self, *args, **kwargs):
         super(Task, self).save(*args, **kwargs)
-        if self.__original_assigned != self.assigned:
+        if self.__original_assigned != self.assigned and self.assigned is not None:
             email.send_task_assigned_email(self.assigned, self)
 
 

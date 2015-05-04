@@ -54,7 +54,7 @@ class TaskForm(forms.ModelForm):
         super(TaskForm, self).__init__(*args, **kwargs)
         if self.parent_instance:  # if we are creating new milestone
             self.fields['assigned'].queryset = self.parent_instance.project.members.filter(
-                projectmember__status=ProjectMember.STATUS_ACCEPTED
+                project_memberships__status=ProjectMember.STATUS_ACCEPTED
             ).all()
 
 
