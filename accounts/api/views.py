@@ -265,7 +265,7 @@ class UsersSearchViewSet(viewsets.ModelViewSet):
         users_ids = []
 
         # if user is project owner
-        for project in user.projects.select_related('manager', 'members').all():
+        for project in user.own_projects.select_related('manager', 'members').all():
             if project.manager:
                 users_ids.append(project.manager.id)
             users_ids.extend(list(project.members.values_list('id', flat=True)))

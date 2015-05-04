@@ -48,7 +48,7 @@ class Project(models.Model):
     slug = models.SlugField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, related_name='own_projects')
     members = models.ManyToManyField(User, related_name='projects', through='ProjectMember', through_fields=('project', 'member'), null=True, blank=True)
     manager = models.ForeignKey(User, blank=True, null=True, related_name='manager_projects')
     brief = models.TextField(blank=True, null=True)
