@@ -110,7 +110,7 @@ class Project(models.Model):
         if amount == 0:
             return 0
         completed = Task.objects.filter(milestone__project=self.id, status=Task.STATUS_COMPLETE).count()
-        return float('%.2f' % (completed * 1.0 / amount)) * 100
+        return int(completed * 100.0 / amount)
 
     def __unicode__(self):
         return self.name
