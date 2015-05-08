@@ -149,8 +149,16 @@ class ProjectMessageViewSet(viewsets.ModelViewSet):
         qs = sort_project_messages(self.queryset)
         return ProjectMessage.objects.filter(id__in=[o.id for o in qs])
 
-    def perform_create(self, obj):
-        obj.save(sender=self.request.user)
+    def perform_create(self, serializer):
+        instance = serializer.save(sender=self.request.user)
+        parent = instance.parent
+        if not parent:
+            return
+        project = parent.project
+        if not project:
+            return
+        recipient = project.manager if instance.sender == project.user else project.user
+        email.send_brief_commented_email(recipient, parent.project)
 
 
 class ProjectMemberViewSet(viewsets.ModelViewSet):

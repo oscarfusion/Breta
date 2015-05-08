@@ -87,3 +87,8 @@ def send_brief_accepted_email(project):
 def send_task_assigned_email(user, task):
     if user.settings.get('new_task_assigned', True):
         return send_email([user.email], 'New task assigned', 'emails/projects/new_task_assigned.html', {'user': user, 'task': task})
+
+
+def send_brief_commented_email(user, project):
+    if user.settings.get('new_brief_comment', True):
+        return send_email([user.email], 'New comment on brief at {}'.format(project.name), 'emails/projects/brief_commented.html', {'user': user, 'project': project})

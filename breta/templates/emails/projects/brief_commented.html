@@ -1,0 +1,13 @@
+{% extends 'emails/clean.html' %}
+
+{% block title %}
+    Hello, {{ user.first_name }}!
+{% endblock %}
+
+{% block content %}
+
+    <p>There are new comment on Brief at "{{ project.name }}" project!</p>
+
+    <p>You can check it using link: <a href="{{ project.get_brief_url }}">{{ project.get_brief_url }}</a></p>
+
+{% endblock %}
