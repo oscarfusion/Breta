@@ -8,7 +8,7 @@ from bitfield.forms import BitFieldCheckboxSelectMultiple
 from bitfield.admin import BitFieldListFilter
 from multiselectfield import MultiSelectField, MultiSelectFormField
 
-from .models import User, Developer, Website, PortfolioProject, PortfolioProjectAttachment, Email
+from .models import User, Developer, Website, PortfolioProject, PortfolioProjectAttachment
 
 
 class AdminUserCreationForm(UserCreationForm):
@@ -107,4 +107,3 @@ class EmailAdmin(admin.ModelAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Developer, DeveloperAdmin)
-admin.site.register(Email, EmailAdmin)
