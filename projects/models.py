@@ -41,7 +41,7 @@ class Project(models.Model):
 
     project_type = models.CharField(max_length=255, choices=PROJECT_CHOICES, default=WEBSITE)
     name = models.CharField(max_length=255)
-    idea = models.CharField(max_length=255)
+    idea = models.TextField()
     description = models.TextField()
     price_range = models.CharField(max_length=255)
     is_sure_about_price = models.BooleanField(default=False)
