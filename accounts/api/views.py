@@ -55,7 +55,6 @@ class UserViewSet(viewsets.ModelViewSet):
             # if 'HTTP_REFERER' in self.request.stream.META:
             #     if 'project-owner' in self.request.stream.META['HTTP_REFERER']:
             #         instance.is_active = True
-            instance.is_active = False
             instance.set_password(password)
         try:
             email_obj = Email.objects.get(email=instance.email)
@@ -64,6 +63,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if email_obj:
             instance.referral_code = email_obj.referral_code
             email_obj.delete()
+        instance.is_active = True
         instance.ip_address = get_client_ip(self.request)
         instance.save()
         User.objects.filter(referrer_email=instance.email).update(referrer=instance)
