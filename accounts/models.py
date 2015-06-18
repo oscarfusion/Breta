@@ -122,6 +122,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def payout_method_exists(self):
         return self.payout_methods.count() > 0
 
+    @property
+    def safe_settings(self):
+        return self.settings if isinstance(self.settings, dict) else {}
+
 
 @receiver(post_save, sender=User)
 def init_new_user(sender, instance, signal, created, **kwargs):

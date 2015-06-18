@@ -75,9 +75,9 @@ class UserViewSet(viewsets.ModelViewSet):
         return instance
 
     def perform_update(self, serializer):
-        was_subscribed_to_newsletters = serializer.instance.settings.get('receive_newsletters', True)
+        was_subscribed_to_newsletters = serializer.instance.safe_settings.get('receive_newsletters', True)
         instance = serializer.save()
-        subscribe_to_newsletters = instance.settings.get('receive_newsletters', True)
+        subscribe_to_newsletters = instance.safe_settings.get('receive_newsletters', True)
         if not was_subscribed_to_newsletters and subscribe_to_newsletters:
             mailchimp_api.subscribe_user(instance)
         elif was_subscribed_to_newsletters and not subscribe_to_newsletters:
