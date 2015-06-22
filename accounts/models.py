@@ -116,7 +116,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.first_name
 
     def get_full_name(self):
-        return '{} {}'.format(self.first_name, self.last_name)
+        return u'{} {}'.format(self.first_name, self.last_name)
 
     @property
     def payout_method_exists(self):
