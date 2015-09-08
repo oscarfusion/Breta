@@ -145,7 +145,7 @@ def create_demo_project(owner, manager, developer):
     )
     Task.objects.create(
         milestone=milestone_3,
-        status=Task.STATUS_DEFAULT,
+        status=Task.STATUS_IN_PROGRESS,
         name="Last task",
         description="""
         Lorem Ipsum is simply dummy text of the printing and typesetting industry.

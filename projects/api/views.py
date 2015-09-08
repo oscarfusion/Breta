@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.utils import timezone
 
 from rest_framework import viewsets
 from rest_framework.parsers import FileUploadParser, MultiPartParser
@@ -200,5 +201,6 @@ class QuoteViewSet(viewsets.ModelViewSet):
         qs = self.queryset
         if 'project' in self.request.QUERY_PARAMS:
             project = self.request.QUERY_PARAMS['project']
-            return qs.filter(project_member__project=project)
+            time = timezone.now() - timezone.timedelta(days=1)
+            qs = qs.filter(project_member__project=project, created_at__lte=time)
         return qs

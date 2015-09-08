@@ -143,7 +143,7 @@ class MilestonesAPITestCase(APITestCase):
 
 
 class TasksAPITestCase(APITestCase):
-    def fake_data(self, milestone=None, status=Task.STATUS_DEFAULT, name='Test name',
+    def fake_data(self, milestone=None, status=Task.STATUS_IN_PROGRESS, name='Test name',
                   description='Test description', due_date=timezone.now().date()):
         if milestone is None:
             milestone = MilestoneFactory()

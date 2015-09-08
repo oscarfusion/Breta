@@ -235,20 +235,18 @@ class Milestone(models.Model):
 
 
 class Task(models.Model):
-    STATUS_DEFAULT = '-'
     STATUS_IN_PROGRESS = 'IP'
     STATUS_COMPLETE = 'CM'
     STATUS_APPROVED = 'APP'
 
     STATUS_CHOICES = (
-        (STATUS_DEFAULT, '-',),
         (STATUS_IN_PROGRESS, 'In progress',),
         (STATUS_COMPLETE, 'Complete',),
         (STATUS_APPROVED, 'Approved',),
     )
 
     milestone = models.ForeignKey(Milestone, related_name='tasks', blank=True, null=True)
-    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default=STATUS_DEFAULT)
+    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default=STATUS_IN_PROGRESS)
     name = models.CharField(max_length=255)
     description = models.TextField()
     due_date = models.DateField(blank=True, null=True)
