@@ -202,5 +202,18 @@ class QuoteViewSet(viewsets.ModelViewSet):
         if 'project' in self.request.QUERY_PARAMS:
             project = self.request.QUERY_PARAMS['project']
             time = timezone.now() - timezone.timedelta(days=1)
-            qs = qs.filter(project_member__project=project, created_at__lte=time)
+            Quote.objects.extra(
+                where=["""
+                    (
+                        SELECT COUNT(pq.id)
+                        FROM projects_quote AS pq
+                        INNER JOIN projects_projectmember AS ppm1 ON (projects_quote.project_member_id = ppm1.id)
+                        INNER JOIN projects_projectmember AS ppm2 ON (projects_quote.project_member_id = ppm2.id)
+                        WHERE
+                            ((projects_quote.status = 'accepted') OR (projects_quote.status = 'pending-owner'))
+                            AND (ppm1.project_id = ppm2.project_id)
+                    ) >= 2
+                """]
+            ).filter().query
+            # qs = qs.filter(project_member__project=project, created_at__lte=time)
         return qs
