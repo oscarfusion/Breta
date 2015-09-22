@@ -1,3 +1,4 @@
+from functools import partial
 import datetime
 import pytz
 from django.utils import timezone
@@ -19,5 +20,15 @@ def transaction_display_at(date):
     return timezone.get_default_timezone().normalize(display_at)
 
 
+def filter_transaction(user, transaction):
+    now = timezone.now()
+    if user == transaction.payer:
+        return True
+    elif user == transaction.receiver:
+        return transaction.displayed_at <= now
+    return False
+
+
 def get_visible_transactions(user, transactions):
-    pass
+    _filter_transaction = partial(filter_transaction, user)
+    return filter(_filter_transaction, transactions)
