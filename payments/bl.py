@@ -13,12 +13,14 @@ from .models import Transaction, CreditCard, PayoutMethod
 
 
 def get_user_balance(user_id):
-    escrow_amount = Transaction.objects.filter(receiver__id=user_id).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
+    received_costs = Transaction.objects.filter(receiver__id=user_id).aggregate(Sum('amount'), Sum('fee'))
+    escrow_amount = received_costs.get('amount__sum') or Decimal(0)
+    withdrawal_fee = received_costs.get('fee__sum') or Decimal(0)
     referral_amount = Transaction.objects.filter(referrer__id=user_id).aggregate(Sum('referrer_amount')).get('referrer_amount__sum') or Decimal(0)
     paid_sum = Transaction.objects.filter(payer__id=user_id).aggregate(Sum('amount'), Sum('fee'))
     milestones_amount = paid_sum.get('amount__sum') or Decimal(0)
     fee_amount = paid_sum.get('fee__sum') or Decimal(0)
-    return escrow_amount + referral_amount - milestones_amount - fee_amount
+    return escrow_amount - withdrawal_fee + referral_amount - milestones_amount - fee_amount
 
 
 def get_fee_and_referrer_amount(amount):
@@ -84,9 +86,8 @@ def create_milestone_transaction(credit_card_id, user, milestone_id):
         if user.referrer:
             fee, referrer_amount = get_fee_and_referrer_amount(task_amount)
         else:
-            fee = task_amount * Decimal(str(config.PO_FEE / 100.0)) + task_amount * Decimal(str(config.DEVELOPER_FEE / 100.0))
+            fee = task_amount * Decimal(str(config.PO_FEE / 100.0))
             referrer_amount = 0
-        task_amount -= task_amount * Decimal(str(config.DEVELOPER_FEE / 100.0))
         transaction = Transaction.objects.create(
             transaction_type=Transaction.MILESTONE,
             amount=task_amount,
