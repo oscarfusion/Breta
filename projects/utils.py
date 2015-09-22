@@ -178,9 +178,17 @@ def create_demo_project_for_developer(user):
     return create_demo_project(owner=manager, manager=manager, developer=user)
 
 
-def _filter_quote_members(quotes):
+def filter_active_quotes(quotes):
     day_ago = timezone.now() - timezone.timedelta(days=1)
-    pass
+    created_day_ago = filter(
+        lambda x: x.created_at < day_ago,
+        quotes
+    )
+    created_today = filter(
+        lambda x: x.created_at >= day_ago,
+        quotes
+    )
+    return created_day_ago + (created_today if len(created_today) > 3 else [])
 
 
 def get_active_quotes(quotes):
@@ -192,6 +200,6 @@ def get_active_quotes(quotes):
         lambda x: x.project_member.type_of_work == ProjectMember.TYPE_OF_WORK_DESIGNER,
         quotes
     ) or []
-    filtered_developers = _filter_quote_members(developers)
-    filtered_designers = _filter_quote_members(designers)
+    filtered_developers = filter_active_quotes(developers)
+    filtered_designers = filter_active_quotes(designers)
     return filtered_developers + filtered_designers
