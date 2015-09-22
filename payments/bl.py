@@ -13,10 +13,12 @@ from .models import Transaction, CreditCard, PayoutMethod
 
 
 def get_user_balance(user_id):
-    escrow_sum = Transaction.objects.filter(receiver__id=user_id).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
-    referral_sum = Transaction.objects.filter(referrer__id=user_id).aggregate(Sum('referrer_amount')).get('referrer_amount__sum') or Decimal(0)
-    paid_sum = Transaction.objects.filter(payer__id=user_id).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
-    return escrow_sum + referral_sum - paid_sum
+    escrow_amount = Transaction.objects.filter(receiver__id=user_id).aggregate(Sum('amount')).get('amount__sum') or Decimal(0)
+    referral_amount = Transaction.objects.filter(referrer__id=user_id).aggregate(Sum('referrer_amount')).get('referrer_amount__sum') or Decimal(0)
+    paid_sum = Transaction.objects.filter(payer__id=user_id).aggregate(Sum('amount'), Sum('fee'))
+    milestones_amount = paid_sum.get('amount__sum') or Decimal(0)
+    fee_amount = paid_sum.get('fee__sum') or Decimal(0)
+    return escrow_amount + referral_amount - milestones_amount - fee_amount
 
 
 def get_fee_and_referrer_amount(amount):
