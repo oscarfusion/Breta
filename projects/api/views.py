@@ -1,5 +1,4 @@
 from django.db.models import Q
-from django.utils import timezone
 
 from rest_framework import viewsets
 from rest_framework.parsers import FileUploadParser, MultiPartParser
@@ -11,7 +10,7 @@ from .serializers import ProjectSerializer, ProjectFileSerializer, MilestoneSeri
 from .permissions import ProjectPermissions, ProjectFilePermissions, MilestonePermission, TaskPermission, \
     ProjectMessagePermission, ProjectMemberPermission, QuotePermission
 from ..models import Project, ProjectFile, Milestone, Task, ProjectMessage, ProjectMember, Quote
-from ..utils import sort_project_messages
+from ..utils import sort_project_messages, get_active_quotes
 from .. import permissions as bl_permissions
 from .. import email
 from .. import bl
@@ -173,7 +172,7 @@ class QuoteViewSet(viewsets.ModelViewSet):
         Q(status=Quote.STATUS_PENDING_OWNER) |
         Q(status=Quote.STATUS_ACCEPTED) |
         Q(status=Quote.STATUS_PENDING_MEMBER)
-    ).select_related().all()
+    ).select_related()
     serializer_class = QuoteSerializer
     permission_classes = (QuotePermission,)
 
@@ -201,6 +200,10 @@ class QuoteViewSet(viewsets.ModelViewSet):
         qs = self.queryset
         if 'project' in self.request.QUERY_PARAMS:
             project = self.request.QUERY_PARAMS['project']
-            time = timezone.now() - timezone.timedelta(days=1)
-            qs = qs.filter(project_member__project=project, created_at__lte=time)
+            qs = qs.filter(project_member__project=project).select_related('project_member', 'project_member__project')
         return qs
+
+    def filter_queryset(self, queryset):
+        if self.request.method == 'GET':
+            return get_active_quotes(queryset.all())
+        return queryset.all()
