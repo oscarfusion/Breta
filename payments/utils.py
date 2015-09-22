@@ -17,3 +17,7 @@ def transaction_display_at(date):
     display_at = date + offset
     display_at = display_at.replace(hour=10, minute=0)
     return timezone.get_default_timezone().normalize(display_at)
+
+
+def get_visible_transactions(user, transactions):
+    pass
