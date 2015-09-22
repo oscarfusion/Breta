@@ -1,10 +1,13 @@
 import datetime
 from decimal import Decimal
+
 from django.utils.text import slugify
+from django.utils import timezone
 from django.utils.timezone import make_aware, get_current_timezone, now, timedelta
 from constance import config
 
 from accounts.models import User
+from .models import ProjectMember
 
 
 def sort_project_messages(iterable):
@@ -173,3 +176,22 @@ def create_demo_project_for_developer(user):
     except User.DoesNotExist:
         return None
     return create_demo_project(owner=manager, manager=manager, developer=user)
+
+
+def _filter_quote_members(quotes):
+    day_ago = timezone.now() - timezone.timedelta(days=1)
+    pass
+
+
+def get_active_quotes(quotes):
+    developers = filter(
+        lambda x: x.project_member.type_of_work == ProjectMember.TYPE_OF_WORK_DEVELOPER,
+        quotes
+    ) or []
+    designers = filter(
+        lambda x: x.project_member.type_of_work == ProjectMember.TYPE_OF_WORK_DESIGNER,
+        quotes
+    ) or []
+    filtered_developers = _filter_quote_members(developers)
+    filtered_designers = _filter_quote_members(designers)
+    return filtered_developers + filtered_designers
