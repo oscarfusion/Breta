@@ -204,4 +204,6 @@ class QuoteViewSet(viewsets.ModelViewSet):
         return qs
 
     def filter_queryset(self, queryset):
-        return get_active_quotes(queryset.all())
+        if self.request.method == 'GET':
+            return get_active_quotes(queryset.all())
+        return queryset.all()
