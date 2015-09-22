@@ -195,11 +195,11 @@ def get_active_quotes(quotes):
     developers = filter(
         lambda x: x.project_member.type_of_work == ProjectMember.TYPE_OF_WORK_DEVELOPER,
         quotes
-    ) or []
+    )
     designers = filter(
         lambda x: x.project_member.type_of_work == ProjectMember.TYPE_OF_WORK_DESIGNER,
         quotes
-    ) or []
+    )
     filtered_developers = filter_active_quotes(developers)
     filtered_designers = filter_active_quotes(designers)
     return filtered_developers + filtered_designers
