@@ -1,6 +1,5 @@
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
-from django.utils import timezone
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework import viewsets
@@ -15,6 +14,7 @@ from .forms import CreateCreditCardForm
 from .. import stripe_api
 from .. import bl
 from .. import email
+from .. import utils
 
 
 class CreditCardViewSet(viewsets.ModelViewSet):
@@ -84,7 +84,10 @@ class TransactionViewSet(viewsets.ModelViewSet):
             Q(payer=self.request.user) |
             Q(receiver=self.request.user) |
             Q(payout_method__user=self.request.user)
-        ).filter(Q(displayed_at__lte=timezone.now())).all()
+        )
+
+    def filter_queryset(self, queryset):
+        return utils.get_visible_transactions(self.request.user, queryset)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
